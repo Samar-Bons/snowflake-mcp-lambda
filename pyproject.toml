@@ -138,6 +138,14 @@ ignore_missing_imports = true
 module = "google.generativeai.*"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = "pydantic.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "sqlalchemy.*"
+ignore_missing_imports = true
+
 [tool.coverage.run]
 source = ["backend/app"]
 omit = [
