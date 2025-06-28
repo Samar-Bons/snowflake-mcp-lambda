@@ -37,7 +37,7 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 # Copy application code
 WORKDIR /app
-COPY backend/app ./app
+COPY app ./app
 
 # Set ownership and switch to non-root user
 RUN chown -R appuser:appuser /app

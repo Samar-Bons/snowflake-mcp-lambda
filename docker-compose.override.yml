@@ -1,0 +1,65 @@
+# Development overrides for docker-compose.yml
+# Automatically loaded by docker-compose for local development
+
+version: '3.8'
+
+services:
+  backend:
+    build:
+      target: builder  # Use builder stage for development
+    environment:
+      - ENV=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+    volumes:
+      - ./backend:/app:cached
+      - backend_cache:/app/.venv
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "
+        poetry install &&
+        poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Optional: pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: snowflake-mcp-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@snowflake-mcp.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    profiles:
+      - admin
+
+  # Optional: Redis Commander for Redis management
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: snowflake-mcp-redis-commander
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    profiles:
+      - admin
+
+volumes:
+  backend_cache:
+    driver: local
+  pgadmin_data:
+    driver: local

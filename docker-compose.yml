@@ -1,0 +1,77 @@
+# Development environment for Snowflake MCP Lambda
+# Includes PostgreSQL and Redis for local development
+
+version: '3.8'
+
+services:
+  # PostgreSQL database for user data
+  postgres:
+    image: postgres:15-alpine
+    container_name: snowflake-mcp-postgres
+    environment:
+      POSTGRES_DB: snowflake_mcp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Redis for session management
+  redis:
+    image: redis:7-alpine
+    container_name: snowflake-mcp-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Backend FastAPI service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: snowflake-mcp-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/snowflake_mcp
+      - REDIS_URL=redis://redis:6379/0
+      - ENV=development
+    volumes:
+      - ./backend:/app
+      - /app/.venv  # Exclude virtual environment from volume mount
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: snowflake-mcp-network

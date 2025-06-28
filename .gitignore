@@ -232,8 +232,8 @@ storybook-static
 
 # Docker
 Dockerfile.prod
-docker-compose.override.yml
 .dockerignore
+# Note: docker-compose.override.yml is tracked for development convenience
 
 # IDE & Editor
 .vscode/

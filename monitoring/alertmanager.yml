@@ -1,0 +1,75 @@
+# ABOUTME: Alertmanager configuration for Snowflake MCP Lambda
+# ABOUTME: Defines notification channels and alert routing rules
+
+global:
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'alerts@snowflake-mcp.local'
+  smtp_require_tls: false
+
+# Email notification template
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Route alerts to different receivers based on labels
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'web.hook'
+  routes:
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 5s
+      repeat_interval: 30m
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+      repeat_interval: 2h
+
+# Receivers define notification destinations
+receivers:
+  - name: 'web.hook'
+    webhook_configs:
+      - url: 'http://localhost:5001/webhook'
+        send_resolved: true
+
+  - name: 'critical-alerts'
+    email_configs:
+      - to: '${ALERT_EMAIL}'
+        subject: '[CRITICAL] Snowflake MCP Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Labels: {{ range $key, $value := .Labels }}{{ $key }}: {{ $value }}{{ end }}
+          {{ end }}
+        headers:
+          Subject: '[CRITICAL] Snowflake MCP Alert'
+
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts'
+        title: 'Critical Alert: {{ .GroupLabels.alertname }}'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        color: 'danger'
+
+  - name: 'warning-alerts'
+    email_configs:
+      - to: '${ALERT_EMAIL}'
+        subject: '[WARNING] Snowflake MCP Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Labels: {{ range $key, $value := .Labels }}{{ $key }}: {{ $value }}{{ end }}
+          {{ end }}
+
+# Inhibition rules to prevent duplicate alerts
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']

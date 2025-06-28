@@ -1,0 +1,307 @@
+# ABOUTME: Production Docker Compose configuration with security hardening and resource limits
+# ABOUTME: Includes monitoring, logging, networking, and health checks for production deployment
+
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.prod
+    image: snowflake-mcp-backend:${VERSION:-latest}
+    container_name: snowflake-mcp-backend
+    restart: unless-stopped
+
+    # Resource limits for production
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+    # Security hardening
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+
+    # Temporary filesystem for writable areas
+    tmpfs:
+      - /tmp:rw,nosuid,size=100m
+      - /app/logs:rw,nosuid,size=200m
+
+    # Environment variables
+    environment:
+      - ENV=production
+      - LOG_LEVEL=info
+      - WORKERS=2
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/snowflake_mcp
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=${SECRET_KEY}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+
+    # Port mapping
+    ports:
+      - "8000:8000"
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=backend"
+
+    # Dependencies
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    # Networks
+    networks:
+      - backend-network
+      - database-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: snowflake-mcp-postgres
+    restart: unless-stopped
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+    # Security
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+
+    # Volumes for persistence
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+
+    # Temporary filesystems
+    tmpfs:
+      - /tmp:rw,nosuid,size=100m
+      - /var/run/postgresql:rw,nosuid,size=10m
+
+    # Environment
+    environment:
+      - POSTGRES_DB=snowflake_mcp
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+
+    # Health check
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d snowflake_mcp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=postgres"
+
+    # Networks
+    networks:
+      - database-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: snowflake-mcp-redis
+    restart: unless-stopped
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
+    # Security
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+    # Redis configuration
+    command: redis-server --appendonly yes --maxmemory 200mb --maxmemory-policy allkeys-lru
+
+    # Volumes for persistence
+    volumes:
+      - redis_data:/data
+
+    # Temporary filesystem
+    tmpfs:
+      - /tmp:rw,nosuid,size=50m
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=redis"
+
+    # Networks
+    networks:
+      - database-network
+
+  # Nginx reverse proxy for production
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: snowflake-mcp-nginx
+    restart: unless-stopped
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
+    # Security
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+      - CHOWN
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+
+    # Configuration
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+    # Temporary filesystems
+    tmpfs:
+      - /var/cache/nginx:rw,nosuid,size=50m
+      - /var/run:rw,nosuid,size=10m
+      - /tmp:rw,nosuid,size=50m
+
+    # Ports
+    ports:
+      - "80:80"
+      - "443:443"
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service=nginx"
+
+    # Dependencies
+    depends_on:
+      backend:
+        condition: service_healthy
+
+    # Networks
+    networks:
+      - backend-network
+
+# Networks
+networks:
+  backend-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: snowflake-backend
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+  database-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: snowflake-db
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+    internal: true  # Database network is internal only
+
+# Volumes
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/data/postgres
+      o: bind
+
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/data/redis
+      o: bind

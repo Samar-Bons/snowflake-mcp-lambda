@@ -22,6 +22,8 @@ google-auth-oauthlib = "^1.2.0"
 pyjwt = {extras = ["crypto"], version = "^2.8.0"}
 google-generativeai = "^0.6.0"
 structlog = "^24.2.0"
+psutil = "^5.9.0"
+requests = "^2.31.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
@@ -132,6 +134,14 @@ show_error_codes = true
 
 [[tool.mypy.overrides]]
 module = "snowflake.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "fastapi.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pytest.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
