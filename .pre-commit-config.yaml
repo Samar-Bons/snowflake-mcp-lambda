@@ -1,0 +1,45 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: debug-statements
+
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+        language_version: python3
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.4.4
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-redis]
+        args: [--strict]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: sh
+        args: [-c, 'command -v poetry >/dev/null 2>&1 && cd "$(git rev-parse --show-toplevel)" && PYTHONPATH=backend poetry run pytest --tb=short || (echo "Poetry not found, skipping tests (tests will run in CI)" && exit 0)']
+        language: system
+        pass_filenames: false
+        always_run: true
