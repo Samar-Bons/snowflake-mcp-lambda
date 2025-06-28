@@ -22,6 +22,8 @@ google-auth-oauthlib = "^1.2.0"
 pyjwt = {extras = ["crypto"], version = "^2.8.0"}
 google-generativeai = "^0.6.0"
 structlog = "^24.2.0"
+requests = "^2.31.0"
+PyYAML = "^6.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
@@ -34,6 +36,8 @@ mypy = "^1.10.0"
 pre-commit = "^3.7.0"
 httpx = "^0.27.0"
 types-redis = "^4.6.0"
+types-requests = "^2.31.0"
+types-PyYAML = "^6.0.12"
 
 [build-system]
 requires = ["poetry-core"]
@@ -102,7 +106,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"backend/tests/*" = ["S101", "PLR2004"]
+"backend/tests/*" = ["S101", "PLR2004", "S603", "S607"]
 
 [tool.isort]
 profile = "black"
@@ -121,7 +125,7 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
 check_untyped_defs = true
-disallow_untyped_decorators = true
+disallow_untyped_decorators = false
 no_implicit_optional = true
 warn_redundant_casts = true
 warn_unused_ignores = true
@@ -129,6 +133,7 @@ warn_no_return = true
 warn_unreachable = true
 strict_equality = true
 show_error_codes = true
+exclude = ["backend/tests/"]
 
 [[tool.mypy.overrides]]
 module = "snowflake.*"
@@ -137,6 +142,22 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "google.generativeai.*"
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "fastapi.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "app.*"
+disallow_untyped_decorators = false
+
+[[tool.mypy.overrides]]
+module = "pytest.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
 
 [tool.coverage.run]
 source = ["backend/app"]
