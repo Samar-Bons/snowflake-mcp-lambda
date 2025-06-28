@@ -40,7 +40,7 @@ The flow intentionally starts small, adds tests immediately, and never leaves or
 Below is Chunk A fully expanded.
 We applied the same granularity to all later chunks (kept concise here to save space).
 
-### Chunk A — Repo & Tooling
+### Chunk A — Repo & Tooling ✅ COMPLETED
 
 | #  | Task                                                           | Acceptance Test                      |
 | -- | -------------------------------------------------------------- | ------------------------------------ |
@@ -49,7 +49,7 @@ We applied the same granularity to all later chunks (kept concise here to save s
 | A3 | Add `pyproject.toml` (Poetry) w/ FastAPI, Uvicorn              | `poetry install` succeeds locally    |
 | A4 | Add Dockerfile.dev (backend) + `.dockerignore`                 | `docker build` completes             |
 | A5 | `.pre-commit-config.yaml` (black, ruff, isort, mypy, pytest)   | `pre-commit run --all-files` passes  |
-| A6 | GitHub Actions workflow: lint + tests on push                  | Red until A8 passes                  |
+| A6 | GitHub Actions workflow: lint + tests on push                  | CI passes with fixed Python matrix   | ✅ DONE |
 | A7 | Write failing pytest for `/health` returning `{"status":"ok"}` | Test marked `xfail`                  |
 | A8 | Implement minimal FastAPI & make test pass                     | CI goes green                        |
 
