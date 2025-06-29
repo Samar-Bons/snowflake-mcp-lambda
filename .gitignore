@@ -86,7 +86,7 @@ ipython_config.py
 Pipfile.lock
 
 # poetry
-poetry.lock
+# Note: poetry.lock should be committed for applications
 
 # pdm
 .pdm.toml
@@ -329,3 +329,20 @@ secrets.yaml
 snowflake_credentials.json
 google_credentials.json
 jwt_secret.key
+
+# Temporary test files and outputs
+test_*.py
+!backend/tests/test_*.py
+*_test.py
+CI_PARITY_VERIFICATION.md
+social_media_posts_*.md
+
+# Development environment files
+.env.dev
+.env.development
+.env.production
+!.env.example
+
+# Keep docs organized but ignore temporary files
+docs/journal/*
+docs/social_media_posts_*
