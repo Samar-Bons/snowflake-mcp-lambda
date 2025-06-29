@@ -99,10 +99,11 @@ ignore = [
     "E501",  # line too long, handled by black
     "S101",  # use of assert detected
     "PLR0913", # too many arguments to function call
+    "I001",  # import sorting - handled by isort separately
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"backend/tests/*" = ["S101", "PLR2004"]
+"backend/tests/*" = ["S101", "S105", "S106", "S603", "PLR2004"]
 
 [tool.isort]
 profile = "black"
