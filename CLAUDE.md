@@ -105,6 +105,6 @@ Based on `prompt_plan.md`, follow this sequence:
 
 ## Key Files to Reference
 
-- `spec.md` - Complete feature requirements and UX flows
-- `prompt_plan.md` - Detailed implementation prompts for each phase
+- `planning/spec.md` - Complete feature requirements and UX flows
+- `planning/prompt_plan.md` - Detailed implementation prompts for each phase
 - `README.md` - Basic project description
