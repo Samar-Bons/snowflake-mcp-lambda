@@ -15,7 +15,7 @@ repos:
       # Ruff - linting and formatting (exactly as CI runs it)
       - id: ruff-check
         name: ruff check
-        entry: poetry run ruff check --output-format=concise
+        entry: ./scripts/poetry-wrapper.sh run ruff check --output-format=concise
         language: system
         types: [python]
         require_serial: true
@@ -23,7 +23,7 @@ repos:
 
       - id: ruff-format
         name: ruff format
-        entry: poetry run ruff format --check
+        entry: ./scripts/poetry-wrapper.sh run ruff format --check
         language: system
         types: [python]
         require_serial: true
@@ -32,7 +32,7 @@ repos:
       # MyPy - type checking (exactly as CI runs it)
       - id: mypy
         name: mypy
-        entry: poetry run mypy
+        entry: ./scripts/poetry-wrapper.sh run mypy
         language: system
         types: [python]
         require_serial: true
@@ -42,7 +42,7 @@ repos:
       # Pytest - full test suite with coverage (exactly as CI runs it)
       - id: pytest
         name: pytest with coverage
-        entry: poetry run pytest
+        entry: ./scripts/poetry-wrapper.sh run pytest
         language: system
         pass_filenames: false
         always_run: true
@@ -52,7 +52,7 @@ repos:
       # Poetry check - ensure lock file is up to date
       - id: poetry-check
         name: poetry check
-        entry: poetry check
+        entry: ./scripts/poetry-wrapper.sh check
         language: system
         pass_filenames: false
         files: pyproject.toml
@@ -60,7 +60,7 @@ repos:
       # Security check with bandit (via ruff S rules)
       - id: security-check
         name: security check
-        entry: poetry run ruff check --select=S
+        entry: ./scripts/poetry-wrapper.sh run ruff check --select=S
         language: system
         types: [python]
         args: [backend/]
