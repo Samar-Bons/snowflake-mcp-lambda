@@ -5,7 +5,6 @@ import os
 from unittest.mock import patch
 
 import pytest
-
 from app.config import Settings, settings
 
 
@@ -55,7 +54,7 @@ class TestSettings:
 
         # Test invalid log level should be rejected
         with pytest.raises(ValueError):
-            Settings(LOG_LEVEL="INVALID_LEVEL")
+            Settings(LOG_LEVEL="INVALID_LEVEL")  # type: ignore[arg-type]
 
     def test_settings_singleton_instance(self) -> None:
         """Test that the global settings instance is accessible."""
