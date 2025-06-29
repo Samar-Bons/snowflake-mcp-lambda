@@ -34,6 +34,9 @@ mypy = "^1.10.0"
 pre-commit = "^3.7.0"
 httpx = "^0.27.0"
 types-redis = "^4.6.0"
+types-requests = "^2.31.0"
+types-pydantic = "^1.8.0"
+types-pytest = "^1.1.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -130,6 +133,7 @@ warn_no_return = true
 warn_unreachable = true
 strict_equality = true
 show_error_codes = true
+exclude = ["backend/tests/"]
 
 [[tool.mypy.overrides]]
 module = "snowflake.*"
