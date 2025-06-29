@@ -20,7 +20,7 @@ repos:
         types: [python]
         require_serial: true
         args: [backend/]
-        
+
       - id: ruff-format
         name: ruff format
         entry: poetry run ruff format --check
@@ -28,7 +28,7 @@ repos:
         types: [python]
         require_serial: true
         args: [backend/]
-      
+
       # MyPy - type checking (exactly as CI runs it)
       - id: mypy
         name: mypy
@@ -38,7 +38,7 @@ repos:
         require_serial: true
         args: [backend/]
         pass_filenames: false
-      
+
       # Pytest - full test suite with coverage (exactly as CI runs it)
       - id: pytest
         name: pytest with coverage
@@ -48,7 +48,7 @@ repos:
         always_run: true
         args: [--cov=backend/app, --cov-report=term-missing, --cov-fail-under=85]
         stages: [commit]
-      
+
       # Poetry check - ensure lock file is up to date
       - id: poetry-check
         name: poetry check
@@ -56,7 +56,7 @@ repos:
         language: system
         pass_filenames: false
         files: pyproject.toml
-      
+
       # Security check with bandit (via ruff S rules)
       - id: security-check
         name: security check

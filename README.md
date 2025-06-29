@@ -11,7 +11,7 @@ A remote MCP Server for Snowflake. Deployed as a AWS Lambda Function
 
 # That's it! All commits will now run the same checks as CI:
 # - Ruff linting & formatting
-# - MyPy type checking  
+# - MyPy type checking
 # - Full pytest suite with 85% coverage requirement
 # - Security scanning
 ```
@@ -19,7 +19,7 @@ A remote MCP Server for Snowflake. Deployed as a AWS Lambda Function
 ### Why Full CI Parity in Pre-commit?
 
 1. **No CI Debugging**: Fix issues locally, not through CI logs
-2. **Resource Efficiency**: Don't waste CI minutes on preventable failures  
+2. **Resource Efficiency**: Don't waste CI minutes on preventable failures
 3. **Guaranteed Success**: If it commits locally, it passes CI
 4. **Better DX**: Immediate feedback, no context switching
 
