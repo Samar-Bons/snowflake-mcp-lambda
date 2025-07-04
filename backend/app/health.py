@@ -34,15 +34,31 @@ def get_readiness_status() -> dict[str, Any]:
     """
     logger.info("Readiness check requested")
 
-    # TODO: Add actual dependency checks (database, redis, etc.)
-    dependencies_ready = True
+    # Check database health
+    database_status = "pending"
+    database_health = {"status": "pending"}
+
+    try:
+        from app.core.database import get_database_manager
+
+        db_manager = get_database_manager()
+        database_health = db_manager.health_check()
+        database_status = database_health["status"]
+    except Exception as e:
+        logger.error(f"Database health check failed: {e}")
+        database_status = "error"
+        database_health = {"status": "error", "error": str(e)}
+
+    # TODO: Add actual dependency checks (redis, snowflake, etc.)
+    dependencies_ready = database_status == "healthy"
 
     return {
         "ready": dependencies_ready,
         "timestamp": datetime.utcnow().isoformat(),
         "dependencies": {
-            "database": "pending",
+            "database": database_status,
             "redis": "pending",
             "snowflake": "pending",
         },
+        "database_health": database_health,
     }

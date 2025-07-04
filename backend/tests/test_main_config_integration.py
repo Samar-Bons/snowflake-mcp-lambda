@@ -50,11 +50,15 @@ class TestMainConfigIntegration:
         client = TestClient(app)
         response = client.get("/readiness")
 
-        assert response.status_code == 200
+        # Should return 503 when database is not available (expected in test environment)
+        assert response.status_code == 503
         data = response.json()
         assert "ready" in data
         assert "timestamp" in data
         assert "dependencies" in data
+        assert "database_health" in data
+        # Should not be ready when database is unavailable
+        assert data["ready"] is False
 
     def test_root_endpoint_works(self) -> None:
         """Test root endpoint returns API information."""
