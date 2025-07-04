@@ -7,6 +7,7 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
+from app.auth.endpoints import router as auth_router
 from app.config import get_settings
 from app.health import get_health_status, get_readiness_status
 
@@ -27,6 +28,9 @@ app = FastAPI(
     version="0.1.0",
     debug=settings.DEBUG,
 )
+
+# Include routers
+app.include_router(auth_router)
 
 
 @app.get("/health")
