@@ -41,12 +41,12 @@ class TestGoogleOAuthService:
         settings = Settings()
         service = GoogleOAuthService(settings)
 
-        with patch('app.auth.oauth_service.Flow') as mock_flow:
+        with patch("app.auth.oauth_service.Flow") as mock_flow:
             mock_flow_instance = Mock()
             mock_flow.from_client_config.return_value = mock_flow_instance
             mock_flow_instance.authorization_url.return_value = (
                 "https://accounts.google.com/oauth/authorize?...",
-                "random_state"
+                "random_state",
             )
 
             auth_url, state = service.get_authorization_url()
@@ -60,12 +60,12 @@ class TestGoogleOAuthService:
         settings = Settings()
         service = GoogleOAuthService(settings)
 
-        with patch('app.auth.oauth_service.Flow') as mock_flow:
+        with patch("app.auth.oauth_service.Flow") as mock_flow:
             mock_flow_instance = Mock()
             mock_flow.from_client_config.return_value = mock_flow_instance
             mock_flow_instance.authorization_url.return_value = (
                 "https://accounts.google.com/oauth/authorize?...",
-                "custom_state"
+                "custom_state",
             )
 
             auth_url, state = service.get_authorization_url(state="custom_state")
@@ -74,7 +74,7 @@ class TestGoogleOAuthService:
             mock_flow_instance.authorization_url.assert_called_with(
                 access_type="offline",
                 include_granted_scopes="true",
-                state="custom_state"
+                state="custom_state",
             )
 
     def test_exchange_code_for_tokens_success(self) -> None:
@@ -82,7 +82,7 @@ class TestGoogleOAuthService:
         settings = Settings()
         service = GoogleOAuthService(settings)
 
-        with patch('app.auth.oauth_service.Flow') as mock_flow:
+        with patch("app.auth.oauth_service.Flow") as mock_flow:
             mock_flow_instance = Mock()
             mock_flow.from_client_config.return_value = mock_flow_instance
             mock_credentials = Mock()
@@ -99,10 +99,10 @@ class TestGoogleOAuthService:
         settings = Settings()
         service = GoogleOAuthService(settings)
 
-        with patch('app.auth.oauth_service.Flow') as mock_flow:
+        with patch("app.auth.oauth_service.Flow") as mock_flow:
             mock_flow_instance = Mock()
             mock_flow.from_client_config.return_value = mock_flow_instance
-            mock_flow_instance.fetch_token.side_effect = GoogleAuthError("Invalid code")
+            mock_flow_instance.fetch_token.side_effect = GoogleAuthError("Invalid code")  # type: ignore[no-untyped-call]
 
             with pytest.raises(OAuthError) as exc_info:
                 service.exchange_code_for_tokens("invalid_code", "state")
@@ -120,13 +120,15 @@ class TestGoogleOAuthService:
             "email": "test@example.com",
             "name": "Test User",
             "picture": "https://example.com/photo.jpg",
-            "verified_email": True
+            "verified_email": True,
         }
 
-        with patch('app.auth.oauth_service.build') as mock_build:
+        with patch("app.auth.oauth_service.build") as mock_build:
             mock_service = Mock()
             mock_build.return_value = mock_service
-            mock_service.userinfo.return_value.get.return_value.execute.return_value = mock_user_data
+            mock_service.userinfo.return_value.get.return_value.execute.return_value = (
+                mock_user_data
+            )
 
             user_info = service.get_user_info(mock_credentials)
 
@@ -147,13 +149,15 @@ class TestGoogleOAuthService:
             "id": "123456789",
             "email": "test@example.com",
             "name": "Test User",
-            "verified_email": False
+            "verified_email": False,
         }
 
-        with patch('app.auth.oauth_service.build') as mock_build:
+        with patch("app.auth.oauth_service.build") as mock_build:
             mock_service = Mock()
             mock_build.return_value = mock_service
-            mock_service.userinfo.return_value.get.return_value.execute.return_value = mock_user_data
+            mock_service.userinfo.return_value.get.return_value.execute.return_value = (
+                mock_user_data
+            )
 
             with pytest.raises(OAuthError) as exc_info:
                 service.get_user_info(mock_credentials)
@@ -167,10 +171,12 @@ class TestGoogleOAuthService:
 
         mock_credentials = Mock()
 
-        with patch('app.auth.oauth_service.build') as mock_build:
+        with patch("app.auth.oauth_service.build") as mock_build:
             mock_service = Mock()
             mock_build.return_value = mock_service
-            mock_service.userinfo.return_value.get.return_value.execute.side_effect = Exception("API Error")
+            mock_service.userinfo.return_value.get.return_value.execute.side_effect = (
+                Exception("API Error")
+            )
 
             with pytest.raises(OAuthError) as exc_info:
                 service.get_user_info(mock_credentials)
@@ -184,7 +190,7 @@ class TestGoogleOAuthService:
             email="test@example.com",
             name="Test User",
             picture="https://example.com/photo.jpg",
-            verified_email=True
+            verified_email=True,
         )
 
         assert user_info.google_id == "123456789"
@@ -200,7 +206,7 @@ class TestGoogleOAuthService:
             email="test@example.com",
             name="Test User",
             picture=None,
-            verified_email=True
+            verified_email=True,
         )
 
         assert user_info.picture is None
@@ -217,15 +223,16 @@ class TestGoogleOAuthService:
         settings = Settings()
         service = GoogleOAuthService(settings)
 
-        with patch('app.auth.oauth_service.Flow') as mock_flow, \
-             patch('app.auth.oauth_service.build') as mock_build:
-
+        with (
+            patch("app.auth.oauth_service.Flow") as mock_flow,
+            patch("app.auth.oauth_service.build") as mock_build,
+        ):
             # Mock authorization URL generation
             mock_flow_instance = Mock()
             mock_flow.from_client_config.return_value = mock_flow_instance
             mock_flow_instance.authorization_url.return_value = (
                 "https://accounts.google.com/oauth/authorize?...",
-                "flow_state"
+                "flow_state",
             )
 
             # Mock token exchange
@@ -241,9 +248,11 @@ class TestGoogleOAuthService:
                 "email": "test@example.com",
                 "name": "Test User",
                 "picture": "https://example.com/photo.jpg",
-                "verified_email": True
+                "verified_email": True,
             }
-            mock_service.userinfo.return_value.get.return_value.execute.return_value = mock_user_data
+            mock_service.userinfo.return_value.get.return_value.execute.return_value = (
+                mock_user_data
+            )
 
             # Test complete flow
             auth_url, state = service.get_authorization_url()

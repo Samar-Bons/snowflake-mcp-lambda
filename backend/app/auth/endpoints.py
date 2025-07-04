@@ -89,7 +89,8 @@ def decode_state(state: str) -> str | None:
     try:
         state_json = base64.urlsafe_b64decode(state.encode()).decode()
         state_data = json.loads(state_json)
-        return state_data.get("redirect_url")
+        redirect_url = state_data.get("redirect_url")
+        return redirect_url if isinstance(redirect_url, str) else None
     except Exception:
         return None
 

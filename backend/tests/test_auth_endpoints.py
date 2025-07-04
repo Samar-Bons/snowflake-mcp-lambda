@@ -36,35 +36,45 @@ def sample_oauth_user_info() -> OAuthUserInfo:
         email="test@example.com",
         name="Test User",
         picture="https://example.com/photo.jpg",
-        verified_email=True
+        verified_email=True,
     )
 
 
 class TestAuthEndpoints:
     """Test suite for authentication API endpoints."""
 
-    def test_login_endpoint_redirects_to_google(self, client: TestClient, mock_oauth_service: Mock) -> None:
+    def test_login_endpoint_redirects_to_google(
+        self, client: TestClient, mock_oauth_service: Mock
+    ) -> None:
         """Test that login endpoint redirects to Google OAuth."""
         mock_oauth_service.get_authorization_url.return_value = (
             "https://accounts.google.com/oauth/authorize?...",
-            "random_state"
+            "random_state",
         )
 
-        with patch('app.auth.endpoints.get_oauth_service', return_value=mock_oauth_service):
+        with patch(
+            "app.auth.endpoints.get_oauth_service", return_value=mock_oauth_service
+        ):
             response = client.get("/api/v1/auth/login")
 
         assert response.status_code == 302
-        assert response.headers["location"].startswith("https://accounts.google.com/oauth/authorize")
+        assert response.headers["location"].startswith(
+            "https://accounts.google.com/oauth/authorize"
+        )
         mock_oauth_service.get_authorization_url.assert_called_once()
 
-    def test_login_endpoint_with_redirect_param(self, client: TestClient, mock_oauth_service: Mock) -> None:
+    def test_login_endpoint_with_redirect_param(
+        self, client: TestClient, mock_oauth_service: Mock
+    ) -> None:
         """Test login endpoint preserves redirect parameter in state."""
         mock_oauth_service.get_authorization_url.return_value = (
             "https://accounts.google.com/oauth/authorize?...",
-            "encoded_state"
+            "encoded_state",
         )
 
-        with patch('app.auth.endpoints.get_oauth_service', return_value=mock_oauth_service):
+        with patch(
+            "app.auth.endpoints.get_oauth_service", return_value=mock_oauth_service
+        ):
             response = client.get("/api/v1/auth/login?redirect=/dashboard")
 
         assert response.status_code == 302
@@ -76,7 +86,7 @@ class TestAuthEndpoints:
         client: TestClient,
         mock_oauth_service: Mock,
         mock_user_service: Mock,
-        sample_oauth_user_info: OAuthUserInfo
+        sample_oauth_user_info: OAuthUserInfo,
     ) -> None:
         """Test successful OAuth callback handling."""
         # Mock successful OAuth flow
@@ -92,19 +102,30 @@ class TestAuthEndpoints:
         # Mock JWT creation
         mock_jwt_token = "jwt_token_here"
 
-        with patch('app.auth.endpoints.get_oauth_service', return_value=mock_oauth_service), \
-             patch('app.auth.endpoints.get_user_service', return_value=mock_user_service), \
-             patch('app.auth.endpoints.create_jwt_token', return_value=mock_jwt_token):
-
-            response = client.get("/api/v1/auth/callback?code=auth_code&state=oauth_state")
+        with (
+            patch(
+                "app.auth.endpoints.get_oauth_service", return_value=mock_oauth_service
+            ),
+            patch(
+                "app.auth.endpoints.get_user_service", return_value=mock_user_service
+            ),
+            patch("app.auth.endpoints.create_jwt_token", return_value=mock_jwt_token),
+        ):
+            response = client.get(
+                "/api/v1/auth/callback?code=auth_code&state=oauth_state"
+            )
 
         assert response.status_code == 302
         # Should set JWT cookie
         assert "snowflake_token" in [cookie.name for cookie in response.cookies.jar]
 
-        mock_oauth_service.exchange_code_for_tokens.assert_called_once_with("auth_code", "oauth_state")
+        mock_oauth_service.exchange_code_for_tokens.assert_called_once_with(
+            "auth_code", "oauth_state"
+        )
         mock_oauth_service.get_user_info.assert_called_once_with(mock_credentials)
-        mock_user_service.get_or_create_user.assert_called_once_with(sample_oauth_user_info)
+        mock_user_service.get_or_create_user.assert_called_once_with(
+            sample_oauth_user_info
+        )
 
     def test_callback_endpoint_missing_code(self, client: TestClient) -> None:
         """Test callback endpoint with missing authorization code."""
@@ -121,17 +142,21 @@ class TestAuthEndpoints:
         assert "Missing state parameter" in response.json()["detail"]
 
     def test_callback_endpoint_oauth_error(
-        self,
-        client: TestClient,
-        mock_oauth_service: Mock
+        self, client: TestClient, mock_oauth_service: Mock
     ) -> None:
         """Test callback endpoint with OAuth service error."""
         from app.auth.oauth_service import OAuthError
 
-        mock_oauth_service.exchange_code_for_tokens.side_effect = OAuthError("Invalid code")
+        mock_oauth_service.exchange_code_for_tokens.side_effect = OAuthError(
+            "Invalid code"
+        )
 
-        with patch('app.auth.endpoints.get_oauth_service', return_value=mock_oauth_service):
-            response = client.get("/api/v1/auth/callback?code=invalid_code&state=oauth_state")
+        with patch(
+            "app.auth.endpoints.get_oauth_service", return_value=mock_oauth_service
+        ):
+            response = client.get(
+                "/api/v1/auth/callback?code=invalid_code&state=oauth_state"
+            )
 
         assert response.status_code == 400
         assert "OAuth authentication failed" in response.json()["detail"]
@@ -141,7 +166,7 @@ class TestAuthEndpoints:
         client: TestClient,
         mock_oauth_service: Mock,
         mock_user_service: Mock,
-        sample_oauth_user_info: OAuthUserInfo
+        sample_oauth_user_info: OAuthUserInfo,
     ) -> None:
         """Test callback endpoint redirects to original URL from state."""
         # Mock successful OAuth flow
@@ -158,12 +183,19 @@ class TestAuthEndpoints:
         mock_jwt_token = "jwt_token_here"
 
         # Mock state decoding to return redirect URL
-        with patch('app.auth.endpoints.get_oauth_service', return_value=mock_oauth_service), \
-             patch('app.auth.endpoints.get_user_service', return_value=mock_user_service), \
-             patch('app.auth.endpoints.create_jwt_token', return_value=mock_jwt_token), \
-             patch('app.auth.endpoints.decode_state', return_value="/dashboard"):
-
-            response = client.get("/api/v1/auth/callback?code=auth_code&state=encoded_redirect_state")
+        with (
+            patch(
+                "app.auth.endpoints.get_oauth_service", return_value=mock_oauth_service
+            ),
+            patch(
+                "app.auth.endpoints.get_user_service", return_value=mock_user_service
+            ),
+            patch("app.auth.endpoints.create_jwt_token", return_value=mock_jwt_token),
+            patch("app.auth.endpoints.decode_state", return_value="/dashboard"),
+        ):
+            response = client.get(
+                "/api/v1/auth/callback?code=auth_code&state=encoded_redirect_state"
+            )
 
         assert response.status_code == 302
         assert response.headers["location"] == "/dashboard"
@@ -194,11 +226,11 @@ class TestAuthEndpoints:
             "preferences": {
                 "auto_run_queries": False,
                 "default_row_limit": 500,
-                "default_output_format": "table"
+                "default_output_format": "table",
             },
             "is_active": True,
             "created_at": "2025-01-01T00:00:00",
-            "updated_at": "2025-01-01T00:00:00"
+            "updated_at": "2025-01-01T00:00:00",
         }
 
         # Override the dependency
@@ -225,15 +257,21 @@ class TestAuthEndpoints:
 
     def test_profile_endpoint_invalid_token(self, client: TestClient) -> None:
         """Test profile endpoint with invalid JWT token."""
-        with patch('app.auth.endpoints.get_current_user', side_effect=Exception("Invalid token")):
+        with patch(
+            "app.auth.endpoints.get_current_user",
+            side_effect=Exception("Invalid token"),
+        ):
             client.cookies.set("snowflake_token", "invalid_jwt_token")
             response = client.get("/api/v1/auth/profile")
 
         assert response.status_code == 401
 
-    def test_update_preferences_endpoint(self, client: TestClient, mock_user_service: Mock) -> None:
+    def test_update_preferences_endpoint(
+        self, client: TestClient, mock_user_service: Mock
+    ) -> None:
         """Test updating user preferences."""
-        from app.auth.endpoints import get_current_user, get_user_service
+        from app.auth.endpoints import get_current_user
+        from app.auth.user_service import get_user_service
 
         mock_user = Mock()
         mock_user.id = 1
@@ -243,8 +281,8 @@ class TestAuthEndpoints:
             "preferences": {
                 "auto_run_queries": True,
                 "default_row_limit": 1000,
-                "default_output_format": "both"
-            }
+                "default_output_format": "both",
+            },
         }
 
         mock_user_service.update_user_preferences.return_value = updated_user
@@ -252,7 +290,7 @@ class TestAuthEndpoints:
         preferences_data = {
             "auto_run_queries": True,
             "default_row_limit": 1000,
-            "default_output_format": "both"
+            "default_output_format": "both",
         }
 
         # Override dependencies
@@ -268,7 +306,7 @@ class TestAuthEndpoints:
 
             mock_user_service.update_user_preferences.assert_called_once_with(
                 1,  # user_id as positional argument
-                preferences_data
+                preferences_data,
             )
         finally:
             # Clean up the overrides
@@ -283,7 +321,9 @@ class TestAuthEndpoints:
         assert "oauth_configured" in response.json()
         assert "timestamp" in response.json()
 
-    def test_get_current_user_dependency_with_valid_token(self, client: TestClient) -> None:
+    def test_get_current_user_dependency_with_valid_token(
+        self, client: TestClient
+    ) -> None:
         """Test that get_current_user dependency works with valid JWT token."""
         from app.auth.jwt_utils import verify_jwt_token
         from app.auth.user_service import get_user_service
@@ -301,7 +341,10 @@ class TestAuthEndpoints:
 
         try:
             # Create a mock request with JWT cookie
-            with patch('app.auth.endpoints.get_jwt_token_from_request', return_value="valid_token"):
+            with patch(
+                "app.auth.endpoints.get_jwt_token_from_request",
+                return_value="valid_token",
+            ):
                 response = client.get("/api/v1/auth/profile")
 
             # Should be able to access protected endpoint if everything is mocked correctly

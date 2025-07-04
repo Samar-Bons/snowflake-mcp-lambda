@@ -4,7 +4,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from google.auth.exceptions import GoogleAuthError  # type: ignore[import-untyped]
+from google.auth.exceptions import GoogleAuthError
 from google_auth_oauthlib.flow import Flow  # type: ignore[import-untyped]
 from googleapiclient.discovery import build  # type: ignore[import-untyped]
 

@@ -9,7 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import BaseModel
 
 
-class User(BaseModel):
+class User(BaseModel):  # type: ignore[misc]
     """User model for storing Google OAuth user information and preferences."""
 
     __tablename__ = "users"

@@ -6,8 +6,9 @@ from datetime import datetime
 from typing import Any
 
 import pytest
-from sqlalchemy import Engine, create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy import create_engine
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.models.base import BaseModel
 from app.models.user import User
@@ -32,11 +33,7 @@ class TestUserModel:
 
     def test_user_creation_with_required_fields(self, in_memory_db: Any) -> None:
         """Test that user can be created with required OAuth fields."""
-        user = User(
-            google_id="123456789",
-            email="test@example.com",
-            name="Test User"
-        )
+        user = User(google_id="123456789", email="test@example.com", name="Test User")
 
         in_memory_db.add(user)
         in_memory_db.commit()
@@ -59,7 +56,7 @@ class TestUserModel:
             auto_run_queries=True,
             default_row_limit=1000,
             default_output_format="both",
-            is_active=True
+            is_active=True,
         )
 
         in_memory_db.add(user)
@@ -77,9 +74,7 @@ class TestUserModel:
     def test_user_default_preferences(self, in_memory_db: Any) -> None:
         """Test that user preferences have correct default values."""
         user = User(
-            google_id="default123",
-            email="default@example.com",
-            name="Default User"
+            google_id="default123", email="default@example.com", name="Default User"
         )
 
         in_memory_db.add(user)
@@ -93,16 +88,12 @@ class TestUserModel:
 
     def test_user_google_id_unique_constraint(self, in_memory_db: Any) -> None:
         """Test that google_id must be unique."""
-        user1 = User(
-            google_id="unique123",
-            email="user1@example.com",
-            name="User One"
-        )
+        user1 = User(google_id="unique123", email="user1@example.com", name="User One")
 
         user2 = User(
             google_id="unique123",  # Same google_id
             email="user2@example.com",
-            name="User Two"
+            name="User Two",
         )
 
         in_memory_db.add(user1)
@@ -110,21 +101,17 @@ class TestUserModel:
 
         in_memory_db.add(user2)
 
-        with pytest.raises(Exception):  # Should raise integrity error
+        with pytest.raises(IntegrityError):  # Should raise integrity error
             in_memory_db.commit()
 
     def test_user_email_unique_constraint(self, in_memory_db: Any) -> None:
         """Test that email must be unique."""
-        user1 = User(
-            google_id="email123",
-            email="same@example.com",
-            name="User One"
-        )
+        user1 = User(google_id="email123", email="same@example.com", name="User One")
 
         user2 = User(
             google_id="email456",
             email="same@example.com",  # Same email
-            name="User Two"
+            name="User Two",
         )
 
         in_memory_db.add(user1)
@@ -132,16 +119,12 @@ class TestUserModel:
 
         in_memory_db.add(user2)
 
-        with pytest.raises(Exception):  # Should raise integrity error
+        with pytest.raises(IntegrityError):  # Should raise integrity error
             in_memory_db.commit()
 
     def test_user_repr_method(self, in_memory_db: Any) -> None:
         """Test that user string representation is correct."""
-        user = User(
-            google_id="repr123",
-            email="repr@example.com",
-            name="Repr User"
-        )
+        user = User(google_id="repr123", email="repr@example.com", name="Repr User")
 
         in_memory_db.add(user)
         in_memory_db.commit()
@@ -158,7 +141,7 @@ class TestUserModel:
             picture="https://example.com/profile.jpg",
             auto_run_queries=True,
             default_row_limit=750,
-            default_output_format="natural"
+            default_output_format="natural",
         )
 
         in_memory_db.add(user)
@@ -179,11 +162,7 @@ class TestUserModel:
 
     def test_user_to_dict_method(self, in_memory_db: Any) -> None:
         """Test that user to_dict method includes all columns."""
-        user = User(
-            google_id="dict123",
-            email="dict@example.com",
-            name="Dict User"
-        )
+        user = User(google_id="dict123", email="dict@example.com", name="Dict User")
 
         in_memory_db.add(user)
         in_memory_db.commit()
@@ -192,9 +171,17 @@ class TestUserModel:
 
         # Should include all table columns
         expected_keys = {
-            "id", "created_at", "updated_at", "google_id", "email",
-            "name", "picture", "auto_run_queries", "default_row_limit",
-            "default_output_format", "is_active"
+            "id",
+            "created_at",
+            "updated_at",
+            "google_id",
+            "email",
+            "name",
+            "picture",
+            "auto_run_queries",
+            "default_row_limit",
+            "default_output_format",
+            "is_active",
         }
 
         assert set(user_dict.keys()) == expected_keys
@@ -206,7 +193,7 @@ class TestUserModel:
         user = User(
             google_id="timestamp123",
             email="timestamp@example.com",
-            name="Timestamp User"
+            name="Timestamp User",
         )
 
         in_memory_db.add(user)
