@@ -9,7 +9,7 @@ The flow intentionally starts small, adds tests immediately, and never leaves or
 | ----------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | **P0 – Foundation**           | Git repo, pre-commit, CI pipeline, Docker skeleton, “hello world” FastAPI & React           | Ensures repeatable dev environment and green pipeline from day 1 |
 | **P1 – Backend Core**         | Config loader, Snowflake client (read-only), health + ping routes, minimal domain models    | Validates DB connectivity early; isolates infra risks            |
-| **P2 – Auth & Sessions**      | Google OAuth, PostgreSQL user store, Redis sessions, login guard on protected routes        | Turns skeleton into a true multi-user app                        |
+| **P2 – Auth & Sessions** ✅    | Google OAuth, PostgreSQL user store, Redis sessions, login guard on protected routes        | Turns skeleton into a true multi-user app                        |
 | **P3 – LLM + Query Pipeline** | Gemini service wrapper, schema cache, NL→SQL plumbing, confirmation step, stubbed execution | Core differentiator; still CLI / cURL only                       |
 | **P4 – Frontend MVP**         | Chat UI, schema explorer, result table w/ pagination                                        | User-visible loop from prompt to data                            |
 | **P5 – History & Settings**   | Persisted query history, favorites, settings panel                                          | Adds stickiness & power features                                 |

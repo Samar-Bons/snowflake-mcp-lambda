@@ -80,6 +80,44 @@ class Settings(BaseSettings):
         default="lax", description="Cookie SameSite attribute"
     )
 
+    # Gemini LLM Configuration
+    GEMINI_API_KEY: str = Field(
+        default="", description="Google Gemini API key (BYOK - user provided)"
+    )
+    GEMINI_MODEL: str = Field(
+        default="gemini-1.5-flash", description="Gemini model to use for SQL generation"
+    )
+    GEMINI_MAX_TOKENS: int = Field(
+        default=1000, description="Maximum tokens for Gemini response", ge=100, le=4000
+    )
+    GEMINI_TEMPERATURE: float = Field(
+        default=0.1, description="Temperature for Gemini responses", ge=0.0, le=1.0
+    )
+    GEMINI_TIMEOUT_SECONDS: int = Field(
+        default=30, description="Timeout for Gemini API calls in seconds", ge=5, le=120
+    )
+
+    # Snowflake Configuration
+    SNOWFLAKE_ACCOUNT: str = Field(
+        default="", description="Snowflake account identifier"
+    )
+    SNOWFLAKE_USER: str = Field(default="", description="Snowflake username")
+    SNOWFLAKE_PASSWORD: str = Field(default="", description="Snowflake password")
+    SNOWFLAKE_WAREHOUSE: str = Field(
+        default="", description="Snowflake warehouse to use"
+    )
+    SNOWFLAKE_DATABASE: str = Field(
+        default="", description="Snowflake database to query"
+    )
+    SNOWFLAKE_SCHEMA: str = Field(default="", description="Snowflake schema to query")
+    SNOWFLAKE_ROLE: str = Field(default="", description="Snowflake role to assume")
+    SNOWFLAKE_QUERY_TIMEOUT: int = Field(
+        default=300, description="Query timeout in seconds", ge=10, le=3600
+    )
+    SNOWFLAKE_MAX_ROWS: int = Field(
+        default=500, description="Maximum rows to return", ge=1, le=10000
+    )
+
     @field_validator("DB_SSL_MODE")
     @classmethod
     def validate_ssl_mode(cls, v: str) -> str:
@@ -115,6 +153,21 @@ class Settings(BaseSettings):
         if v not in valid_values:
             raise ValueError(
                 f"Invalid SameSite value: {v}. Must be one of: {valid_values}"
+            )
+        return v
+
+    @field_validator("GEMINI_MODEL")
+    @classmethod
+    def validate_gemini_model(cls, v: str) -> str:
+        """Validate Gemini model name."""
+        valid_models = [
+            "gemini-1.5-flash",
+            "gemini-1.5-pro",
+            "gemini-1.0-pro",
+        ]
+        if v not in valid_models:
+            raise ValueError(
+                f"Invalid Gemini model: {v}. Must be one of: {valid_models}"
             )
         return v
 
