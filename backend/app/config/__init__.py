@@ -4,11 +4,18 @@
 from typing import Literal
 
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     """Base application settings with common configuration."""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=True,
+        extra="ignore",  # Ignore extra environment variables
+    )
 
     # Application Configuration
     DEBUG: bool = Field(default=True, description="Enable debug mode")
@@ -36,13 +43,11 @@ class Settings(BaseSettings):
     # API Configuration
     API_V1_PREFIX: str = Field(default="/api/v1", description="API version prefix")
 
-    class Config:
-        """Pydantic configuration."""
 
-        env_file_encoding = "utf-8"
-        case_sensitive = True
-        extra = "ignore"  # Ignore extra environment variables
+def get_settings() -> Settings:
+    """Get application settings instance.
 
-
-# Configuration instance
-settings = Settings()
+    This function creates a new Settings instance each time it's called,
+    ensuring fresh environment variable loading for testing.
+    """
+    return Settings()

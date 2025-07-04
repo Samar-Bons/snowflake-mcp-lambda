@@ -7,10 +7,17 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
+from app.config import get_settings
 from app.health import get_health_status, get_readiness_status
 
+# Get configuration
+settings = get_settings()
+
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=getattr(logging, settings.LOG_LEVEL),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 # Create FastAPI app instance
@@ -18,6 +25,7 @@ app = FastAPI(
     title="Snowflake MCP Lambda",
     description="A remote Model Context Protocol Server for Snowflake deployed as AWS Lambda",
     version="0.1.0",
+    debug=settings.DEBUG,
 )
 
 
