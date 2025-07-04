@@ -1,7 +1,7 @@
 # ABOUTME: Configuration management system with Pydantic models
 # ABOUTME: Handles environment variables and application settings validation
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -51,6 +51,35 @@ class Settings(BaseSettings):
     # API Configuration
     API_V1_PREFIX: str = Field(default="/api/v1", description="API version prefix")
 
+    # Google OAuth Configuration
+    GOOGLE_CLIENT_ID: str = Field(default="", description="Google OAuth client ID")
+    GOOGLE_CLIENT_SECRET: str = Field(
+        default="", description="Google OAuth client secret"
+    )
+    GOOGLE_REDIRECT_URI: str = Field(
+        default="http://localhost:8000/api/v1/auth/callback",
+        description="Google OAuth redirect URI",
+    )
+    GOOGLE_OAUTH_SCOPES: list[str] = Field(
+        default=["openid", "email", "profile"], description="Google OAuth scopes"
+    )
+
+    # JWT Configuration
+    JWT_SECRET_KEY: str = Field(
+        default="", description="Secret key for JWT tokens (defaults to SECRET_KEY)"
+    )
+    JWT_ALGORITHM: str = Field(default="HS256", description="JWT signing algorithm")
+    JWT_EXPIRATION_HOURS: int = Field(
+        default=24, description="JWT expiration time in hours", ge=1, le=168
+    )
+    JWT_COOKIE_NAME: str = Field(
+        default="snowflake_token", description="JWT cookie name"
+    )
+    JWT_COOKIE_SECURE: bool = Field(default=True, description="Use secure cookies")
+    JWT_COOKIE_SAMESITE: str = Field(
+        default="lax", description="Cookie SameSite attribute"
+    )
+
     @field_validator("DB_SSL_MODE")
     @classmethod
     def validate_ssl_mode(cls, v: str) -> str:
@@ -66,6 +95,34 @@ class Settings(BaseSettings):
         if v not in valid_modes:
             raise ValueError(f"Invalid SSL mode: {v}. Must be one of: {valid_modes}")
         return v
+
+    @field_validator("JWT_ALGORITHM")
+    @classmethod
+    def validate_jwt_algorithm(cls, v: str) -> str:
+        """Validate JWT algorithm."""
+        valid_algorithms = ["HS256", "HS384", "HS512"]
+        if v not in valid_algorithms:
+            raise ValueError(
+                f"Invalid JWT algorithm: {v}. Must be one of: {valid_algorithms}"
+            )
+        return v
+
+    @field_validator("JWT_COOKIE_SAMESITE")
+    @classmethod
+    def validate_cookie_samesite(cls, v: str) -> str:
+        """Validate cookie SameSite attribute."""
+        valid_values = ["strict", "lax", "none"]
+        if v not in valid_values:
+            raise ValueError(
+                f"Invalid SameSite value: {v}. Must be one of: {valid_values}"
+            )
+        return v
+
+    def model_post_init(self, __context: Any) -> None:
+        """Post-initialization to set JWT_SECRET_KEY from SECRET_KEY if not provided."""
+        if not self.JWT_SECRET_KEY:
+            # Use the main SECRET_KEY if JWT_SECRET_KEY is not set
+            self.JWT_SECRET_KEY = self.SECRET_KEY
 
 
 def get_settings() -> Settings:

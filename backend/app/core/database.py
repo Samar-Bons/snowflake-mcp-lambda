@@ -3,10 +3,12 @@
 
 import logging
 import time
+from collections.abc import Generator
 from typing import Any
 
 from sqlalchemy import Engine, create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import QueuePool
 
 from app.config import Settings
@@ -190,3 +192,20 @@ def get_database_manager() -> DatabaseManager:
         _database_manager = DatabaseManager(settings)
 
     return _database_manager
+
+
+def get_database_session() -> Generator[Session, None, None]:
+    """
+    Get database session from the global database manager.
+
+    Yields:
+        SQLAlchemy Session object
+    """
+    manager = get_database_manager()
+    session_local = sessionmaker(autocommit=False, autoflush=False, bind=manager.engine)
+
+    session = session_local()
+    try:
+        yield session
+    finally:
+        session.close()
