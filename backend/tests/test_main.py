@@ -40,16 +40,20 @@ class TestFastAPIApp:
         assert data["version"] == "0.1.0"
         assert "timestamp" in data
 
-    def test_readiness_endpoint_returns_ready_status(self) -> None:
-        """Test that readiness endpoint returns ready status."""
+    def test_readiness_endpoint_returns_status(self) -> None:
+        """Test that readiness endpoint returns appropriate status based on dependencies."""
         response = self.client.get("/readiness")
 
-        assert response.status_code == 200
+        # Should return 503 when database is not available (expected in test environment)
+        assert response.status_code == 503
         data = response.json()
 
-        assert data["ready"] is True
+        assert data["ready"] is False
         assert "dependencies" in data
         assert "timestamp" in data
+        assert "database_health" in data
+        # Database should be in error state due to missing connection
+        assert data["dependencies"]["database"] == "error"
 
     def test_app_has_correct_metadata(self) -> None:
         """Test that FastAPI app has correct title and description."""

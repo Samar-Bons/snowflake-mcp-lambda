@@ -3,7 +3,7 @@
 
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -29,11 +29,19 @@ class Settings(BaseSettings):
         description="Secret key for cryptographic operations",
     )
 
-    # Database Configuration (placeholder for future implementation)
+    # Database Configuration
     DATABASE_URL: str = Field(
         default="postgresql://postgres:postgres@localhost:5432/snowflake_mcp",
         description="PostgreSQL database URL",
     )
+    DB_POOL_SIZE: int = Field(
+        default=10, description="Database connection pool size", ge=1, le=100
+    )
+    DB_POOL_TIMEOUT: int = Field(
+        default=30, description="Database connection timeout in seconds", ge=1, le=300
+    )
+    DB_ECHO_SQL: bool = Field(default=False, description="Echo SQL queries to logs")
+    DB_SSL_MODE: str = Field(default="require", description="PostgreSQL SSL mode")
 
     # Redis Configuration (placeholder for future implementation)
     REDIS_URL: str = Field(
@@ -42,6 +50,22 @@ class Settings(BaseSettings):
 
     # API Configuration
     API_V1_PREFIX: str = Field(default="/api/v1", description="API version prefix")
+
+    @field_validator("DB_SSL_MODE")
+    @classmethod
+    def validate_ssl_mode(cls, v: str) -> str:
+        """Validate PostgreSQL SSL mode."""
+        valid_modes = [
+            "disable",
+            "allow",
+            "prefer",
+            "require",
+            "verify-ca",
+            "verify-full",
+        ]
+        if v not in valid_modes:
+            raise ValueError(f"Invalid SSL mode: {v}. Must be one of: {valid_modes}")
+        return v
 
 
 def get_settings() -> Settings:

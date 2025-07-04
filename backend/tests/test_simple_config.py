@@ -75,3 +75,52 @@ class TestSimpleConfiguration:
             pytest.raises(ValueError),
         ):
             Settings()
+
+    def test_database_configuration_defaults(self) -> None:
+        """Test that database configuration has proper defaults."""
+        with patch.dict(os.environ, {}, clear=True):
+
+            class TestSettings(Settings):
+                model_config = SettingsConfigDict(
+                    env_file="non-existent-test-file.env",
+                    env_file_encoding="utf-8",
+                    case_sensitive=True,
+                    extra="ignore",
+                )
+
+            settings = TestSettings()
+            assert settings.DB_POOL_SIZE == 10
+            assert settings.DB_POOL_TIMEOUT == 30
+            assert settings.DB_ECHO_SQL is False
+            assert settings.DB_SSL_MODE == "require"
+
+    def test_database_configuration_from_env(self) -> None:
+        """Test that database configuration can be set from environment."""
+        with patch.dict(
+            os.environ,
+            {
+                "DB_POOL_SIZE": "20",
+                "DB_POOL_TIMEOUT": "60",
+                "DB_ECHO_SQL": "true",
+                "DB_SSL_MODE": "prefer",
+            },
+        ):
+            settings = Settings()
+            assert settings.DB_POOL_SIZE == 20
+            assert settings.DB_POOL_TIMEOUT == 60
+            assert settings.DB_ECHO_SQL is True
+            assert settings.DB_SSL_MODE == "prefer"
+
+    def test_database_configuration_validation(self) -> None:
+        """Test that database configuration validates values."""
+        with (
+            patch.dict(os.environ, {"DB_POOL_SIZE": "-1"}),
+            pytest.raises(ValueError),
+        ):
+            Settings()
+
+        with (
+            patch.dict(os.environ, {"DB_POOL_TIMEOUT": "0"}),
+            pytest.raises(ValueError),
+        ):
+            Settings()

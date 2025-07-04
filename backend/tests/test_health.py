@@ -3,7 +3,7 @@
 
 from datetime import datetime
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from app.health import get_health_status, get_readiness_status
 
@@ -55,12 +55,78 @@ class TestHealthChecks:
 
     def test_readiness_dependencies_structure(self) -> None:
         """Test that dependencies have expected structure."""
-        result = get_readiness_status()
+        with patch("app.core.database.get_database_manager") as mock_get_db_manager:
+            # Mock the database manager to prevent initialization issues
+            mock_db_manager = Mock()
+            mock_db_manager.health_check.return_value = {"status": "pending"}
+            mock_get_db_manager.return_value = mock_db_manager
 
-        dependencies = result["dependencies"]
-        expected_deps = ["database", "redis", "snowflake"]
+            result = get_readiness_status()
 
-        for dep in expected_deps:
-            assert dep in dependencies
-            # For now, all should be "pending" until actual implementations
-            assert dependencies[dep] == "pending"
+            dependencies = result["dependencies"]
+            expected_deps = ["database", "redis", "snowflake"]
+
+            for dep in expected_deps:
+                assert dep in dependencies
+            # Redis and snowflake should still be "pending"
+            assert dependencies["redis"] == "pending"
+            assert dependencies["snowflake"] == "pending"
+            # Database should be "pending" with our mock
+            assert dependencies["database"] == "pending"
+
+    def test_get_readiness_status_includes_database_health(self) -> None:
+        """Test that readiness status includes actual database health check."""
+        fixed_time = datetime(2024, 1, 1, 12, 0, 0)
+
+        with patch("app.health.datetime") as mock_datetime:
+            mock_datetime.utcnow.return_value = fixed_time
+
+            with patch("app.core.database.get_database_manager") as mock_get_db_manager:
+                mock_db_manager = Mock()
+                mock_db_manager.health_check.return_value = {
+                    "status": "healthy",
+                    "connected": True,
+                    "response_time_ms": 15.5,
+                }
+                mock_get_db_manager.return_value = mock_db_manager
+
+                result = get_readiness_status()
+
+                assert result["dependencies"]["database"] == "healthy"
+                assert result["database_health"]["status"] == "healthy"
+                assert result["database_health"]["connected"] is True
+                assert result["database_health"]["response_time_ms"] == 15.5
+
+    def test_get_readiness_status_handles_database_failure(self) -> None:
+        """Test that readiness status handles database connection failures."""
+        with patch("app.core.database.get_database_manager") as mock_get_db_manager:
+            mock_db_manager = Mock()
+            mock_db_manager.health_check.return_value = {
+                "status": "unhealthy",
+                "connected": False,
+                "error": "Connection timeout",
+            }
+            mock_get_db_manager.return_value = mock_db_manager
+
+            result = get_readiness_status()
+
+            assert result["dependencies"]["database"] == "unhealthy"
+            assert result["database_health"]["status"] == "unhealthy"
+            assert result["database_health"]["connected"] is False
+            assert "Connection timeout" in result["database_health"]["error"]
+
+    def test_get_readiness_status_handles_database_manager_exception(self) -> None:
+        """Test that readiness status handles database manager exceptions."""
+        with patch("app.core.database.get_database_manager") as mock_get_db_manager:
+            mock_get_db_manager.side_effect = Exception(
+                "Database manager initialization failed"
+            )
+
+            result = get_readiness_status()
+
+            assert result["dependencies"]["database"] == "error"
+            assert result["database_health"]["status"] == "error"
+            assert (
+                "Database manager initialization failed"
+                in result["database_health"]["error"]
+            )
