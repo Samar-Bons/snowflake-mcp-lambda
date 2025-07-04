@@ -1,18 +1,17 @@
 # ABOUTME: Tests for Snowflake schema discovery service
 # ABOUTME: Tests metadata extraction, connection management, and schema caching
 
-from typing import Any, Dict, List
 from unittest.mock import Mock, patch
 
 import pytest
 
 from app.config import Settings
 from app.snowflake.schema_service import (
+    ColumnInfo,
+    DatabaseSchema,
     SchemaService,
     SchemaServiceError,
-    ColumnInfo,
     TableInfo,
-    DatabaseSchema,
 )
 
 
@@ -37,12 +36,12 @@ class TestSchemaService:
     @pytest.fixture
     def schema_service(self, mock_settings: Settings) -> SchemaService:
         """Create SchemaService instance for testing."""
-        with patch('app.snowflake.schema_service.snowflake.connector.connect'):
+        with patch("app.snowflake.schema_service.snowflake.connector.connect"):
             return SchemaService(settings=mock_settings)
 
     def test_schema_service_initialization(self, mock_settings: Settings) -> None:
         """Test that SchemaService initializes correctly."""
-        with patch('app.snowflake.schema_service.snowflake.connector.connect'):
+        with patch("app.snowflake.schema_service.snowflake.connector.connect"):
             service = SchemaService(settings=mock_settings)
 
         assert service.settings == mock_settings
@@ -62,7 +61,7 @@ class TestSchemaService:
 
         assert "Missing required Snowflake credentials" in str(exc_info.value)
 
-    @patch('app.snowflake.schema_service.snowflake.connector.connect')
+    @patch("app.snowflake.schema_service.snowflake.connector.connect")
     def test_get_connection_success(
         self, mock_connect: Mock, schema_service: SchemaService
     ) -> None:
@@ -83,7 +82,7 @@ class TestSchemaService:
             role="test_role",
         )
 
-    @patch('app.snowflake.schema_service.snowflake.connector.connect')
+    @patch("app.snowflake.schema_service.snowflake.connector.connect")
     def test_get_connection_failure(
         self, mock_connect: Mock, schema_service: SchemaService
     ) -> None:
@@ -102,7 +101,7 @@ class TestSchemaService:
             name="customer_id",
             data_type="NUMBER",
             is_nullable=False,
-            comment="Primary key for customer table"
+            comment="Primary key for customer table",
         )
 
         assert column.name == "customer_id"
@@ -118,9 +117,7 @@ class TestSchemaService:
         ]
 
         table = TableInfo(
-            name="customers",
-            columns=columns,
-            comment="Customer information table"
+            name="customers", columns=columns, comment="Customer information table"
         )
 
         assert table.name == "customers"
@@ -136,11 +133,7 @@ class TestSchemaService:
             TableInfo("orders", [], "Order data"),
         ]
 
-        schema = DatabaseSchema(
-            database="test_db",
-            schema_name="public",
-            tables=tables
-        )
+        schema = DatabaseSchema(database="test_db", schema_name="public", tables=tables)
 
         assert schema.database == "test_db"
         assert schema.schema_name == "public"
@@ -148,7 +141,7 @@ class TestSchemaService:
         assert schema.tables[0].name == "customers"
         assert schema.tables[1].name == "orders"
 
-    @patch('app.snowflake.schema_service.snowflake.connector.connect')
+    @patch("app.snowflake.schema_service.snowflake.connector.connect")
     def test_discover_schema_success(
         self, mock_connect: Mock, schema_service: SchemaService
     ) -> None:
@@ -202,7 +195,7 @@ class TestSchemaService:
         assert orders_table.comment == "Order information table"
         assert len(orders_table.columns) == 3
 
-    @patch('app.snowflake.schema_service.snowflake.connector.connect')
+    @patch("app.snowflake.schema_service.snowflake.connector.connect")
     def test_discover_schema_connection_error(
         self, mock_connect: Mock, schema_service: SchemaService
     ) -> None:
@@ -235,7 +228,7 @@ class TestSchemaService:
             tables=[
                 TableInfo("customers", customers_columns, "Customer data"),
                 TableInfo("orders", orders_columns, "Order data"),
-            ]
+            ],
         )
 
         context = schema_service.format_schema_context(schema)
@@ -251,7 +244,7 @@ class TestSchemaService:
 
     def test_validate_connection_success(self, schema_service: SchemaService) -> None:
         """Test connection validation success."""
-        with patch.object(schema_service, '_get_connection') as mock_get_conn:
+        with patch.object(schema_service, "_get_connection") as mock_get_conn:
             mock_connection = Mock()
             mock_cursor = Mock()
             mock_connection.cursor.return_value = mock_cursor
@@ -265,14 +258,14 @@ class TestSchemaService:
 
     def test_validate_connection_failure(self, schema_service: SchemaService) -> None:
         """Test connection validation failure."""
-        with patch.object(schema_service, '_get_connection') as mock_get_conn:
+        with patch.object(schema_service, "_get_connection") as mock_get_conn:
             mock_get_conn.side_effect = Exception("Connection failed")
 
             result = schema_service.validate_connection()
 
             assert result is False
 
-    @patch('app.snowflake.schema_service.snowflake.connector.connect')
+    @patch("app.snowflake.schema_service.snowflake.connector.connect")
     def test_execute_query_success(
         self, mock_connect: Mock, schema_service: SchemaService
     ) -> None:
@@ -308,7 +301,7 @@ class TestSchemaService:
         assert result["row_count"] == 2
         assert result["truncated"] is False
 
-    @patch('app.snowflake.schema_service.snowflake.connector.connect')
+    @patch("app.snowflake.schema_service.snowflake.connector.connect")
     def test_execute_query_with_truncation(
         self, mock_connect: Mock, schema_service: SchemaService
     ) -> None:
@@ -340,7 +333,7 @@ class TestSchemaService:
 
         assert "Only SELECT queries are allowed" in str(exc_info.value)
 
-    @patch('app.snowflake.schema_service.snowflake.connector.connect')
+    @patch("app.snowflake.schema_service.snowflake.connector.connect")
     def test_execute_query_database_error(
         self, mock_connect: Mock, schema_service: SchemaService
     ) -> None:

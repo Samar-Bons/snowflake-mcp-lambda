@@ -138,11 +138,7 @@ SQL QUERY:"""
         sql_pattern = r"```sql\s*(.*?)\s*```"
         match = re.search(sql_pattern, response_text, re.DOTALL | re.IGNORECASE)
 
-        if match:
-            sql_query = match.group(1).strip()
-        else:
-            # If no code block, assume the entire response is SQL
-            sql_query = response_text.strip()
+        sql_query = match.group(1).strip() if match else response_text.strip()
 
         # Remove any leading/trailing whitespace and normalize
         sql_query = " ".join(sql_query.split())

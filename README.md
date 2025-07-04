@@ -3,20 +3,20 @@ A remote MCP Server for Snowflake. Deployed as a AWS Lambda Function
 
 ## 📊 Project Status
 
-**Current Phase: Ready for P3 - LLM + Query Pipeline** 
+**Current Phase: Ready for P3 - LLM + Query Pipeline**
 
 ### ✅ Completed
 - **P0 - Foundation**: Git repo, pre-commit hooks, CI pipeline, Docker setup
-- **P1 - Backend Core**: FastAPI app, config management, database foundations, health endpoints  
+- **P1 - Backend Core**: FastAPI app, config management, database foundations, health endpoints
 - **P2 - Auth & Sessions**: Complete Google OAuth integration with user management
   - User SQLAlchemy model with preferences
-  - JWT-based session management  
+  - JWT-based session management
   - Auth endpoints (login, callback, logout, profile, preferences)
   - 103 tests with 89.73% coverage
 
 ### 🎯 Next Up
 - **P3 - LLM + Query Pipeline**: Gemini integration, schema discovery, NL→SQL conversion
-- **P4 - Frontend MVP**: React app, chat interface, schema explorer  
+- **P4 - Frontend MVP**: React app, chat interface, schema explorer
 - **P5 - History & Settings**: Query history, favorites, user preferences
 - **P6 - Ops & Observability**: Logging, monitoring, production deployment
 

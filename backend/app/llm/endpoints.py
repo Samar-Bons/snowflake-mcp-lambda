@@ -76,9 +76,9 @@ def get_schema_service() -> SchemaService:
 @router.post("/", response_model=ChatResponse)
 async def chat(
     request: ChatRequest,
-    current_user: User = Depends(get_current_user),
-    gemini_service: GeminiService = Depends(get_gemini_service),
-    schema_service: SchemaService = Depends(get_schema_service),
+    current_user: User = Depends(get_current_user),  # noqa: B008
+    gemini_service: GeminiService = Depends(get_gemini_service),  # noqa: B008
+    schema_service: SchemaService = Depends(get_schema_service),  # noqa: B008
 ) -> ChatResponse:
     """Convert natural language to SQL and optionally execute it.
 
@@ -141,8 +141,8 @@ async def chat(
 @router.post("/execute", response_model=ExecuteSQLResponse)
 async def execute_sql(
     request: ExecuteSQLRequest,
-    current_user: User = Depends(get_current_user),
-    schema_service: SchemaService = Depends(get_schema_service),
+    current_user: User = Depends(get_current_user),  # noqa: B008
+    schema_service: SchemaService = Depends(get_schema_service),  # noqa: B008
 ) -> ExecuteSQLResponse:
     """Execute a SQL query.
 
