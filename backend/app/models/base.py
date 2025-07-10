@@ -5,12 +5,11 @@ from datetime import datetime
 from typing import Any
 
 from sqlalchemy import DateTime, Integer
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.sql import func
 
 
-class Base:
+class Base(DeclarativeBase):
     """Base class for all database models with common fields."""
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
@@ -27,10 +26,9 @@ class Base:
     def to_dict(self) -> dict[str, Any]:
         """Convert model instance to dictionary."""
         return {
-            column.name: getattr(self, column.name)
-            for column in self.__table__.columns  # type: ignore[attr-defined]
+            column.name: getattr(self, column.name) for column in self.__table__.columns
         }
 
 
-# Create the declarative base
-BaseModel = declarative_base(cls=Base)
+# Create the base model for import compatibility
+BaseModel = Base

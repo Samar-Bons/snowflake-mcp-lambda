@@ -1,7 +1,7 @@
 # ABOUTME: Chat API endpoints for natural language to SQL conversion
 # ABOUTME: Provides the main chat interface and query execution endpoints
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -198,5 +198,5 @@ async def health_check() -> HealthResponse:
         status="healthy",
         gemini_configured=gemini_configured,
         snowflake_configured=snowflake_configured,
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
     )

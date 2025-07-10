@@ -3,7 +3,7 @@
 
 import base64
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
@@ -69,7 +69,7 @@ def encode_state(redirect_url: str | None = None) -> str:
         Base64-encoded state string
     """
     state_data = {
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "redirect_url": redirect_url,
     }
 
@@ -339,5 +339,5 @@ async def auth_health_check() -> AuthHealthResponse:
     return AuthHealthResponse(
         status="healthy",
         oauth_configured=oauth_configured,
-        timestamp=datetime.utcnow().isoformat(),
+        timestamp=datetime.now(timezone.utc).isoformat(),
     )
