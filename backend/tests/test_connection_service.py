@@ -64,3 +64,26 @@ class TestSnowflakeConnectionService:
         assert isinstance(result.success, bool)
         assert isinstance(result.message, str)
         assert isinstance(result.response_time_ms, int)
+
+    def test_encryption_is_reversible(self) -> None:
+        """Test that encryption can be decrypted back to original values."""
+        service = SnowflakeConnectionService()
+
+        params = ConnectionParams(
+            account="test_account",
+            user="test_user",
+            password="test_password",
+            warehouse="test_warehouse",
+            database="test_database",
+            schema="test_schema",
+        )
+
+        encrypted = service.encrypt_connection_params(params)
+        decrypted = service.decrypt_connection_params(encrypted)
+
+        assert decrypted.account == "test_account"
+        assert decrypted.user == "test_user"
+        assert decrypted.password == "test_password"
+        assert decrypted.warehouse == "test_warehouse"
+        assert decrypted.database == "test_database"
+        assert decrypted.schema == "test_schema"

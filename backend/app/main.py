@@ -11,6 +11,7 @@ from app.auth.endpoints import router as auth_router
 from app.config import get_settings
 from app.health import get_health_status, get_readiness_status
 from app.llm.endpoints import router as chat_router
+from app.snowflake.endpoints import router as snowflake_router
 
 # Get configuration
 settings = get_settings()
@@ -33,6 +34,7 @@ app = FastAPI(
 # Include routers
 app.include_router(auth_router)
 app.include_router(chat_router, prefix=settings.API_V1_PREFIX)
+app.include_router(snowflake_router, prefix=settings.API_V1_PREFIX)
 
 
 @app.get("/health")

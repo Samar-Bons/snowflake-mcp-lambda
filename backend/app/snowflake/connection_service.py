@@ -45,6 +45,18 @@ class SnowflakeConnectionService:
             "encrypted_schema": params.schema[::-1],
         }
 
+    def decrypt_connection_params(self, encrypted: dict[str, str]) -> ConnectionParams:
+        """Decrypt connection parameters."""
+        # Simple decryption - reverse the strings back
+        return ConnectionParams(
+            account=encrypted["encrypted_account"][::-1],
+            user=encrypted["encrypted_user"][::-1],
+            password=encrypted["encrypted_password"][::-1],
+            warehouse=encrypted["encrypted_warehouse"][::-1],
+            database=encrypted["encrypted_database"][::-1],
+            schema=encrypted["encrypted_schema"][::-1],
+        )
+
     async def test_connection(self, params: ConnectionParams) -> ConnectionTestResult:
         """Test connection parameters."""
         start_time = time.time()
