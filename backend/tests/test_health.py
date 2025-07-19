@@ -1,7 +1,7 @@
 # ABOUTME: Unit tests for health check functionality
 # ABOUTME: Demonstrates TDD approach with comprehensive coverage
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 from unittest.mock import Mock, patch
 
@@ -13,9 +13,9 @@ class TestHealthChecks:
 
     def test_get_health_status_returns_healthy(self) -> None:
         """Test that health status returns healthy response."""
-        fixed_time = datetime(2024, 1, 1, 12, 0, 0)
+        fixed_time = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
         with patch("app.health.datetime") as mock_datetime:
-            mock_datetime.utcnow.return_value = fixed_time
+            mock_datetime.now.return_value = fixed_time
 
             result = get_health_status()
 
@@ -33,9 +33,9 @@ class TestHealthChecks:
 
     def test_get_readiness_status_returns_ready_state(self) -> None:
         """Test that readiness status includes dependency information."""
-        fixed_time = datetime(2024, 1, 1, 12, 0, 0)
+        fixed_time = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
         with patch("app.health.datetime") as mock_datetime:
-            mock_datetime.utcnow.return_value = fixed_time
+            mock_datetime.now.return_value = fixed_time
 
             result = get_readiness_status()
 

@@ -1,15 +1,18 @@
 # ABOUTME: User model for OAuth authentication and profile management
 # ABOUTME: Stores Google OAuth user data and application preferences
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import Boolean, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
 
+if TYPE_CHECKING:
+    from app.models.connection import SnowflakeConnection
 
-class User(BaseModel):  # type: ignore[misc]
+
+class User(BaseModel):
     """User model for storing Google OAuth user information and preferences."""
 
     __tablename__ = "users"
@@ -59,6 +62,13 @@ class User(BaseModel):  # type: ignore[misc]
         default=True,
         nullable=False,
         comment="Whether the user account is active",
+    )
+
+    # Relationships
+    snowflake_connections: Mapped[list["SnowflakeConnection"]] = relationship(
+        "SnowflakeConnection",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self) -> str:

@@ -2,7 +2,7 @@
 # ABOUTME: Provides readiness and liveness probes for deployment environments
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ def get_health_status() -> dict[str, Any]:
 
     return {
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "service": "snowflake-mcp-lambda",
         "version": "0.1.0",
     }
@@ -54,7 +54,7 @@ def get_readiness_status() -> dict[str, Any]:
 
     return {
         "ready": dependencies_ready,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "dependencies": {
             "database": database_status,
             "redis": "pending",

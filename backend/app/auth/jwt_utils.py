@@ -1,7 +1,7 @@
 # ABOUTME: JWT token utilities for authentication
 # ABOUTME: Handles JWT creation, verification, and cookie management
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import jwt
@@ -34,8 +34,9 @@ def create_jwt_token(user_id: int) -> str:
         # Token payload
         payload = {
             "user_id": user_id,
-            "iat": datetime.utcnow(),
-            "exp": datetime.utcnow() + timedelta(hours=settings.JWT_EXPIRATION_HOURS),
+            "iat": datetime.now(timezone.utc),
+            "exp": datetime.now(timezone.utc)
+            + timedelta(hours=settings.JWT_EXPIRATION_HOURS),
         }
 
         # Create and return token
@@ -102,7 +103,9 @@ def create_jwt_cookie_response_headers(token: str) -> dict[str, str]:
     settings = get_settings()
 
     # Calculate expiration time
-    expires = datetime.utcnow() + timedelta(hours=settings.JWT_EXPIRATION_HOURS)
+    expires = datetime.now(timezone.utc) + timedelta(
+        hours=settings.JWT_EXPIRATION_HOURS
+    )
     expires_str = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
     # Build cookie attributes

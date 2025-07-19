@@ -1,6 +1,30 @@
 # snowflake-mcp-lambda
 A remote MCP Server for Snowflake. Deployed as a AWS Lambda Function
 
+## 📊 Project Status
+
+**Current Phase: Ready for P4 - Frontend MVP**
+
+### ✅ Completed
+- **P0 - Foundation**: Git repo, pre-commit hooks, CI pipeline, Docker setup
+- **P1 - Backend Core**: FastAPI app, config management, database foundations, health endpoints
+- **P2 - Auth & Sessions**: Complete Google OAuth integration with user management
+  - User SQLAlchemy model with preferences
+  - JWT-based session management
+  - Auth endpoints (login, callback, logout, profile, preferences)
+  - 103 tests with 89.73% coverage
+- **P3 - LLM + Query Pipeline**: Complete Gemini integration and Snowflake schema discovery
+  - Gemini API service with BYOK model and prompt engineering
+  - Snowflake schema service with read-only query execution
+  - Chat endpoints for NL→SQL conversion with autorun support
+  - SQL validation and injection prevention
+  - 55 tests with 95%+ coverage for new components
+
+### 🎯 Next Up
+- **P4 - Frontend MVP**: React app, chat interface, schema explorer
+- **P5 - History & Settings**: Query history, favorites, user preferences
+- **P6 - Ops & Observability**: Logging, monitoring, production deployment
+
 ## 🚀 Developer Setup (REQUIRED)
 
 **IMPORTANT**: Our pre-commit hooks exactly mirror CI. This means longer commit times but zero CI failures.
