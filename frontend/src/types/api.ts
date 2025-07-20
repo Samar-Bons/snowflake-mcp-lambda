@@ -13,6 +13,22 @@ export interface ApiError {
   code?: string;
 }
 
+export interface ApiErrorResponse {
+  message?: string;
+  detail?: string;
+  code?: string;
+}
+
+// Type guard to check if data is an API error response
+export function isApiErrorResponse(data: unknown): data is ApiErrorResponse {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    (typeof (data as ApiErrorResponse).message === 'string' ||
+     typeof (data as ApiErrorResponse).detail === 'string')
+  );
+}
+
 export interface HealthCheckResponse {
   status: 'ok' | 'error';
   checks: {

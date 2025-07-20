@@ -2,6 +2,7 @@
 // ABOUTME: Supports different variants and sizes for the application
 
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { cn } from '../../utils/cn';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
@@ -34,7 +35,12 @@ export function Button({
     lg: 'px-6 py-3 text-base',
   };
 
-  const classes = `${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`;
+  const classes = cn(
+    baseClasses,
+    variants[variant],
+    sizes[size],
+    className
+  );
 
   return (
     <button

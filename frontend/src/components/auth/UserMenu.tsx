@@ -1,18 +1,24 @@
 // ABOUTME: User profile dropdown menu component for authenticated users
 // ABOUTME: Shows user info and provides logout functionality
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { useClickOutside } from '../../hooks/useClickOutside';
 import { Button } from '../ui/Button';
+import { ChevronDownIcon } from '../icons';
+import { cn } from '../../utils/cn';
 
 export function UserMenu() {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
+  const closeMenu = useCallback(() => setIsOpen(false), []);
+  const menuRef = useClickOutside<HTMLDivElement>(closeMenu);
+
   if (!user) return null;
 
   return (
-    <div className="relative">
+    <div ref={menuRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 text-slate-300 hover:text-white transition-colors"
@@ -31,14 +37,12 @@ export function UserMenu() {
           </div>
         )}
         <span className="text-sm font-medium">{user.name}</span>
-        <svg
-          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        <ChevronDownIcon
+          className={cn(
+            'w-4 h-4 transition-transform',
+            isOpen && 'rotate-180'
+          )}
+        />
       </button>
 
       {isOpen && (

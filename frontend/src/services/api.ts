@@ -4,6 +4,7 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosResponse } from 'axios';
 import type { ApiError } from '../types/api';
+import { isApiErrorResponse } from '../types/api';
 import { authEvents } from '../utils/auth-events';
 
 // Create axios instance with base configuration
@@ -38,8 +39,8 @@ api.interceptors.response.use(
       status: error.response?.status || 0,
     };
 
-    if (error.response?.data && typeof error.response.data === 'object') {
-      const data = error.response.data as any;
+    if (error.response?.data && isApiErrorResponse(error.response.data)) {
+      const data = error.response.data;
       apiError.message = data.message || data.detail || apiError.message;
       apiError.code = data.code;
     } else if (error.message) {
