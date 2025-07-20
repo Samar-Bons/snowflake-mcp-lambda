@@ -1,0 +1,87 @@
+# ABOUTME: Docker ignore file for backend to exclude unnecessary files from build context
+# ABOUTME: Improves build performance and reduces image size by excluding dev artifacts
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Testing artifacts
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Development tools
+.mypy_cache/
+.ruff_cache/
+.black/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+docs/
+
+# Environment files (should use secrets/env vars instead)
+.env
+.env.*
+!.env.example
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS generated files
+Thumbs.db
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Database files (shouldn't be in container)
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+
+# Development scripts
+scripts/dev*
+scripts/local*
+
+# Docker files (not needed in container)
+Dockerfile*
+docker-compose*.yml
