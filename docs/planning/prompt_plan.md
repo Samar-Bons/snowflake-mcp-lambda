@@ -1,13 +1,18 @@
-Below is a **complete implementation plan** followed by **nested task breakdowns** and a **ready-to-copy set of code-generation prompts** you can paste into your favorite LLM (e.g., GitHub Copilot Chat or ChatGPT-Code Interpreter).
-The flow intentionally starts small, adds tests immediately, and never leaves orphaned code.
+⚠️ **DEPRECATED**: This file is now superseded by **PROJECT_STATUS.md** which contains the complete, unified implementation status and planning information.
+
+**For current status and next steps, see**: `docs/planning/PROJECT_STATUS.md`
+
+---
+
+Below is the original implementation plan for reference. Note that most backend work (Prompts 1-10) has been completed.
 
 ## 🚨 IMPLEMENTATION STATUS UPDATE (2025-07-20)
 
-**REALITY CHECK**: Most backend prompts (1-9) have been completed through actual implementation, not by following these prompts. Docker Compose setup has also been completed. The frontend prompts (10-14) remain to be executed.
+**✅ COMPLETED**: Backend foundation, authentication, Snowflake integration, LLM pipeline, Docker environment, Frontend auth flow (Prompts 1-10)
+**🟡 NEXT**: Prompt 11 - Chat UI implementation (components ready to build)
+**❌ REMAINING**: Prompts 12-14 for history, production setup, and polish
 
-**✅ COMPLETED INDEPENDENTLY**: Backend foundation, authentication, Snowflake integration, LLM pipeline, Docker development environment
-**❌ NEXT TO EXECUTE**: Prompts 10-14 for frontend development
-**✅ DOCKER SETUP COMPLETED**: Comprehensive development environment with PostgreSQL, Redis, and hot reload
+**See PROJECT_STATUS.md for detailed current state and ready-to-execute prompts.**
 
 ---
 
@@ -255,7 +260,7 @@ Enhance `/chat`.
 Extend SnowflakeClient with `run_query(sql, limit)`; mock in tests.
 ```
 
-### Prompt 10 — Frontend Skeleton w/ Auth Flow
+### Prompt 10 — Frontend Skeleton w/ Auth Flow ✅ COMPLETED
 
 ```text
 Create React app (Vite + TS) under `frontend/`.
@@ -267,6 +272,18 @@ Create React app (Vite + TS) under `frontend/`.
 4. After auth, store JWT in `httpOnly` cookie; frontend reads `/api/me` to hydrate user context.
 
 Add Cypress e2e test: login redirect and 200 on `/health`.
+
+**COMPLETED**: All features implemented including:
+- ✅ React + Vite + TypeScript setup with complete project structure
+- ✅ Tailwind CSS with dark mode support and custom variables
+- ✅ React Router with /login and /app/* routes properly configured
+- ✅ Google OAuth integration through auth service hitting /auth/login
+- ✅ httpOnly cookie handling via withCredentials in API client
+- ✅ User context hydration through /auth/me endpoint
+- ✅ Comprehensive auth components (LoginButton, ProtectedRoute, UserMenu)
+- ✅ Cypress e2e tests for auth flow and health checks
+- ✅ Login page with proper loading states and redirects
+- ✅ Dashboard page skeleton for authenticated users
 ```
 
 ### Prompt 11 — Chat UI Vertical Slice
