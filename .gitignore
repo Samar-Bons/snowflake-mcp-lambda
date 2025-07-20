@@ -233,7 +233,8 @@ storybook-static
 # Docker
 Dockerfile.prod
 docker-compose.override.yml
-.dockerignore
+# .dockerignore files should be version controlled
+# .dockerignore
 
 # IDE & Editor
 .vscode/

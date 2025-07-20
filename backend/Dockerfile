@@ -17,7 +17,7 @@ ENV POETRY_NO_INTERACTION=1 \
     POETRY_VENV_IN_PROJECT=1 \
     POETRY_CACHE_DIR=/opt/poetry_cache
 
-# Copy dependency files
+# Copy dependency files first (better layer caching)
 WORKDIR /app
 COPY pyproject.toml poetry.lock ./
 

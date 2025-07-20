@@ -1,0 +1,134 @@
+# ABOUTME: Docker Compose configuration for development environment
+# ABOUTME: Provides PostgreSQL, Redis, and backend services for local development
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: snowflake-mcp-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-snowflake_mcp}
+      POSTGRES_USER: ${POSTGRES_USER:-snowflake_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password_change_me}
+      POSTGRES_HOST_AUTH_METHOD: ${POSTGRES_HOST_AUTH_METHOD:-scram-sha-256}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U snowflake_user -d snowflake_mcp"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - snowflake-network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: snowflake-mcp-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - snowflake-network
+
+  # Backend API service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: snowflake-mcp-backend
+    ports:
+      - "8000:8000"
+    environment:
+      # Database configuration
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-snowflake_user}:${POSTGRES_PASSWORD:-dev_password_change_me}@postgres:5432/${POSTGRES_DB:-snowflake_mcp}"
+      REDIS_URL: "redis://redis:6379/0"
+
+      # Application settings
+      ENV: "development"
+      DEBUG: "true"
+      LOG_LEVEL: "DEBUG"
+
+      # Auth configuration (placeholder values for development)
+      GOOGLE_CLIENT_ID: "your-google-client-id"
+      GOOGLE_CLIENT_SECRET: "your-google-client-secret"
+      GOOGLE_REDIRECT_URI: "http://localhost:8000/api/v1/auth/callback"
+
+      # JWT configuration
+      JWT_SECRET_KEY: "dev-secret-key-change-in-production"
+      JWT_ALGORITHM: "HS256"
+      JWT_EXPIRE_MINUTES: "1440"
+
+      # Gemini API (placeholder - user provides their own)
+      GEMINI_API_KEY: "your-gemini-api-key"
+
+      # Snowflake configuration (placeholder - user configures via UI)
+      SNOWFLAKE_ACCOUNT: ""
+      SNOWFLAKE_USER: ""
+      SNOWFLAKE_PASSWORD: ""
+      SNOWFLAKE_WAREHOUSE: ""
+      SNOWFLAKE_DATABASE: ""
+      SNOWFLAKE_SCHEMA: ""
+    volumes:
+      - ./backend:/app
+      - /app/.venv  # Anonymous volume to preserve Poetry virtual environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - snowflake-network
+    restart: unless-stopped
+
+  # Frontend development server
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: snowflake-mcp-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000/api/v1
+      - VITE_APP_NAME=Snowflake MCP Lambda
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # Anonymous volume to preserve npm dependencies
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - snowflake-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  snowflake-network:
+    driver: bridge
