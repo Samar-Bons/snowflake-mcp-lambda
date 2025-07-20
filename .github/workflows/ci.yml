@@ -64,6 +64,10 @@ jobs:
 
   security-scan:
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
     steps:
     - uses: actions/checkout@v4
 
@@ -80,3 +84,5 @@ jobs:
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'
+        category: 'trivy-vulnerability-scan'
+      continue-on-error: true
