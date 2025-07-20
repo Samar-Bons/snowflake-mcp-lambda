@@ -5,8 +5,12 @@
 
 # Default target
 help: ## Show this help message
+	@echo "🐳 Snowflake MCP Lambda - Development Commands"
+	@echo ""
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@echo ""
+	@echo "🔒 Note: All cleanup commands only affect this project's Docker resources"
 
 # Docker operations
 build: ## Build all Docker containers
@@ -55,11 +59,16 @@ dev-setup: setup build up ## Complete development setup
 db-migrate: ## Run database migrations
 	docker compose exec backend poetry run alembic upgrade head
 
-db-reset: ## Reset database (WARNING: destroys all data)
-	docker compose down -v
+db-reset: ## Reset database (WARNING: destroys project database data only)
+	docker compose stop backend frontend
+	docker compose rm -f backend frontend
+	docker volume rm snowflake-mcp-lambda_postgres_data || true
+	docker volume rm snowflake-mcp-lambda_redis_data || true
 	docker compose up -d postgres redis
-	sleep 5
+	@echo "Waiting for database to be ready..."
+	sleep 10
 	docker compose exec backend poetry run alembic upgrade head
+	@echo "✅ Database reset complete"
 
 # Testing
 test: ## Run backend tests
@@ -69,9 +78,22 @@ test-cov: ## Run backend tests with coverage
 	docker compose exec backend poetry run pytest --cov=app --cov-report=html
 
 # Cleanup
-clean: ## Stop containers and remove volumes (WARNING: destroys all data)
+clean: ## Stop containers and remove project volumes (WARNING: destroys project data only)
 	docker compose down -v
-	docker system prune -f
+	docker compose rm -f
+	@echo "✅ Cleaned up project containers and volumes"
+	@echo "ℹ️  To also remove project images, run: make clean-images"
+
+clean-images: ## Remove project Docker images
+	docker compose down
+	docker compose rm -f
+	@echo "Removing project images..."
+	@docker images --filter=reference="snowflake-mcp-lambda*" -q | xargs -r docker rmi -f
+	@docker images --filter=reference="*snowflake-mcp*" -q | xargs -r docker rmi -f
+	@echo "✅ Cleaned up project images"
+
+clean-all: clean clean-images ## Complete cleanup - removes containers, volumes, and images for this project only
+	@echo "✅ Complete project cleanup finished"
 
 restart: ## Restart all services
 	docker compose restart
