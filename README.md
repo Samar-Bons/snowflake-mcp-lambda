@@ -73,6 +73,7 @@ make clean          # Clean up project containers/volumes only
 - **Robust health checks**: PostgreSQL, Redis, Backend API, and Frontend all have proper health validation
 - **No race conditions**: `make dev-setup` waits for all services to be ready before completion
 - **Smart polling**: Replace fixed sleeps with proper service health polling
+- **Cross-platform health checks**: Works with or without curl on host system (uses container curl as fallback)
 
 ## 🚀 Alternative: Manual Developer Setup
 

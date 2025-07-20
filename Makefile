@@ -113,8 +113,13 @@ restart: ## Restart all services
 # Health checks
 health: ## Check health of all services
 	@echo "Checking service health..."
-	@curl -f http://localhost:8000/health && echo "✅ Backend healthy" || echo "❌ Backend unhealthy"
-	@curl -f http://localhost:3000 && echo "✅ Frontend healthy" || echo "❌ Frontend unhealthy"
+	@if command -v curl >/dev/null 2>&1; then \
+		curl -f http://localhost:8000/health >/dev/null 2>&1 && echo "✅ Backend healthy" || echo "❌ Backend unhealthy"; \
+		curl -f http://localhost:3000 >/dev/null 2>&1 && echo "✅ Frontend healthy" || echo "❌ Frontend unhealthy"; \
+	else \
+		docker compose exec backend curl -f http://localhost:8000/health >/dev/null 2>&1 && echo "✅ Backend healthy" || echo "❌ Backend unhealthy"; \
+		docker compose exec frontend curl -f http://localhost:3000 >/dev/null 2>&1 && echo "✅ Frontend healthy" || echo "❌ Frontend unhealthy"; \
+	fi
 
 wait-healthy: ## Wait for all services to be healthy
 	@echo "Waiting for services to be healthy..."
@@ -131,13 +136,13 @@ wait-healthy: ## Wait for all services to be healthy
 	done
 	@echo "✅ Redis is healthy"
 	@echo "⏳ Checking Backend API..."
-	@until curl -f http://localhost:8000/health >/dev/null 2>&1; do \
+	@until docker compose exec backend curl -f http://localhost:8000/health >/dev/null 2>&1; do \
 		echo "   Backend API not ready, waiting..."; \
 		sleep 3; \
 	done
 	@echo "✅ Backend API is healthy"
 	@echo "⏳ Checking Frontend..."
-	@until curl -f http://localhost:3000 >/dev/null 2>&1; do \
+	@until docker compose exec frontend curl -f http://localhost:3000 >/dev/null 2>&1; do \
 		echo "   Frontend not ready, waiting..."; \
 		sleep 3; \
 	done
