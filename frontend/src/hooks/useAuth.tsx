@@ -1,7 +1,7 @@
 // ABOUTME: React hook for authentication context management
 // ABOUTME: Provides auth state, user data, and auth actions throughout the app
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { AuthService } from '../services/auth';
 import type { User, AuthContextType } from '../types/auth';
@@ -14,16 +14,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = user !== null;
 
-  const login = () => {
+  const login = useCallback(() => {
     AuthService.login();
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     AuthService.logout();
-  };
+  }, []);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     try {
       setIsLoading(true);
       const userData = await AuthService.getCurrentUser();
@@ -33,21 +33,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   // Check auth status on mount
   useEffect(() => {
     refreshUser();
-  }, []);
+  }, [refreshUser]);
 
-  const value: AuthContextType = {
-    user,
-    isLoading,
-    isAuthenticated,
-    login,
-    logout,
-    refreshUser,
-  };
+  const value: AuthContextType = useMemo(
+    () => ({
+      user,
+      isLoading,
+      isAuthenticated,
+      login,
+      logout,
+      refreshUser,
+    }),
+    [user, isLoading, isAuthenticated, login, logout, refreshUser]
+  );
 
   return (
     <AuthContext.Provider value={value}>
