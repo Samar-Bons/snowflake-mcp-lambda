@@ -31,9 +31,10 @@ describe('API Health Check', () => {
   })
 
   it('handles API errors gracefully', () => {
+    const apiUrl = Cypress.env('apiUrl') || 'http://localhost:8000';
     cy.request({
       method: 'GET',
-      url: 'http://localhost:8000/nonexistent',
+      url: `${apiUrl}/nonexistent`,
       failOnStatusCode: false,
     }).then((response) => {
       expect(response.status).to.eq(404)

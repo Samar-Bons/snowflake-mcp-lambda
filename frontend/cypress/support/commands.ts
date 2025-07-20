@@ -16,9 +16,10 @@ declare global {
 }
 
 Cypress.Commands.add('checkApiHealth', () => {
+  const apiUrl = Cypress.env('apiUrl') || 'http://localhost:8000';
   cy.request({
     method: 'GET',
-    url: 'http://localhost:8000/health',
+    url: `${apiUrl}/health`,
     failOnStatusCode: false,
   }).then((response) => {
     expect(response.status).to.eq(200)

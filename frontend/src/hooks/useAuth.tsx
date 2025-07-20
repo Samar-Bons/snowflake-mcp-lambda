@@ -5,6 +5,7 @@ import { createContext, useContext, useState, useEffect, useMemo, useCallback } 
 import type { ReactNode } from 'react';
 import { AuthService } from '../services/auth';
 import type { User, AuthContextType } from '../types/auth';
+import { authEvents } from '../utils/auth-events';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -14,8 +15,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = user !== null;
 
-  const login = useCallback(() => {
-    AuthService.login();
+  const login = useCallback(async (): Promise<void> => {
+    return AuthService.login();
   }, []);
 
   const logout = useCallback(() => {
@@ -39,6 +40,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     refreshUser();
   }, [refreshUser]);
+
+  // Listen for logout events from API client (401 errors)
+  useEffect(() => {
+    const handleLogout = () => {
+      logout();
+    };
+
+    authEvents.on('logout', handleLogout);
+
+    return () => {
+      authEvents.off('logout', handleLogout);
+    };
+  }, [logout]);
 
   const value: AuthContextType = useMemo(
     () => ({

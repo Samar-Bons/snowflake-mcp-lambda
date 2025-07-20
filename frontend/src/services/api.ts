@@ -4,6 +4,7 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosResponse } from 'axios';
 import type { ApiError } from '../types/api';
+import { authEvents } from '../utils/auth-events';
 
 // Create axios instance with base configuration
 const api = axios.create({
@@ -47,8 +48,8 @@ api.interceptors.response.use(
 
     // Handle specific status codes
     if (error.response?.status === 401) {
-      // Unauthorized - redirect to login or clear session
-      window.location.href = '/login';
+      // Unauthorized - signal AuthProvider to perform logout and clear state
+      authEvents.emit('logout');
     }
 
     return Promise.reject(apiError);
