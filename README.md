@@ -25,7 +25,40 @@ A remote MCP Server for Snowflake. Deployed as a AWS Lambda Function
 - **P5 - History & Settings**: Query history, favorites, user preferences
 - **P6 - Ops & Observability**: Logging, monitoring, production deployment
 
-## 🚀 Developer Setup (REQUIRED)
+## 🚀 Quick Start with Docker (RECOMMENDED)
+
+**For the fastest development experience:**
+
+```bash
+# 1. Clone and setup environment
+git clone <your-repo-url>
+cd snowflake-mcp-lambda
+make setup  # Copies .env.example to .env
+
+# 2. Edit .env with your API keys (see Configuration section below)
+# At minimum, set: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GEMINI_API_KEY
+
+# 3. Start everything with one command
+make dev-setup
+# This builds containers, starts services, and runs migrations
+
+# 4. Access the application
+# - Frontend: http://localhost:3000
+# - Backend API: http://localhost:8000
+# - API Docs: http://localhost:8000/docs
+```
+
+**Common development commands:**
+```bash
+make help           # Show all available commands
+make up             # Start services
+make down           # Stop services
+make logs           # View all logs
+make test           # Run backend tests
+make health         # Check service health
+```
+
+## 🚀 Alternative: Manual Developer Setup
 
 **IMPORTANT**: Our pre-commit hooks exactly mirror CI. This means longer commit times but zero CI failures.
 
@@ -48,6 +81,50 @@ A remote MCP Server for Snowflake. Deployed as a AWS Lambda Function
 4. **Better DX**: Immediate feedback, no context switching
 
 Yes, commits take 30-60 seconds. But that's better than 5-10 minute CI debug cycles.
+
+## ⚙️ Configuration
+
+### Required API Keys
+
+Before running the application, you need to obtain these API keys:
+
+#### 1. Google OAuth (for user authentication)
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing one
+3. Enable Google+ API
+4. Create OAuth 2.0 Client ID credentials
+5. Add authorized redirect URI: `http://localhost:8000/api/v1/auth/callback`
+6. Copy Client ID and Client Secret to your `.env` file
+
+#### 2. Gemini API (for LLM functionality)
+1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Create a new API key
+3. Copy the key to your `.env` file
+
+#### 3. Snowflake Connection (configured via UI)
+- Users can configure their Snowflake connections through the web interface
+- Or set default values in `.env` for development/testing
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+# Required for authentication
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Required for LLM functionality
+GEMINI_API_KEY=your-gemini-api-key
+
+# Generate a secure JWT secret
+JWT_SECRET_KEY=your-secure-secret-key
+
+# Optional: Default Snowflake connection
+SNOWFLAKE_ACCOUNT=your-account
+SNOWFLAKE_USER=your-username
+# ... etc
+```
 
 ### 🤖 Why This Matters for AI Code Assistants
 
