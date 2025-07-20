@@ -65,6 +65,7 @@ make clean          # Clean up project containers/volumes only
 - **Layer caching**: Optimized Dockerfile layer ordering
 - **Hot reload**: Both backend and frontend auto-reload on changes
 - **Scoped cleanup**: Safe cleanup commands that preserve other projects
+- **Volume optimization**: Anonymous volumes preserve dependencies (`.venv`, `node_modules`)
 
 ## 🚀 Alternative: Manual Developer Setup
 

@@ -82,7 +82,7 @@ services:
       SNOWFLAKE_SCHEMA: ""
     volumes:
       - ./backend:/app
-      - /app/node_modules
+      - /app/.venv  # Anonymous volume to preserve Poetry virtual environment
     depends_on:
       postgres:
         condition: service_healthy
@@ -110,7 +110,7 @@ services:
       - VITE_APP_NAME=Snowflake MCP Lambda
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - /app/node_modules  # Anonymous volume to preserve npm dependencies
     depends_on:
       - backend
     networks:
