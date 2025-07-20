@@ -9,10 +9,10 @@ services:
     image: postgres:15-alpine
     container_name: snowflake-mcp-postgres
     environment:
-      POSTGRES_DB: snowflake_mcp
-      POSTGRES_USER: snowflake_user
-      POSTGRES_PASSWORD: dev_password_123
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: ${POSTGRES_DB:-snowflake_mcp}
+      POSTGRES_USER: ${POSTGRES_USER:-snowflake_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password_change_me}
+      POSTGRES_HOST_AUTH_METHOD: ${POSTGRES_HOST_AUTH_METHOD:-scram-sha-256}
     ports:
       - "5432:5432"
     volumes:
@@ -52,7 +52,7 @@ services:
       - "8000:8000"
     environment:
       # Database configuration
-      DATABASE_URL: "postgresql://snowflake_user:dev_password_123@postgres:5432/snowflake_mcp"
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-snowflake_user}:${POSTGRES_PASSWORD:-dev_password_change_me}@postgres:5432/${POSTGRES_DB:-snowflake_mcp}"
       REDIS_URL: "redis://redis:6379/0"
 
       # Application settings

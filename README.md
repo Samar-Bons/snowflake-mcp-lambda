@@ -33,10 +33,11 @@ A remote MCP Server for Snowflake. Deployed as a AWS Lambda Function
 # 1. Clone and setup environment
 git clone <your-repo-url>
 cd snowflake-mcp-lambda
-make setup  # Copies .env.example to .env
+make setup  # Copies .env.example to .env with security reminders
 
-# 2. Edit .env with your API keys (see Configuration section below)
-# At minimum, set: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GEMINI_API_KEY
+# 2. IMPORTANT: Edit .env with secure values (see Configuration section below)
+# Required: POSTGRES_PASSWORD, JWT_SECRET_KEY, GOOGLE_CLIENT_ID,
+#          GOOGLE_CLIENT_SECRET, GEMINI_API_KEY
 
 # 3. Start everything with one command
 make dev-setup

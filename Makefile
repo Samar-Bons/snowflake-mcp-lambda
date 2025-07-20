@@ -28,11 +28,19 @@ logs-frontend: ## View frontend logs only
 	docker compose logs -f frontend
 
 # Development setup
-setup: ## Initial setup - copy .env.example to .env
+setup: ## Initial setup - copy .env.example to .env with security reminders
 	@if [ ! -f .env ]; then \
 		cp .env.example .env; \
-		echo "Created .env file from .env.example"; \
-		echo "Please edit .env with your actual configuration values"; \
+		echo "✅ Created .env file from .env.example"; \
+		echo ""; \
+		echo "🔒 SECURITY REMINDERS:"; \
+		echo "1. Generate a secure PostgreSQL password"; \
+		echo "2. Generate a secure JWT secret: python -c \"import secrets; print(secrets.token_hex(32))\""; \
+		echo "3. Add your Google OAuth credentials"; \
+		echo "4. Add your Gemini API key"; \
+		echo "5. NEVER commit the .env file to version control"; \
+		echo ""; \
+		echo "📝 Please edit .env with your actual configuration values before running 'make up'"; \
 	else \
 		echo ".env file already exists"; \
 	fi
