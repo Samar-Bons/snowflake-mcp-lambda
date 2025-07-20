@@ -57,7 +57,14 @@ make down           # Stop services
 make logs           # View all logs
 make test           # Run backend tests
 make health         # Check service health
+make clean          # Clean up project containers/volumes only
 ```
+
+**Performance Features:**
+- **Fast builds**: `.dockerignore` files exclude unnecessary files
+- **Layer caching**: Optimized Dockerfile layer ordering
+- **Hot reload**: Both backend and frontend auto-reload on changes
+- **Scoped cleanup**: Safe cleanup commands that preserve other projects
 
 ## 🚀 Alternative: Manual Developer Setup
 

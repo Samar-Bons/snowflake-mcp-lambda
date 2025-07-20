@@ -20,14 +20,16 @@ ENV POETRY_NO_INTERACTION=1 \
 # Set working directory
 WORKDIR /app
 
-# Copy dependency files
+# Copy dependency files first (better layer caching)
 COPY pyproject.toml poetry.lock ./
 
 # Install all dependencies including dev dependencies
 RUN poetry install && rm -rf $POETRY_CACHE_DIR
 
-# Copy application code
-COPY . .
+# Copy application code (do this last for better caching)
+COPY app/ ./app/
+COPY alembic/ ./alembic/
+COPY alembic.ini ./
 
 # Expose port
 EXPOSE 8000
