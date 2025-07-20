@@ -57,6 +57,7 @@ make down           # Stop services
 make logs           # View all logs
 make test           # Run backend tests
 make health         # Check service health
+make wait-healthy   # Wait for all services to be ready
 make clean          # Clean up project containers/volumes only
 ```
 
@@ -66,6 +67,12 @@ make clean          # Clean up project containers/volumes only
 - **Hot reload**: Both backend and frontend auto-reload on changes
 - **Scoped cleanup**: Safe cleanup commands that preserve other projects
 - **Volume optimization**: Anonymous volumes preserve dependencies (`.venv`, `node_modules`)
+
+**Reliability Features:**
+- **Health-based dependencies**: Services wait for dependencies to be healthy, not just started
+- **Robust health checks**: PostgreSQL, Redis, Backend API, and Frontend all have proper health validation
+- **No race conditions**: `make dev-setup` waits for all services to be ready before completion
+- **Smart polling**: Replace fixed sleeps with proper service health polling
 
 ## 🚀 Alternative: Manual Developer Setup
 

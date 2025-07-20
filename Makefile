@@ -1,7 +1,7 @@
 # ABOUTME: Makefile for common development tasks and Docker operations
 # ABOUTME: Provides convenient shortcuts for building, running, and testing the application
 
-.PHONY: help build up down logs test clean setup dev-setup db-migrate
+.PHONY: help build up down logs test clean setup dev-setup db-migrate wait-healthy
 
 # Default target
 help: ## Show this help message
@@ -49,11 +49,15 @@ setup: ## Initial setup - copy .env.example to .env with security reminders
 		echo ".env file already exists"; \
 	fi
 
-dev-setup: setup build up ## Complete development setup
-	@echo "Development environment is starting up..."
-	@echo "Backend will be available at: http://localhost:8000"
-	@echo "Frontend will be available at: http://localhost:3000"
-	@echo "API docs will be available at: http://localhost:8000/docs"
+dev-setup: setup build up wait-healthy ## Complete development setup with health checks
+	@echo ""
+	@echo "🎉 Development environment is ready!"
+	@echo "📍 Services available at:"
+	@echo "   • Backend API: http://localhost:8000"
+	@echo "   • Frontend:    http://localhost:3000"
+	@echo "   • API docs:    http://localhost:8000/docs"
+	@echo "   • PostgreSQL:  localhost:5432"
+	@echo "   • Redis:       localhost:6379"
 
 # Database operations
 db-migrate: ## Run database migrations
@@ -65,9 +69,17 @@ db-reset: ## Reset database (WARNING: destroys project database data only)
 	docker volume rm snowflake-mcp-lambda_postgres_data || true
 	docker volume rm snowflake-mcp-lambda_redis_data || true
 	docker compose up -d postgres redis
-	@echo "Waiting for database to be ready..."
-	sleep 10
-	docker compose exec backend poetry run alembic upgrade head
+	@echo "Waiting for database to be healthy..."
+	@until docker compose exec postgres pg_isready -U ${POSTGRES_USER:-snowflake_user} -d ${POSTGRES_DB:-snowflake_mcp} >/dev/null 2>&1; do \
+		echo "Database not ready, waiting..."; \
+		sleep 2; \
+	done
+	@echo "Database is healthy, running migrations..."
+	docker compose up -d backend
+	@until docker compose exec backend poetry run alembic upgrade head >/dev/null 2>&1; do \
+		echo "Backend not ready for migrations, waiting..."; \
+		sleep 2; \
+	done
 	@echo "✅ Database reset complete"
 
 # Testing
@@ -103,6 +115,34 @@ health: ## Check health of all services
 	@echo "Checking service health..."
 	@curl -f http://localhost:8000/health && echo "✅ Backend healthy" || echo "❌ Backend unhealthy"
 	@curl -f http://localhost:3000 && echo "✅ Frontend healthy" || echo "❌ Frontend unhealthy"
+
+wait-healthy: ## Wait for all services to be healthy
+	@echo "Waiting for services to be healthy..."
+	@echo "⏳ Checking PostgreSQL..."
+	@until docker compose exec postgres pg_isready -U ${POSTGRES_USER:-snowflake_user} >/dev/null 2>&1; do \
+		echo "   PostgreSQL not ready, waiting..."; \
+		sleep 2; \
+	done
+	@echo "✅ PostgreSQL is healthy"
+	@echo "⏳ Checking Redis..."
+	@until docker compose exec redis redis-cli ping >/dev/null 2>&1; do \
+		echo "   Redis not ready, waiting..."; \
+		sleep 2; \
+	done
+	@echo "✅ Redis is healthy"
+	@echo "⏳ Checking Backend API..."
+	@until curl -f http://localhost:8000/health >/dev/null 2>&1; do \
+		echo "   Backend API not ready, waiting..."; \
+		sleep 3; \
+	done
+	@echo "✅ Backend API is healthy"
+	@echo "⏳ Checking Frontend..."
+	@until curl -f http://localhost:3000 >/dev/null 2>&1; do \
+		echo "   Frontend not ready, waiting..."; \
+		sleep 3; \
+	done
+	@echo "✅ Frontend is healthy"
+	@echo "🎉 All services are healthy and ready!"
 
 # Development helpers
 shell-backend: ## Open shell in backend container

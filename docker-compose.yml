@@ -112,7 +112,8 @@ services:
       - ./frontend:/app
       - /app/node_modules  # Anonymous volume to preserve npm dependencies
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - snowflake-network
     restart: unless-stopped
