@@ -1,22 +1,22 @@
-# Snowflake MCP Lambda - Complete Project Status & Implementation Plan
+# Data Chat MVP - Complete Project Status & Implementation Plan
 
-**Last Updated**: 2025-07-20
-**Current Phase**: Backend Complete (85%), Frontend Auth Complete, Chat UI Next Priority
+**Last Updated**: 2025-07-21
+**Current Phase**: Backend Complete (85%), Frontend Auth Complete, CSV Upload MVP Next Priority
 **Test Coverage**: 91%+ (Backend), E2E Tests Added (Frontend)
 
 ---
 
 ## 🎯 Project Overview
 
-**Goal**: A web application with chat interface allowing **non-technical users** to interact with **Snowflake databases** using **natural language** queries via Gemini LLM.
+**Goal**: A web application with chat interface allowing **non-technical users** to interact with **CSV files and databases** using **natural language** queries via Gemini LLM.
 
 **Architecture**:
-- **Backend**: FastAPI (Python) + Poetry + PostgreSQL + Redis + Snowflake + Gemini API
+- **Backend**: FastAPI (Python) + Poetry + PostgreSQL + Redis + SQLite + Gemini API + File Processing
 - **Frontend**: React + Vite + TypeScript + Tailwind CSS (dark mode)
-- **Auth**: Google OAuth with JWT cookies
+- **Auth**: Google OAuth with JWT cookies (optional for MVP)
 - **Deploy**: Docker + Docker Compose, AWS Lambda target
 
-**Key Flow**: Google OAuth → Snowflake connection setup → NL input → Gemini LLM → SQL generation → confirmation modal → read-only execution → paginated results
+**Key Flow**: CSV file upload → auto-conversion to SQLite → NL input → Gemini LLM → SQL generation → confirmation modal → read-only execution → paginated results
 
 ---
 
@@ -42,11 +42,12 @@
 - ✅ User model with OAuth fields and preferences storage
 - ✅ Protected route middleware and authentication dependencies
 
-#### Phase 3: Snowflake Integration ✅ COMPLETED
-- ✅ Snowflake client with AES-256 encrypted connection storage (96% coverage)
-- ✅ Schema discovery and metadata caching system (98% coverage)
+#### Phase 3: Data Source Integration ✅ PARTIAL COMPLETED
+- ✅ Snowflake client with AES-256 encrypted connection storage (96% coverage) - legacy support
+- ✅ Schema discovery and metadata caching system (98% coverage) - works with SQLite
 - ✅ Read-only query validation and execution with 500-row limits
-- ✅ Connection testing and comprehensive error handling
+- ⚠️ CSV file upload processing (needs implementation for MVP)
+- ⚠️ SQLite adapter for uploaded data (needs implementation)
 
 #### Phase 4: LLM Pipeline ✅ COMPLETED
 - ✅ Gemini API integration with context building (95% coverage)
@@ -73,25 +74,35 @@
 
 ---
 
-## 🚧 NEXT PRIORITIES: Frontend Chat Implementation
+## 🚧 NEXT PRIORITIES: Backend + Visual-Driven UI Development
 
-### 🟡 IN PROGRESS: Chat UI (Phase 6.3 = Prompt 11)
+### 🟡 IN PROGRESS: Backend Foundation + Design System (Phase 6 = Prompt 11)
 
-**Immediate Task**: Implement ChatGPT-like interface connecting to working backend
+**Implementation Methodology**:
+- **Backend-First**: Complete extensible file processing architecture before any UI work
+- **Visual-Driven Development**: SAMAR DON provides design references, implementation uses Puppeteer for pixel-perfect matching
+- **Iterative Screenshots**: Visual validation at each step prevents design drift and ensures quality
+- **Template Foundation**: HTML templates proven and perfected before React conversion
 
-**Required Components**:
-- **ChatWindow**: Main chat container with message history
-- **MessageBubble**: Display user prompts and assistant responses
-- **PromptInput**: Text input with send button and loading states
-- **SQL Confirmation Modal**: Show generated SQL before execution
-- **Results Table**: Display query results with pagination (react-table)
-- **Schema Sidebar**: Collapsible schema browser (initially mocked)
+**Backend Components to Add**:
+- **FileProcessor interface**: Extensible foundation for multiple file types (CSV, Excel, JSON, Parquet)
+- **CSVProcessor service**: First concrete processor implementation with pandas integration
+- **POST /data/upload**: Multi-format endpoint with type detection and processor routing
+- **SQLite adapter**: Integration with existing LLM pipeline and query engine
+- **File management**: Session-based storage with automatic cleanup and metadata tracking
 
-**Backend Integration**:
-- Connect to existing `/chat` endpoint (POST with prompt, autorun toggle)
-- Handle SQL confirmation flow and autorun settings
-- Display results from backend query execution
-- Error handling for LLM and Snowflake failures
+**Visual Design Process**:
+- **Design References**: Screenshots and mockups provided by SAMAR DON for each screen
+- **Puppeteer Implementation**: Automated screenshot comparison for pixel-perfect results
+- **Template Creation**: HTML/CSS templates matching design specifications exactly
+- **Responsive Validation**: Multi-viewport testing and responsive design optimization
+- **Visual Regression Testing**: Prevent UI degradation during development iterations
+
+**Frontend Integration**:
+- **Template Conversion**: Convert proven HTML templates to React components systematically
+- **Visual Fidelity**: Maintain exact pixel-perfect matching using screenshot validation
+- **State Management**: Connect to backend APIs with proper error handling and loading states
+- **Existing Integration**: Work with current authentication and API client infrastructure
 
 ### ❌ REMAINING: Advanced Features (Prompts 12-14)
 
@@ -123,10 +134,15 @@
   GET  /auth/me           - Get current user profile
   POST /auth/logout       - Logout and clear session
 
-✅ Snowflake Integration:
-  POST /chat              - NL to SQL with optional execution
-  POST /snowflake/test    - Test connection parameters
-  GET  /snowflake/schema  - Get cached schema metadata
+✅ Data Integration:
+  POST /chat              - NL to SQL with optional execution (works with SQLite)
+  POST /snowflake/test    - Test Snowflake connection parameters (legacy)
+  GET  /snowflake/schema  - Get cached schema metadata (legacy)
+
+⚠️ File Upload (MVP Priority):
+  POST /data/upload       - Upload CSV file and convert to SQLite (needs implementation)
+  GET  /data/schema       - Get schema info for uploaded files (needs implementation)
+  DELETE /data/cleanup    - Clean up temporary files (needs implementation)
 
 ✅ Health & Admin:
   GET  /health           - Health check endpoint
@@ -168,26 +184,56 @@
 
 ## 🎯 Ready-to-Execute Prompts
 
-### NEXT: Prompt 11 - Chat UI Vertical Slice
+### NEXT: Prompt 11 - Backend Foundation + Visual Design System
 
 ```text
-Add components to complete the chat interface:
+Implement extensible backend architecture and visual-driven UI development:
 
-**Components to Create**:
-1. `ChatWindow` - Main chat container with message history scrolling
-2. `MessageBubble` - Display user prompts and assistant responses with proper styling
-3. `PromptInput` - Text input with send button, loading states, and validation
-4. `SQLConfirmationModal` - Show generated SQL with confirm/edit options
-5. `ResultsTable` - Display query results using react-table with pagination
+**PHASE A: Backend Extensible Foundation**:
+1. Create FileProcessor interface - Abstract base class for all file type processors
+2. Implement file type detection and routing system - Route uploads to appropriate processors
+3. Build CSVProcessor - First concrete implementation with pandas, schema detection, SQLite conversion
+4. Create POST /data/upload endpoint - Multi-format file handling with validation and security
+5. Integrate SQLite adapter - Connect to existing LLM pipeline and query engine
+6. Add file management - Session-based storage with automatic cleanup and metadata tracking
 
-**Integration Requirements**:
-- Call backend `/chat` endpoint with prompt and autorun toggle
-- Handle SQL confirmation flow (show modal if autorun=false)
-- Display tabular results with proper error handling
-- Add schema sidebar placeholder (mocked list for now)
-- Connect to existing authentication and API client infrastructure
+**PHASE B: Visual Design Implementation**:
+1. Collect design references - Screenshots and specifications provided by SAMAR DON
+2. Implement with Puppeteer - Automated visual validation and pixel-perfect iteration
+3. Create HTML templates - File upload, schema preview, chat interface, results display
+4. Test responsiveness - Multi-viewport validation with screenshot comparison
+5. Visual regression testing - Prevent UI degradation during development
 
-**Testing**: Add unit tests for components and integration test for chat flow
+**PHASE C: React Integration**:
+1. Convert templates to components - Maintain exact visual fidelity using screenshots
+2. Add state management - Connect to backend APIs with existing auth infrastructure
+3. Implement interactions - File upload progress, chat flow, results pagination
+4. E2E testing - Complete user flow from upload to query results
+
+**Architecture Benefits**:
+- Extensible FileProcessor foundation for future file types (Excel, JSON, Parquet)
+- Visual-driven development prevents design drift and ensures pixel-perfect implementation
+- Backend-first approach provides solid foundation before UI complexity
+- HTML template foundation proven before React conversion reduces rework
+
+**Technical Requirements**:
+- FileProcessor abstraction with type registry system for extensibility
+- Puppeteer integration for visual validation and screenshot automation
+- Session-based file storage with proper cleanup and security validation
+- Responsive design working across desktop, tablet, mobile viewports
+- Maintain existing LLM pipeline, authentication, and API client infrastructure
+
+**Testing Strategy**:
+- Backend: Unit tests for FileProcessor, CSV processing, SQLite conversion
+- Visual: Screenshot comparison tests for UI regression prevention
+- Frontend: Component tests for React integration and state management
+- E2E: Complete flow testing with various file formats and user scenarios
+
+**Success Metrics**:
+- Backend processes files through extensible FileProcessor architecture
+- HTML templates match design specifications pixel-perfect via Puppeteer validation
+- React components maintain template visual fidelity exactly
+- Complete user flow works end-to-end with proper error handling and feedback
 ```
 
 ### FOLLOWING: Prompt 12 - History, Favorites, Settings
@@ -207,11 +253,11 @@ Frontend: Left drawer list of past queries with star icon, settings modal for ro
 - Database migrations automated and tested
 - Backend API fully functional and tested (91%+ coverage)
 
-### Required Services (✅ Running)
+### Required Services (✅ Running for MVP)
 - PostgreSQL database with user management
-- Snowflake connection (user-provided credentials)
-- Google OAuth application (configured)
+- Google OAuth application (configured) - optional for MVP
 - Gemini API access (user-provided API key)
+- File storage (temporary) - local filesystem or Redis
 
 ### Development Commands (✅ Working)
 ```bash
@@ -235,10 +281,10 @@ pytest --cov=backend        # Backend tests
 
 ## 💡 Key Implementation Notes for AI Agents
 
-1. **Backend is Production-Ready**: 91%+ test coverage, full authentication, working Snowflake and LLM integration
-2. **Frontend Auth Complete**: Full OAuth flow, protected routes, user context - ready for chat components
-3. **API Integration Ready**: Existing `/chat` endpoint accepts NL prompts and returns SQL + results
-4. **No Breaking Changes Needed**: New components should integrate with existing auth and API infrastructure
+1. **Backend Foundation Ready**: 91%+ test coverage, authentication, working LLM integration - needs CSV upload capability
+2. **Frontend Auth Complete**: Full OAuth flow, protected routes, user context - ready for file upload + chat components
+3. **LLM Pipeline Ready**: Existing `/chat` endpoint works with SQLite data - perfect for CSV uploads
+4. **No Breaking Changes Needed**: CSV upload extends existing architecture without disrupting completed work
 5. **Test Infrastructure**: Both backend (pytest) and frontend (vitest + cypress) testing fully configured
 
-**Next Agent Should**: Focus immediately on implementing chat UI components (Prompt 11) since all foundation work is complete.
+**Next Agent Should**: Implement CSV upload backend + frontend components (Prompt 11) to create complete MVP that works without external database credentials.
