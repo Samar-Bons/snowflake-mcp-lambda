@@ -27,37 +27,46 @@ jobs:
         version: latest
         virtualenvs-create: true
         virtualenvs-in-project: true
+        virtualenvs-path: backend/.venv
 
     - name: Load cached venv
       id: cached-poetry-dependencies
       uses: actions/cache@v4
       with:
-        path: .venv
-        key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+        path: backend/.venv
+        key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('backend/poetry.lock') }}
 
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: |
+        cd backend
+        poetry install --no-interaction --no-root
 
     - name: Install project
-      run: poetry install --no-interaction
+      run: |
+        cd backend
+        poetry install --no-interaction
 
     - name: Lint and format with ruff
       run: |
-        poetry run ruff check --output-format=github backend/
-        poetry run ruff format --check backend/
+        cd backend
+        poetry run ruff check --output-format=github .
+        poetry run ruff format --check .
 
     - name: Type check with mypy
-      run: poetry run mypy backend/
+      run: |
+        cd backend
+        poetry run mypy .
 
     - name: Test with pytest
       run: |
-        poetry run pytest --cov=backend/app --cov-report=xml --cov-report=term-missing --cov-fail-under=85
+        cd backend
+        poetry run pytest --cov=app --cov-report=xml --cov-report=term-missing --cov-fail-under=85
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
-        file: ./coverage.xml
+        file: ./backend/coverage.xml
         flags: unittests
         name: codecov-umbrella
         fail_ci_if_error: false
