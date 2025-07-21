@@ -4,30 +4,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Snowflake MCP Lambda** - A remote Model Context Protocol Server for Snowflake deployed as AWS Lambda. Enables non-technical users to interact with Snowflake databases through natural language queries via chat interface.
+**Data Chat MVP** - A web application enabling non-technical users to upload CSV files and query them using natural language via chat interface. Expandable to support multiple database types in the future.
 
-## Architecture (Planned Implementation)
+## Architecture (Current Implementation Status)
 
 **Core Stack:**
-- Backend: FastAPI (Python) with Poetry dependency management
-- Frontend: React + Vite + TypeScript + Tailwind CSS (dark mode)
-- Auth: Google OAuth with JWT cookies
-- Data: PostgreSQL (users), Redis (sessions), Snowflake (queries)
-- LLM: Gemini API (BYOK - user provides API key)
-- Deploy: Docker + Docker Compose, AWS Lambda target
+- Backend: FastAPI (Python) with Poetry dependency management ✅
+- Frontend: React + Vite + TypeScript + Tailwind CSS (dark mode) ✅
+- Auth: Google OAuth with JWT cookies (optional for MVP) ✅
+- Data: PostgreSQL (users), Redis (sessions), SQLite (uploaded CSV data)
+- LLM: Gemini API (BYOK - user provides API key) ✅
+- Deploy: Docker + Docker Compose ✅
 
-**Key Flow:**
-1. Google OAuth → user session in Redis
-2. User configures Snowflake connection via step-by-step form
+**MVP Key Flow:**
+1. User uploads CSV file → auto-conversion to SQLite
+2. Schema detection and preview → ready for queries
 3. Natural language input → Gemini LLM → SQL generation
-4. SQL confirmation modal → read-only execution → paginated results
-5. Query history/favorites stored per user
+4. SQL confirmation modal → execution → paginated results
+5. Session-based data (cleanup after session expires)
 
 ## Development Commands
 
-**Current Status:** Planning phase - no implementation exists yet.
+**Current Status:** Backend foundation complete (85%), frontend auth complete, CSV upload MVP next priority.
 
-**Expected commands when implementation begins:**
+**Working commands:**
 ```bash
 # Setup
 poetry install                    # Install Python dependencies
@@ -51,37 +51,43 @@ docker compose up               # Development environment
 docker compose -f prod.yml up  # Production environment
 ```
 
-## Implementation Phases
+## Implementation Phases (Current Status)
 
-Based on `prompt_plan.md`, follow this sequence:
+**Phase 0-1:** Foundation + Backend Core ✅ COMPLETED
+- Git setup, pre-commit hooks, CI pipeline ✅
+- FastAPI skeleton with health routes ✅
+- Config system with Pydantic + environment support ✅
+- Database client abstraction ready for CSV/SQLite ✅
 
-**Phase 0-1:** Foundation + Backend Core
-- Git setup, pre-commit hooks, CI pipeline
-- FastAPI skeleton with health routes
-- Config system with Pydantic + environment support
-- Snowflake client with connection validation
+**Phase 2:** Auth Stack ✅ COMPLETED
+- Google OAuth flow with callback handling ✅
+- PostgreSQL user model + SQLAlchemy ✅
+- Redis session management with 24h expiry ✅
+- JWT middleware for route protection ✅
 
-**Phase 2:** Auth Stack
-- Google OAuth flow with callback handling
-- PostgreSQL user model + SQLAlchemy
-- Redis session management with 24h expiry
-- JWT middleware for route protection
+**Phase 3:** Data Integration ✅ PARTIAL COMPLETED
+- Gemini LLM integration working ✅
+- Schema introspection system ready for SQLite ✅
+- `/chat` endpoint: NL → SQL → confirmation → execution ✅
+- Read-only query validation + 500 row limit ✅
+- ⚠️ CSV upload processing (needs implementation for MVP)
+- ⚠️ File management and SQLite conversion (needs implementation)
 
-**Phase 3:** LLM Pipeline
-- Gemini service wrapper with API key injection
-- Context builder for schema metadata
-- `/chat` endpoint: NL → SQL → confirmation → execution
-- Read-only query validation + 500 row limit
+**Phase 4:** Frontend Foundation ✅ COMPLETED
+- React app with complete auth flow ✅
+- Dashboard layout ready for components ✅
+- ⚠️ CSV upload components (next priority)
+- ⚠️ Chat interface components (next priority)
 
-**Phase 4-5:** Frontend + Features
-- React app with auth flow and chat UI
-- Schema explorer sidebar, result table with pagination
-- Query history CRUD, favorites, settings panel
+**Phase 5:** 🟡 CSV Upload MVP (CURRENT PRIORITY)
+- Backend: CSV upload, processing, SQLite conversion
+- Frontend: File upload, schema preview, chat interface
+- Integration: Complete upload → chat → results flow
 
-**Phase 6:** Production Readiness
-- Structured JSON logging with external sink
-- Docker Compose production profile
-- GitHub Actions for image builds
+**Phase 6:** Future Features (After MVP)
+- Multiple file formats (Excel, JSON, Parquet)
+- Database connections (PostgreSQL, MySQL)
+- Query history, favorites, advanced settings
 
 ## Code Standards
 
@@ -98,13 +104,58 @@ Based on `prompt_plan.md`, follow this sequence:
 - Pristine test output required to pass
 
 **Security Constraints:**
-- Read-only Snowflake queries only (SELECT statements)
+- Read-only SQL queries only (SELECT statements)
 - Intent classification to detect unsafe prompts
+- Secure file upload validation (size limits, type checking)
+- Session-based temporary data storage
 - No sensitive data in logs or commits
-- Connection validation before query execution
 
 ## Key Files to Reference
 
-- `planning/spec.md` - Complete feature requirements and UX flows
-- `planning/prompt_plan.md` - Detailed implementation prompts for each phase
+- `docs/planning/PROJECT_STATUS.md` - **Primary reference**: Current status and next prompts
+- `docs/planning/spec.md` - Complete feature requirements and UX flows
+- `DEVELOPMENT.md` - Developer setup and troubleshooting guide
 - `README.md` - Basic project description
+
+## Next Implementation Priority
+
+**Prompt 11 - CSV Upload MVP**: Implement file upload backend + frontend components to enable users to upload CSV files and query them via chat interface. This creates a complete MVP that works without external database credentials.
+
+See `docs/planning/PROJECT_STATUS.md` for detailed implementation requirements.
+
+## MCP Servers Configuration
+
+**Active MCP Servers** (configured via `claude mcp list`):
+
+- **GitHub MCP Server** (`github`) - Repository management
+  - Manage issues, PRs, commits, and repository operations
+  - Usage: Natural language requests for GitHub operations
+
+- **File System MCP Server** (`filesystem`) - Enhanced file operations
+  - Advanced file read/write capabilities beyond built-in tools
+  - Usage: File management and bulk operations
+
+- **PostgreSQL MCP Server** (`postgres`) - Database integration
+  - Direct database querying and management
+  - Perfect for data analysis and database operations
+
+- **Docker MCP Server** (`docker`) - Container management
+  - Manage Docker containers, images, and compose files
+  - Usage: `docker compose up/down`, container operations
+
+- **Puppeteer MCP Server** (`puppeteer`) - Web automation
+  - Browser automation and web scraping capabilities
+  - Usage: Testing, screenshots, web interactions
+
+**MCP Server Commands:**
+```bash
+claude mcp list                    # View all configured servers
+claude mcp get <server-name>       # Get server details
+claude mcp remove <server-name>    # Remove a server
+```
+
+**Usage Tips:**
+- Reference resources with "@" mentions (e.g., @filename)
+- Use slash commands for server-exposed prompts
+- Set required API keys/tokens as environment variables
+- Test servers with non-sensitive data first

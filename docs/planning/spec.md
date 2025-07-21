@@ -3,8 +3,8 @@
 
 ## ✅ Overview
 
-**Goal:** A web application with a chat interface that allows **non-technical users** to interact with a **Snowflake database** using **natural language** queries.
-Users can **connect their own Snowflake DB**, interact with it using a **Gemini-based LLM**, and receive **tabular and/or natural language outputs**.
+**Goal:** A web application with a chat interface that allows **non-technical users** to interact with **CSV files and databases** using **natural language** queries.
+Users can **upload CSV files OR connect databases**, interact with their data using a **Gemini-based LLM**, and receive **tabular and/or natural language outputs**.
 
 ---
 
@@ -12,10 +12,11 @@ Users can **connect their own Snowflake DB**, interact with it using a **Gemini-
 
 ### 👤 User Onboarding
 
-* **Google OAuth login** (secure and familiar)
-* Option to use **demo datasets** without login
-* After login: user provides **Snowflake connection** via a **step-by-step form**
-* Connection validated **immediately** on submission
+* **Google OAuth login** (secure and familiar) - optional for MVP
+* **CSV File Upload** as primary entry point (no login required for MVP)
+* Alternative: **Database connection** via step-by-step form (future feature)
+* **Immediate data preview** after CSV upload or connection
+* Auto-detected schema with user confirmation option
 
 ### 💬 Chat Interface
 
@@ -94,15 +95,33 @@ backend/
 
 ## ✅ Data Handling
 
-### 🗂️ Snowflake Schema
+### 📁 CSV File Processing (MVP Priority)
 
-* On first connect, cache:
+* **File Upload Pipeline:**
+  * Drag-and-drop interface with progress indication
+  * Support for CSV files up to 100MB
+  * Auto-detection of delimiters, headers, encoding
+  * Schema inference (column names, data types)
+  * Conversion to SQLite for querying
 
+* **Data Preview & Validation:**
+  * Show first 10 rows for user confirmation
+  * Display detected schema (column names, types, nullable)
+  * Allow manual schema adjustments if needed
+  * Error handling for malformed CSV files
+
+* **Session Management:**
+  * Temporary storage during user session
+  * Auto-cleanup after session expiry
+  * Multiple file support (future: JOIN capabilities)
+
+### 🗂️ Database Schema (Future Expansion)
+
+* On connection, cache:
   * Table names
   * Columns + data types
 * Refreshable manually by user
 * Used for:
-
   * Autocomplete
   * Prompt context
   * Protocol flow
@@ -110,12 +129,12 @@ backend/
 ### 💬 LLM Pipeline (Model-Context-Protocol)
 
 1. **Intent classification** (detect unsafe or invalid prompts)
-2. **Context building** (user prompt + schema hints)
-3. **LLM call** (Gemini API via `llm_service`)
-4. **Confirmation** (non-intrusive display of SQL)
-5. **Execution** (`snowflake_client`)
-6. **Output formatting** (based on preference)
-7. **Session update** (history, favorites)
+2. **Context building** (user prompt + schema hints from SQLite/uploaded data)
+3. **LLM call** (Gemini API via `llm_service` with SQLite-optimized prompts)
+4. **Confirmation** (non-intrusive display of generated SQL)
+5. **Execution** (SQLite queries for uploaded CSV data)
+6. **Output formatting** (based on user preference)
+7. **Session update** (query history within session)
 
 ---
 
