@@ -3,8 +3,7 @@ name = "snowflake-mcp-lambda"
 version = "0.1.0"
 description = "A remote Model Context Protocol Server for Snowflake deployed as AWS Lambda"
 authors = ["Samar Don <samar@example.com>"]
-readme = "README.md"
-packages = [{include = "app", from = "backend"}]
+packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -41,14 +40,14 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-testpaths = ["backend/tests"]
+testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov=backend/app",
+    "--cov=app",
     "--cov-report=term-missing:skip-covered",
     "--cov-report=html:htmlcov",
     "--cov-report=xml",
@@ -64,7 +63,7 @@ markers = [
 [tool.ruff]
 target-version = "py310"
 line-length = 88
-src = ["backend"]
+src = ["."]
 
 [tool.ruff.lint]
 select = [
@@ -122,7 +121,7 @@ exclude = ["migrations/"]
 
 # More permissive settings for tests while still type-checking them
 [[tool.mypy.overrides]]
-module = "backend.tests.*"
+module = "tests.*"
 disallow_untyped_defs = false
 disallow_incomplete_defs = false
 warn_return_any = false
@@ -137,7 +136,7 @@ module = "google.generativeai.*"
 ignore_missing_imports = true
 
 [tool.coverage.run]
-source = ["backend/app"]
+source = ["app"]
 omit = [
     "*/tests/*",
     "*/test_*",
