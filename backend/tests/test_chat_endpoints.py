@@ -171,7 +171,7 @@ class TestChatEndpoints:
         response = authenticated_client.post("/api/v1/chat", json=request_data)
 
         assert response.status_code == 400
-        assert "Failed to discover schema" in response.json()["detail"]
+        assert "Failed to discover Snowflake schema" in response.json()["detail"]
 
     def test_chat_endpoint_query_execution_error(
         self, authenticated_client: TestClient, mock_services: tuple[Mock, Mock]

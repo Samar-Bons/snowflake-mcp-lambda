@@ -59,7 +59,9 @@ class TestGeminiConfig:
 
         assert "Invalid Gemini model" in str(exc_info.value)
 
-    def test_gemini_max_tokens_validation(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_gemini_max_tokens_validation(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test Gemini max tokens validation."""
         # Valid range: 100-4000 tokens
         valid_token_counts = [100, 1000, 4000]
@@ -81,7 +83,9 @@ class TestGeminiConfig:
             with pytest.raises(ValidationError):
                 Settings()
 
-    def test_gemini_temperature_validation(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_gemini_temperature_validation(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test Gemini temperature validation."""
         # Valid range: 0.0-1.0
         valid_temperatures = [0.0, 0.1, 0.5, 1.0]
@@ -190,7 +194,9 @@ class TestGeminiConfig:
             with pytest.raises(ValidationError):
                 Settings()
 
-    def test_snowflake_max_rows_validation(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_snowflake_max_rows_validation(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test Snowflake max rows validation."""
         # Valid range: 1-10000 rows
         valid_row_counts = [1, 500, 10000]

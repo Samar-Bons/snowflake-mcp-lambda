@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DataChat</title>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter:wght@400;500;600;700&amp;display=swap" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style type="text/tailwindcss">
+        :root {
+            --primary-color: #0c7ff2;
+            --background-color: #121212;
+            --text-primary: #E0E0E0;
+            --text-secondary: #A0A0A0;
+            --accent-color: #333333;
+            --card-background: #1E1E1E;
+            --button-hover: #1E60B3;
+            --input-background: #2C2C2C;
+            --input-border: #4A4A4A;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+        }
+        .button_primary {
+            @apply bg-[var(--primary-color)] text-white py-2 px-4 rounded-md hover:bg-[var(--button-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-opacity-50;
+        }
+        .button_secondary {
+            @apply bg-[var(--accent-color)] text-[var(--text-primary)] py-2 px-4 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)] focus:ring-opacity-50;
+        }
+        .input {
+            @apply bg-[var(--input-background)] border border-[var(--input-border)] text-[var(--text-primary)] rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent;
+        }
+        .typography_h1 {
+            @apply text-3xl font-bold text-[var(--text-primary)] mb-4;
+        }
+        .typography_h2 {
+            @apply text-2xl font-semibold text-[var(--text-primary)] mb-3;
+        }
+        .typography_body {
+            @apply text-[var(--text-secondary)];
+        }
+        .link {
+            @apply text-[var(--primary-color)] hover:underline;
+        }
+    </style>
+</head>
+<body class="bg-[var(--background-color)] text-[var(--text-primary)]">
+<div class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden">
+<div class="flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--accent-color)] px-6 py-4">
+<div class="flex items-center gap-4 text-white">
+<svg class="h-8 w-8 text-[var(--primary-color)]" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+<h1 class="text-xl font-bold">DataChat</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="button_secondary p-2 rounded-full">
+<svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+<path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"></path>
+</svg>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBoHHEhFwo3MGeZocZLPPMHB98m-aZqCyQAYn50mvxc7pCH9P_yfMMES9H-SpflYMLuKjPhWLhZTb2-ySLVQ4sWoGJpJWzQlMX862CYD_oCiFpNdbPVTkWlxZlncjlA5jToNEl5M5tZOvOZ7pgPD23QS0jtsUp5xyv4w-FPAxo8VTid9G1nOwEbFOH_82M9H1PFv45WoQq5M0RJJDXEWCJsuYGSFB9_iB1H6CrPLb9jRYLanc1i2mK0ANsgJdO2nzDRCVcA23gSZqxo");'></div>
+</div>
+</header>
+<main class="flex flex-1 overflow-hidden">
+<div class="flex flex-1 flex-col p-6 overflow-y-auto">
+<div class="border-b border-[var(--accent-color)] mb-4">
+<div class="flex space-x-8">
+<a class="typography_body text-sm font-bold pb-3 border-b-2 border-[var(--primary-color)] text-[var(--text-primary)]" href="#">Chat</a>
+<a class="typography_body text-sm font-bold pb-3 border-b-2 border-transparent hover:border-[var(--primary-color)]" href="#">Playground</a>
+</div>
+</div>
+<div class="flex-1 space-y-6">
+<div class="flex items-start gap-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCirSZAkzSuB07qH6AoM2BwhyPR84BK_MjpuMKlpHX17GrWoaN_6dXG07Kc4VklL_UMiVcB-nHrlgRFStmCUpwAsa5g1OEvZqqFJimezdwqdW-OebRMb4Jj_u6_hH_zebvvbnts8eLHjqwRcKBT_clzPBoHpZaXazI00MjFscmi-f8Iis84HxaDTM7CtI5yPfyEt8Qi-Zpers9eFbE_kbCnrQkX6PrDHFqk6Z4OsLryBPvX-0K37Uj6zDb2Wazpnvc1VlyrreVgiNb1");'></div>
+<div class="flex flex-col gap-1 items-start">
+<p class="text-[var(--text-secondary)] text-sm">AI Assistant</p>
+<div class="bg-[var(--card-background)] rounded-lg px-4 py-2">
+<p class="text-base">Hi there! I'm your AI assistant. How can I help you today?</p>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-4 justify-end">
+<div class="flex flex-col gap-1 items-end">
+<p class="text-[var(--text-secondary)] text-sm">Sophia</p>
+<div class="bg-[var(--primary-color)] text-white rounded-lg px-4 py-2">
+<p class="text-base">Show me the total sales for each product category.</p>
+</div>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCvAxhaiVnlew9MRNIEh3zPsGOxbTMQaeC4svUMYxtWiaZyEIYIDsImv4-T3qJf52vFawZjmrJJzc6WlmiL8Reb5lnfvsQzTit0dEnPIkfE4l3MwA7Kj4cuVzfKhgUSTPIUzp6dFSQhHnB2TtDH9xTK30iTgHH2SEiMreLjUrZosTs9w6r5Phz_iZnj8daSh1MeLi-EZNXlWXs_q1kY6d49VMfJRZZsX96ykJPfJwpJEAnlLUTxcISX9SGX8qCfaXfBkRuMC0afXD1u");'></div>
+</div>
+<div class="flex items-start gap-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD6oHe84CcUfeUOuCrW2Dh900dWAaoRdg2LQsjtB6yMolRGBzTQHUj4_Ducv70BJcN7lbqMhZ_Vl6WfdViQxGNnP6ZNrTqUvdRF_J5m0QLXgUyLNm43W1AmI7FBvrvJut4a59W4THMIjBqmQoRoo51eSguGf6SILjF9SnDbd1bMiX6kHNoCgn0DjKOS5GSdZFyJxVscycaSbFlBEs12uy7-q6t7vmCcOJWeOOhJyYVNcm5IN9DFwTQIdpjbpvB33CpSSKIFbt1-1G6r");'></div>
+<div class="flex flex-col gap-2 items-start">
+<p class="text-[var(--text-secondary)] text-sm">AI Assistant</p>
+<div class="bg-[var(--card-background)] rounded-lg px-4 py-2 mb-2">
+<p class="text-base">Here's the total sales for each product category:</p>
+</div>
+<div class="overflow-x-auto rounded-lg border border-[var(--accent-color)] bg-[var(--card-background)] w-full">
+<table class="w-full text-left">
+<thead class="bg-[var(--accent-color)]/30">
+<tr>
+<th class="p-4 text-sm font-medium">Product Category</th>
+<th class="p-4 text-sm font-medium">Total Sales</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-t border-[var(--accent-color)]">
+<td class="p-4">Electronics</td>
+<td class="p-4 text-[var(--text-secondary)]">$1,200,000</td>
+</tr>
+<tr class="border-t border-[var(--accent-color)]">
+<td class="p-4">Clothing</td>
+<td class="p-4 text-[var(--text-secondary)]">$800,000</td>
+</tr>
+<tr class="border-t border-[var(--accent-color)]">
+<td class="p-4">Home Goods</td>
+<td class="p-4 text-[var(--text-secondary)]">$500,000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6 flex items-center gap-4">
+<input class="input flex-1 pr-12" placeholder="Ask me anything about your data..." type="text"/>
+<button class="button_secondary p-2.5 rounded-full -ml-12">
+<svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+<path d="M209.66,122.34a8,8,0,0,1,0,11.32l-82.05,82a56,56,0,0,1-79.2-79.21L147.67,35.73a40,40,0,1,1,56.61,56.55L105,193A24,24,0,1,1,71,159L154.3,74.38A8,8,0,1,1,165.7,85.6L82.39,170.31a8,8,0,1,0,11.27,11.36L192.93,81A24,24,0,1,0,159,47L59.76,147.68a40,40,0,1,0,56.53,56.62l82.06-82A8,8,0,0,1,209.66,122.34Z"></path>
+</svg>
+</button>
+<button class="button_primary">
+<span>Send</span>
+</button>
+</div>
+</div>
+<aside class="w-96 bg-[var(--card-background)] border-l border-[var(--accent-color)] p-6 flex flex-col gap-4 overflow-y-auto">
+<h2 class="typography_h2 text-xl">Schema Explorer</h2>
+<div class="relative">
+<input class="input w-full pl-10" placeholder="Search tables and columns" type="text"/>
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--text-secondary)]">
+<svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+<path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+</svg>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--accent-color)]/50 cursor-pointer">
+<div class="bg-[var(--accent-color)] p-3 rounded-lg">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM40,112H80v32H40Zm56,0H216v32H96ZM216,64V96H40V64ZM40,160H80v32H40Zm176,32H96V160H216v32Z"></path></svg>
+</div>
+<div>
+<p class="font-medium">Sales Data</p>
+<p class="text-sm text-[var(--text-secondary)]">Table</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--accent-color)]/50 cursor-pointer pl-8">
+<div class="bg-[var(--accent-color)] p-3 rounded-lg">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg"><path d="M104,32H64A16,16,0,0,0,48,48V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,104,32Zm0,176H64V48h40ZM192,32H152a16,16,0,0,0-16,16V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,192,32Zm0,176H152V48h40Z"></path></svg>
+</div>
+<div>
+<p class="font-medium">Product Category</p>
+<p class="text-sm text-[var(--text-secondary)]">Column</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--accent-color)]/50 cursor-pointer pl-8">
+<div class="bg-[var(--accent-color)] p-3 rounded-lg">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg"><path d="M104,32H64A16,16,0,0,0,48,48V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,104,32Zm0,176H64V48h40ZM192,32H152a16,16,0,0,0-16,16V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,192,32Zm0,176H152V48h40Z"></path></svg>
+</div>
+<div>
+<p class="font-medium">Total Sales</p>
+<p class="text-sm text-[var(--text-secondary)]">Column</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--accent-color)]/50 cursor-pointer">
+<div class="bg-[var(--accent-color)] p-3 rounded-lg">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM40,112H80v32H40Zm56,0H216v32H96ZM216,64V96H40V64ZM40,160H80v32H40Zm176,32H96V160H216v32Z"></path></svg>
+</div>
+<div>
+<p class="font-medium">Customer Data</p>
+<p class="text-sm text-[var(--text-secondary)]">Table</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--accent-color)]/50 cursor-pointer pl-8">
+<div class="bg-[var(--accent-color)] p-3 rounded-lg">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg"><path d="M104,32H64A16,16,0,0,0,48,48V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,104,32Zm0,176H64V48h40ZM192,32H152a16,16,0,0,0-16,16V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,192,32Zm0,176H152V48h40Z"></path></svg>
+</div>
+<div>
+<p class="font-medium">Customer ID</p>
+<p class="text-sm text-[var(--text-secondary)]">Column</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--accent-color)]/50 cursor-pointer pl-8">
+<div class="bg-[var(--accent-color)] p-3 rounded-lg">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg"><path d="M104,32H64A16,16,0,0,0,48,48V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,104,32Zm0,176H64V48h40ZM192,32H152a16,16,0,0,0-16,16V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,192,32Zm0,176H152V48h40Z"></path></svg>
+</div>
+<div>
+<p class="font-medium">Customer Name</p>
+<p class="text-sm text-[var(--text-secondary)]">Column</p>
+</div>
+</div>
+</div>
+</aside>
+</main>
+</div>
+</div>
+
+</body></html>

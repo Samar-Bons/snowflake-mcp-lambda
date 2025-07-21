@@ -9,29 +9,34 @@ repos:
       - id: check-merge-conflict
       - id: debug-statements
 
-  # Use local hooks to ensure exact CI parity
+  # Backend hooks (Python) - Use local hooks to ensure exact CI parity
   - repo: local
     hooks:
-      # Ruff - linting and formatting (exactly as CI runs it)
-      - id: ruff-check
-        name: ruff check
-        entry: ./scripts/poetry-wrapper.sh run ruff check --output-format=concise
+      # Ruff - linting and formatting for backend
+      - id: ruff-check-backend
+        name: ruff check (backend)
+        entry: ./scripts/poetry-wrapper.sh run ruff check app/ tests/ --output-format=concise
         language: system
+        files: ^backend/
         types: [python]
         require_serial: true
+        pass_filenames: false
 
-      - id: ruff-format
-        name: ruff format
-        entry: ./scripts/poetry-wrapper.sh run ruff format --check
+      - id: ruff-format-backend
+        name: ruff format (backend)
+        entry: ./scripts/poetry-wrapper.sh run ruff format --check app/ tests/
         language: system
+        files: ^backend/
         types: [python]
         require_serial: true
+        pass_filenames: false
 
-      # MyPy - type checking (exactly as CI runs it)
-      - id: mypy
-        name: mypy
-        entry: ./scripts/poetry-wrapper.sh run mypy .
+      # MyPy - type checking for backend
+      - id: mypy-backend
+        name: mypy (backend)
+        entry: ./scripts/poetry-wrapper.sh run mypy app/
         language: system
+        files: ^backend/
         types: [python]
         require_serial: true
         pass_filenames: false
@@ -55,12 +60,35 @@ repos:
         pass_filenames: false
         files: backend/pyproject.toml
 
-      # Security check with bandit (via ruff S rules)
-      - id: security-check
-        name: security check
-        entry: ./scripts/poetry-wrapper.sh run ruff check --select=S
+      # Security check with bandit (via ruff S rules) for backend
+      - id: security-check-backend
+        name: security check (backend)
+        entry: ./scripts/poetry-wrapper.sh run ruff check --select=S app/ tests/
         language: system
+        files: ^backend/
         types: [python]
+        pass_filenames: false
+
+  # Frontend hooks (TypeScript/React)
+  - repo: local
+    hooks:
+      # ESLint for frontend
+      - id: eslint-frontend
+        name: ESLint (frontend)
+        entry: bash -c 'cd frontend && npm run lint'
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|jsx)$
+        pass_filenames: false
+        require_serial: true
+
+      # TypeScript check for frontend (via build)
+      - id: tsc-frontend
+        name: TypeScript check (frontend)
+        entry: bash -c 'cd frontend && npx tsc --noEmit'
+        language: system
+        files: ^frontend/.*\.(ts|tsx)$
+        pass_filenames: false
+        require_serial: true
 
 # Configuration to run all hooks
 default_stages: [commit]
