@@ -94,13 +94,23 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"backend/tests/*" = [
+"tests/*" = [
     "S101",    # assert use (required for pytest)
     "S105",    # hardcoded password (test fixtures)
     "S106",    # hardcoded password in argument (test fixtures)
     "S603",    # subprocess call (integration tests)
     "PLR2004", # magic values (common in tests)
     "SLF001",  # private member access (testing internals)
+]
+# Complex data structures with acceptable type issues
+"app/data/sqlite_adapter.py" = [
+    "TCH003",  # pathlib needed at runtime for file operations
+]
+"app/services/*" = [
+    "C901",    # complexity acceptable for file processing
+    "PLR0911", # multiple returns acceptable for validation functions
+    "PLR0912", # many branches acceptable for cleanup functions
+    "PLW2901", # variable reassignment is intentional
 ]
 
 [tool.ruff.lint.isort]

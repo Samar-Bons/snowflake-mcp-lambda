@@ -17,8 +17,7 @@ repos:
         name: ruff check (backend)
         entry: ./scripts/poetry-wrapper.sh run ruff check app/ tests/ --output-format=concise
         language: system
-        files: ^backend/
-        types: [python]
+        files: ^backend/.*\.py$
         require_serial: true
         pass_filenames: false
 
@@ -26,8 +25,7 @@ repos:
         name: ruff format (backend)
         entry: ./scripts/poetry-wrapper.sh run ruff format --check app/ tests/
         language: system
-        files: ^backend/
-        types: [python]
+        files: ^backend/.*\.py$
         require_serial: true
         pass_filenames: false
 
@@ -36,8 +34,7 @@ repos:
         name: mypy (backend)
         entry: ./scripts/poetry-wrapper.sh run mypy app/
         language: system
-        files: ^backend/
-        types: [python]
+        files: ^backend/.*\.py$
         require_serial: true
         pass_filenames: false
 
@@ -65,8 +62,7 @@ repos:
         name: security check (backend)
         entry: ./scripts/poetry-wrapper.sh run ruff check --select=S app/ tests/
         language: system
-        files: ^backend/
-        types: [python]
+        files: ^backend/.*\.py$
         pass_filenames: false
 
   # Frontend hooks (TypeScript/React)
