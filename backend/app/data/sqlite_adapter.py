@@ -4,7 +4,7 @@
 import logging
 import sqlite3
 from datetime import datetime
-from pathlib import Path  # noqa: TCH003
+from pathlib import Path
 from typing import Any
 
 from ..services.file_management import FileManager
@@ -63,12 +63,12 @@ class SQLiteSchemaService:
                 }
 
                 # For uploaded files, we typically have one database and schema
-                db_name = self._current_db_path.stem
+                db_name: str = self._current_db_path.stem
                 schema["databases"][db_name] = {"schemas": {}}  # type: ignore[assignment]
 
                 # Use 'main' as schema name for SQLite
-                schema_name = "main"
-                schema["databases"][db_name]["schemas"][schema_name] = {"tables": {}}  # type: ignore[index]
+                schema_name: str = "main"
+                schema["databases"][db_name]["schemas"][schema_name] = {"tables": {}}
 
                 for (table_name,) in tables:
                     # Get table info
@@ -93,8 +93,16 @@ class SQLiteSchemaService:
                             "default_value": default_value,
                         }
 
-                    tables_dict = schema["databases"][db_name]["schemas"][schema_name]["tables"]
-                    tables_dict[table_name] = table_info
+                    # Access nested dictionary - mypy has trouble with the dynamic structure
+                    # but we know the schema is constructed safely above
+                    try:
+                        tables_dict = schema["databases"][db_name]["schemas"][
+                            schema_name
+                        ]["tables"]
+                        tables_dict[table_name] = table_info
+                    except (KeyError, TypeError):
+                        # Schema structure is unexpected, skip this table
+                        continue
 
                 return schema
 

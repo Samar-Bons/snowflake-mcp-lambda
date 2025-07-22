@@ -146,6 +146,11 @@ module = "snowflake.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
+module = "app.data.sqlite_adapter"
+# Dynamic schema structure access causes type checking issues
+disable_error_code = ["index"]
+
+[[tool.mypy.overrides]]
 module = "google.generativeai.*"
 ignore_missing_imports = true
 

@@ -148,6 +148,9 @@ class CSVProcessor(FileProcessor):
             row_count = self._estimate_row_count(file_path, encoding)
 
             table_name = file_path.stem.lower().replace(" ", "_").replace("-", "_")
+            # Ensure table name starts with letter (SQL requirement)
+            if table_name and table_name[0].isdigit():
+                table_name = f"table_{table_name}"
 
             return FileSchema(
                 table_name=table_name,
@@ -159,7 +162,7 @@ class CSVProcessor(FileProcessor):
         except Exception as e:
             raise ValueError(f"Schema detection failed: {e!s}") from e
 
-    def convert_to_database(  # noqa: C901
+    def convert_to_database(
         self, file_path: Path, output_db_path: Path
     ) -> ProcessingResult:
         """Convert CSV to SQLite database"""
@@ -204,13 +207,16 @@ class CSVProcessor(FileProcessor):
                         i = 1
                         while f"{col}_{i}" in seen:
                             i += 1
-                        col = f"{col}_{i}"  # noqa: PLW2901
+                        col = f"{col}_{i}"
                     cols.append(col)
                     seen.add(col)
                 df.columns = cols
 
             # Convert to SQLite
             table_name = file_path.stem.lower().replace(" ", "_").replace("-", "_")
+            # Ensure table name starts with letter (SQL requirement)
+            if table_name and table_name[0].isdigit():
+                table_name = f"table_{table_name}"
 
             try:
                 with sqlite3.connect(output_db_path) as conn:
@@ -273,7 +279,7 @@ class CSVProcessor(FileProcessor):
             logger.error(f"Encoding detection failed: {e}")
             return None
 
-    def _infer_column_type(self, series: pd.Series) -> str:  # noqa: PLR0911
+    def _infer_column_type(self, series: pd.Series) -> str:
         """Infer SQLite-compatible data type from pandas series"""
         # Remove nulls for type inference
         non_null_series = series.dropna()

@@ -44,6 +44,12 @@ class UserPreferencesUpdate(BaseModel):
     default_output_format: str | None = Field(None, description="Default output format")
 
 
+class LoginResponse(BaseModel):
+    """Model for login response."""
+
+    redirect_url: str = Field(description="OAuth authorization URL to redirect to")
+
+
 class AuthHealthResponse(BaseModel):
     """Model for auth health check response."""
 
@@ -143,11 +149,11 @@ def get_current_user(request: Request) -> User:
 
 
 # Auth endpoints
-@router.get("/login")
+@router.get("/login", response_model=LoginResponse)
 async def login(
     request: Request,
     redirect: str | None = Query(None, description="URL to redirect to after login"),
-) -> RedirectResponse:
+) -> LoginResponse:
     """Initiate Google OAuth login flow.
 
     Args:
@@ -155,7 +161,7 @@ async def login(
         redirect: Optional redirect URL after successful login
 
     Returns:
-        Redirect response to Google OAuth authorization URL
+        JSON response with OAuth authorization URL
     """
     try:
         oauth_service = get_oauth_service()
@@ -166,7 +172,7 @@ async def login(
         # Get authorization URL
         auth_url, _ = oauth_service.get_authorization_url(state=state)
 
-        return RedirectResponse(url=auth_url, status_code=302)
+        return LoginResponse(redirect_url=auth_url)
 
     except Exception as e:
         raise HTTPException(
@@ -267,6 +273,21 @@ async def logout() -> Response:
         response.headers[key] = value
 
     return response
+
+
+@router.get("/me")
+async def get_current_user_info(
+    current_user: User = Depends(get_current_user),  # noqa: B008
+) -> dict[str, Any]:
+    """Get current user information.
+
+    Args:
+        current_user: Current authenticated user
+
+    Returns:
+        User profile data
+    """
+    return current_user.to_profile_dict()
 
 
 @router.get("/profile")

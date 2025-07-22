@@ -66,7 +66,6 @@ def _process_file_content(
 async def upload_file(
     request: Request,
     file: UploadFile,
-    current_user: User,
 ) -> JSONResponse:
     """Upload and process a data file"""
     _validate_uploaded_file(file)
@@ -113,7 +112,9 @@ async def upload_file(
 
         # Convert to database
         file_manager = FileManager()
-        db_path = file_manager.get_user_db_path(str(current_user.id), temp_file_id)
+        # Use session ID instead of user ID for anonymous uploads
+        session_id = "anonymous"
+        db_path = file_manager.get_user_db_path(session_id, temp_file_id)
 
         result = processor.convert_to_database(temp_file_path, db_path)
 
@@ -144,7 +145,7 @@ async def upload_file(
             "warnings": result.warnings or [],
         }
 
-        file_manager.store_file_info(str(current_user.id), temp_file_id, file_info)
+        file_manager.store_file_info(session_id, temp_file_id, file_info)
 
         return JSONResponse(
             content={
@@ -173,12 +174,13 @@ async def upload_file(
 @router.get("/schema/{file_id}")
 async def get_file_schema(
     file_id: str,
-    current_user: User = Depends(get_current_user),  # noqa: B008
 ) -> JSONResponse:
     """Get schema information for uploaded file"""
 
     file_manager = FileManager()
-    file_info = file_manager.get_file_info(str(current_user.id), file_id)
+    # Use anonymous session for public access
+    session_id = "anonymous"
+    file_info = file_manager.get_file_info(session_id, file_id)
 
     if not file_info:
         raise HTTPException(status_code=404, detail="File not found")

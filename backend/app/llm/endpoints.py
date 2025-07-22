@@ -7,11 +7,9 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
-from app.auth.endpoints import get_current_user
 from app.config import get_settings
 from app.data.sqlite_adapter import SQLiteSchemaError, SQLiteSchemaService
 from app.llm.gemini_service import GeminiService, GeminiServiceError
-from app.models.user import User
 from app.snowflake.schema_service import (
     SchemaService,
     SchemaServiceError,
@@ -28,8 +26,9 @@ class ChatRequest(BaseModel):
     autorun: bool = Field(
         default=False, description="Whether to automatically execute the generated SQL"
     )
-    file_id: str | None = Field(
-        default=None, description="ID of uploaded file to query (if using file data)"
+    file_id: str = Field(
+        ...,
+        description="REQUIRED: ID of uploaded file to query - MVP requires file uploads only",
     )
 
 
@@ -37,8 +36,9 @@ class ExecuteSQLRequest(BaseModel):
     """Request model for SQL execution endpoint."""
 
     sql: str = Field(..., min_length=1, description="SQL query to execute")
-    file_id: str | None = Field(
-        default=None, description="ID of uploaded file to query (if using file data)"
+    file_id: str = Field(
+        ...,
+        description="REQUIRED: ID of uploaded file to query - MVP requires file uploads only",
     )
 
 
@@ -76,60 +76,53 @@ def get_gemini_service() -> GeminiService:
     return GeminiService(settings=settings)
 
 
-def get_schema_service() -> SchemaService:
-    """Get schema service instance."""
+def get_schema_service() -> SchemaService | None:
+    """Get schema service instance (optional for file-only requests)."""
     settings = get_settings()
-    return SchemaService(settings=settings)
+    try:
+        return SchemaService(settings=settings)
+    except Exception:
+        # Return None if Snowflake is not configured - we'll handle this in endpoints
+        return None
 
 
 def _get_schema_service_for_file(
-    user_id: str, file_id: str | None, schema_service: SchemaService
+    user_id: str, file_id: str, schema_service: SchemaService | None
 ) -> tuple[Any, str]:
-    """Get appropriate schema service and context for the request."""
-    if file_id:
-        # Use SQLite data source
-        sqlite_service = SQLiteSchemaService(user_id)
-        if not sqlite_service.set_active_file(file_id):
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"File {file_id} not found or expired",
-            )
+    """Get SQLite schema service and context for uploaded file - MVP file-upload only."""
+    # MVP: Only support SQLite file uploads, no Snowflake fallback
+    sqlite_service = SQLiteSchemaService(user_id)
+    if not sqlite_service.set_active_file(file_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"File {file_id} not found or expired",
+        )
 
-        try:
-            sqlite_schema = sqlite_service.discover_schema()
-            schema_context = sqlite_service.format_schema_context(sqlite_schema)
-            return sqlite_service, schema_context
-        except SQLiteSchemaError as e:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Failed to discover file schema: {e!s}",
-            ) from e
-    else:
-        # Use Snowflake data source (original behavior)
-        try:
-            snowflake_schema = schema_service.discover_schema()
-            schema_context = schema_service.format_schema_context(snowflake_schema)
-            return schema_service, schema_context
-        except SchemaServiceError as e:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Failed to discover Snowflake schema: {e!s}",
-            ) from e
+    try:
+        sqlite_schema = sqlite_service.discover_schema()
+        schema_context = sqlite_service.format_schema_context(sqlite_schema)
+        return sqlite_service, schema_context
+    except SQLiteSchemaError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to discover file schema: {e!s}",
+        ) from e
 
 
 # API Endpoints
 @router.post("/", response_model=ChatResponse)
 async def chat(
     request: ChatRequest,
-    current_user: User = Depends(get_current_user),  # noqa: B008
     gemini_service: GeminiService = Depends(get_gemini_service),  # noqa: B008
-    schema_service: SchemaService = Depends(get_schema_service),  # noqa: B008
+    schema_service: SchemaService | None = Depends(get_schema_service),  # noqa: B008
 ) -> ChatResponse:
     """Convert natural language to SQL and optionally execute it."""
     try:
         # Get schema service and context
+        # Use anonymous session for public access
+        session_id = "anonymous"
         active_service, schema_context = _get_schema_service_for_file(
-            str(current_user.id), request.file_id, schema_service
+            session_id, request.file_id, schema_service
         )
 
         # Generate SQL using Gemini
@@ -171,8 +164,7 @@ async def chat(
 @router.post("/execute", response_model=ExecuteSQLResponse)
 async def execute_sql(
     request: ExecuteSQLRequest,
-    current_user: User = Depends(get_current_user),  # noqa: B008
-    schema_service: SchemaService = Depends(get_schema_service),  # noqa: B008
+    schema_service: SchemaService | None = Depends(get_schema_service),  # noqa: B008
 ) -> ExecuteSQLResponse:
     """Execute a SQL query.
 
@@ -188,30 +180,21 @@ async def execute_sql(
         HTTPException: If query execution fails
     """
     try:
-        # Determine data source
-        if request.file_id:
-            # Use SQLite data source
-            sqlite_service = SQLiteSchemaService(str(current_user.id))
-            if not sqlite_service.set_active_file(request.file_id):
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"File {request.file_id} not found or expired",
-                )
+        # MVP: Only SQLite file uploads, no Snowflake fallback
+        session_id = "anonymous"
+        sqlite_service = SQLiteSchemaService(session_id)
+        if not sqlite_service.set_active_file(request.file_id):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"File {request.file_id} not found or expired",
+            )
 
-            try:
-                results = sqlite_service.execute_query(request.sql)
-            except SQLiteSchemaError as e:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
-                ) from e
-        else:
-            # Use Snowflake data source (original behavior)
-            try:
-                results = schema_service.execute_query(request.sql)
-            except SchemaServiceError as e:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
-                ) from e
+        try:
+            results = sqlite_service.execute_query(request.sql)
+        except SQLiteSchemaError as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+            ) from e
 
         return ExecuteSQLResponse(results=results)
 

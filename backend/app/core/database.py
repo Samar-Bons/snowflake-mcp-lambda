@@ -196,8 +196,9 @@ def get_redis_client() -> redis.Redis[str] | None:
             settings = get_settings()
             _redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
             # Test connection
-            _redis_client.ping()
-            logger.info("Redis client connected successfully")
+            if _redis_client:
+                _redis_client.ping()
+                logger.info("Redis client connected successfully")
         except Exception as e:
             logger.warning(f"Failed to connect to Redis: {e}")
             return None

@@ -149,7 +149,9 @@ class FileManager:
                     data = self.redis_client.get(key)
                     if data:
                         file_info = json.loads(data)
-                        file_id = key.split(":")[-1]
+                        # Ensure key is a string for split operation
+                        key_str = str(key)
+                        file_id = key_str.split(":")[-1]
                         files.append(
                             {
                                 "file_id": file_id,
@@ -194,7 +196,7 @@ class FileManager:
         files.sort(key=lambda x: x["created_at"], reverse=True)
         return files
 
-    def cleanup_expired_files(self) -> int:  # noqa: C901, PLR0912
+    def cleanup_expired_files(self) -> int:
         """Clean up expired files across all users"""
         cleaned_count = 0
 
