@@ -177,10 +177,10 @@ class DatabaseManager:
 _database_manager: DatabaseManager | None = None
 
 # Global Redis client
-_redis_client: redis.Redis[str] | None = None
+_redis_client: redis.Redis | None = None
 
 
-def get_redis_client() -> redis.Redis[str] | None:
+def get_redis_client() -> redis.Redis | None:
     """
     Get or create global Redis client instance.
 

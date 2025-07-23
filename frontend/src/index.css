@@ -1,0 +1,426 @@
+/* ABOUTME: Main stylesheet importing Tailwind CSS and design system variables */
+/* ABOUTME: Integrates with the professional dark theme from ../styleGuide/styles.css */
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Import design system CSS variables */
+@import url('../../styleGuide/styles.css');
+
+/* Global styles and theme variables */
+:root {
+  /* Inherit all CSS variables from styleGuide/styles.css */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Base body styles matching design system */
+body {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-light-primary);
+  background-color: var(--color-primary-dark);
+  line-height: var(--line-height-normal);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Root container */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom component classes using design system variables */
+@layer components {
+  /* File upload zone styles */
+  .upload-zone {
+    @apply relative flex flex-col items-center justify-center;
+    min-height: 200px;
+    border: 2px dashed var(--color-light-subtle);
+    background: var(--color-secondary-dark);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-normal);
+    cursor: pointer;
+  }
+
+  .upload-zone--drag-over {
+    border-color: var(--color-blue-primary);
+    background: rgba(96, 165, 250, 0.05);
+    transform: scale(1.02);
+  }
+
+  .upload-zone--uploading {
+    border-color: var(--color-blue-primary);
+    background: var(--color-surface);
+  }
+
+  /* Chat message styles */
+  .chat-message {
+    @apply flex gap-3 max-w-[80%];
+  }
+
+  .chat-message--user {
+    @apply self-end flex-row-reverse;
+  }
+
+  .chat-message--assistant {
+    @apply self-start;
+  }
+
+  .chat-message__content {
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--color-surface);
+    border-radius: var(--radius-lg);
+    color: var(--color-light-secondary);
+    font-size: var(--font-size-regular);
+    line-height: var(--line-height-normal);
+  }
+
+  .chat-message--user .chat-message__content {
+    background-color: var(--color-blue-primary);
+    color: var(--color-light-primary);
+  }
+
+  /* Chat avatar styles */
+  .chat-avatar {
+    @apply flex items-center justify-center flex-shrink-0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--color-blue-primary);
+    color: var(--color-light-primary);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .chat-avatar--large {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-size-regular);
+  }
+
+  .chat-avatar--assistant {
+    background-color: var(--color-purple-primary);
+  }
+
+  /* Button styles matching design system */
+  .btn {
+    @apply inline-flex items-center justify-center;
+    padding: var(--space-3) var(--space-4);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-regular);
+    font-weight: var(--font-weight-normal);
+    line-height: 1;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+  }
+
+  .btn:focus {
+    outline: 2px solid var(--color-blue-light);
+    outline-offset: 2px;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn--primary {
+    background-color: var(--color-blue-primary);
+    color: var(--color-light-primary);
+  }
+
+  .btn--primary:hover:not(:disabled) {
+    background-color: var(--color-blue-secondary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn--secondary {
+    background-color: var(--color-purple-primary);
+    color: var(--color-light-primary);
+  }
+
+  .btn--secondary:hover:not(:disabled) {
+    background-color: var(--color-purple-secondary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn--outline {
+    background-color: transparent;
+    border-color: var(--color-blue-primary);
+    color: var(--color-blue-primary);
+  }
+
+  .btn--outline:hover:not(:disabled) {
+    background-color: var(--color-blue-primary);
+    color: var(--color-light-primary);
+  }
+
+  .btn--ghost {
+    background-color: transparent;
+    color: var(--color-light-muted);
+  }
+
+  .btn--ghost:hover:not(:disabled) {
+    background-color: var(--color-surface);
+    color: var(--color-light-primary);
+  }
+
+  .btn--large {
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--font-size-large);
+    font-weight: var(--font-weight-medium);
+    min-height: 56px;
+  }
+
+  .btn--small {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-small);
+  }
+
+  /* Card styles */
+  .card {
+    background-color: var(--color-secondary-dark);
+    border: 1px solid var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    transition: all var(--transition-normal);
+  }
+
+  .card--elevated {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card--interactive {
+    cursor: pointer;
+  }
+
+  .card--interactive:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--color-blue-primary);
+  }
+
+  /* Input styles */
+  .form-input,
+  .form-textarea {
+    @apply w-full;
+    padding: var(--space-3);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-regular);
+    color: var(--color-light-primary);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-surface-elevated);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+  }
+
+  .form-input:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--color-blue-primary);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  }
+
+  .form-input::placeholder,
+  .form-textarea::placeholder {
+    color: var(--color-light-subtle);
+  }
+
+  /* Table styles */
+  .data-table {
+    @apply w-full border-collapse;
+    background-color: var(--color-secondary-dark);
+    border: 1px solid var(--color-surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .data-table th {
+    background-color: var(--color-surface);
+    color: var(--color-light-primary);
+    font-weight: var(--font-weight-medium);
+    text-align: left;
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--color-surface-elevated);
+  }
+
+  .data-table td {
+    color: var(--color-light-secondary);
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--color-surface);
+  }
+
+  .data-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .data-table--hover tbody tr:hover {
+    background-color: var(--color-surface);
+  }
+
+  /* Modal styles */
+  .modal-overlay {
+    @apply fixed inset-0 z-50 flex items-center justify-center;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-content {
+    background-color: var(--color-secondary-dark);
+    border: 1px solid var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalSlideIn 0.3s ease-out;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-50px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Loading and skeleton styles */
+  .skeleton {
+    background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.04),
+      transparent
+    );
+    animation: skeleton-loading 1.5s infinite;
+  }
+
+  @keyframes skeleton-loading {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Typing indicator */
+  .typing-dots {
+    @apply flex gap-1;
+  }
+
+  .typing-dot {
+    width: 4px;
+    height: 4px;
+    background-color: var(--color-light-muted);
+    border-radius: 50%;
+    animation: typing-bounce 1.4s infinite ease-in-out;
+  }
+
+  .typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes typing-bounce {
+    0%, 60%, 100% {
+      opacity: 0.3;
+      transform: translateY(0);
+    }
+    30% {
+      opacity: 1;
+      transform: translateY(-4px);
+    }
+  }
+
+  /* Progress bar styles */
+  .progress-bar {
+    background: linear-gradient(90deg,
+      var(--color-blue-primary) 0%,
+      var(--color-purple-primary) 100%
+    );
+    height: 4px;
+    border-radius: 2px;
+    transition: all var(--transition-normal);
+  }
+
+  /* Status indicators */
+  .status-badge {
+    @apply inline-flex items-center gap-2 px-3 py-1;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .status-badge--success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--color-success);
+  }
+
+  .status-badge--error {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--color-error);
+  }
+
+  .status-badge--warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--color-warning);
+  }
+
+  .status-badge--info {
+    background-color: rgba(96, 165, 250, 0.1);
+    color: var(--color-blue-primary);
+  }
+}
+
+/* Utility classes */
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-blue-primary) 0%, var(--color-purple-primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+  }
+
+  .shadow-glow-purple {
+    box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-elevated);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-light-subtle);
+}

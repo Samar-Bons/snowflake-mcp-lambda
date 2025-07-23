@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class FileManager:
     """Manages uploaded files and metadata with session-based storage"""
 
-    def __init__(self, redis_client: redis.Redis[str] | None = None):
+    def __init__(self, redis_client: redis.Redis | None = None):
         self.redis_client = redis_client or self._get_redis_client()
         self.base_dir = Path(tempfile.gettempdir()) / "data_chat_files"
         self.base_dir.mkdir(exist_ok=True)
@@ -25,7 +25,7 @@ class FileManager:
         self.file_expiry_hours = 24  # Files expire after 24 hours
         self.metadata_key_prefix = "file_metadata:"
 
-    def _get_redis_client(self) -> redis.Redis[str] | None:
+    def _get_redis_client(self) -> redis.Redis | None:
         """Get Redis client for metadata storage"""
         try:
             # Use default Redis connection (same as sessions)
