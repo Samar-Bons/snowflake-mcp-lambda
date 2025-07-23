@@ -1,0 +1,1669 @@
+<!-- ABOUTME: Style guide showcase page with all components and design tokens -->
+<!-- ABOUTME: Complete design system documentation with interactive examples -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Guide - Professional Dark Theme</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <main class="main">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero__content">
+                <h1 class="hero__title">Crafting Beautiful Digital Experiences</h1>
+                <p class="hero__subtitle">A comprehensive design system built with precision, purpose, and passion for creating exceptional user interfaces.</p>
+                <div class="hero__buttons">
+                    <button class="btn btn--primary btn--large">
+                        <i data-lucide="arrow-right" class="btn__icon"></i>
+                        Explore Components
+                    </button>
+                    <button class="btn btn--secondary btn--large">
+                        <i data-lucide="github" class="btn__icon"></i>
+                        View Source
+                    </button>
+                </div>
+            </div>
+            <div class="hero__decorations">
+                <div class="hero__decoration hero__decoration--1"></div>
+                <div class="hero__decoration hero__decoration--2"></div>
+                <div class="hero__decoration hero__decoration--3"></div>
+            </div>
+            <!-- Add theme toggle to hero -->
+            <button class="theme-toggle theme-toggle--hero" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i data-lucide="sun" class="theme-toggle__icon theme-toggle__icon--light"></i>
+                <i data-lucide="moon" class="theme-toggle__icon theme-toggle__icon--dark"></i>
+            </button>
+        </section>
+
+        <div class="container">
+            <!-- Color Palette Section -->
+            <section class="section">
+                <h2 class="section__title">Color Palette</h2>
+
+                <p class="section-intro">Our color system uses Tailwind's 400/600 scale for accent colors. Blue 400 (#60a5fa) and Purple 400 (#a78bfa) provide excellent contrast on dark backgrounds, while their 600 variants (#2563eb, #9333ea) are used for hover states and emphasis.</p>
+
+                <div class="color-grid">
+                    <div class="color-card">
+                        <div class="color-swatch color-swatch--primary-dark"></div>
+                        <div class="color-info">
+                            <h3>Primary Dark</h3>
+                            <p>Background</p>
+                        </div>
+                    </div>
+                    <div class="color-card">
+                        <div class="color-swatch color-swatch--secondary-dark"></div>
+                        <div class="color-info">
+                            <h3>Secondary Dark</h3>
+                            <p>Surface</p>
+                        </div>
+                    </div>
+                    <div class="color-card">
+                        <div class="color-swatch color-swatch--blue-accent"></div>
+                        <div class="color-info">
+                            <h3>Blue 400</h3>
+                            <p>Primary Actions (#60a5fa)</p>
+                        </div>
+                    </div>
+                    <div class="color-card">
+                        <div class="color-swatch color-swatch--purple-accent"></div>
+                        <div class="color-info">
+                            <h3>Purple 400</h3>
+                            <p>Secondary Actions (#a78bfa)</p>
+                        </div>
+                    </div>
+                    <div class="color-card">
+                        <div class="color-swatch color-swatch--light-accent"></div>
+                        <div class="color-info">
+                            <h3>Light Accent</h3>
+                            <p>Text & Highlights</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Typography Section -->
+            <section class="section">
+                <h2 class="section__title">Typography</h2>
+                <div class="typography-showcase">
+                    <h1 class="heading-1">Heading 1 - 48px</h1>
+                    <h2 class="heading-2">Heading 2 - 36px</h2>
+                    <h3 class="heading-3">Heading 3 - 28px</h3>
+                    <h4 class="heading-4">Heading 4 - 24px</h4>
+                    <h5 class="heading-5">Heading 5 - 20px</h5>
+                    <h6 class="heading-6">Heading 6 - 18px</h6>
+                    <p class="body-large">Large body text - 18px. This is used for important content that needs more emphasis.</p>
+                    <p class="body-regular">Regular body text - 16px. This is the standard text size for most content on the website.</p>
+                    <p class="body-small">Small body text - 14px. Used for less important content, captions, and secondary information.</p>
+                    <p class="body-caption">Caption text - 12px. Used for image captions, footnotes, and minimal text elements.</p>
+                </div>
+            </section>
+
+            <!-- Spacing Section -->
+            <section class="section">
+                <h2 class="section__title">Spacing System</h2>
+
+                <p class="section-intro">Our spacing system uses a 4px grid to ensure consistent and harmonious layouts. All spacing values are multiples of 4px, creating visual rhythm and making it easier to align elements.</p>
+
+                <h3 class="subsection__title">Spacing Scale</h3>
+                <div class="spacing-grid">
+                    <div class="spacing-example">
+                        <div class="spacing-example-label">--space-1 (4px)</div>
+                        <div class="spacing-visual" style="width: 4px; height: 4px;"></div>
+                    </div>
+                    <div class="spacing-example">
+                        <div class="spacing-example-label">--space-2 (8px)</div>
+                        <div class="spacing-visual" style="width: 8px; height: 8px;"></div>
+                    </div>
+                    <div class="spacing-example">
+                        <div class="spacing-example-label">--space-3 (12px)</div>
+                        <div class="spacing-visual" style="width: 12px; height: 12px;"></div>
+                    </div>
+                    <div class="spacing-example">
+                        <div class="spacing-example-label">--space-4 (16px)</div>
+                        <div class="spacing-visual" style="width: 16px; height: 16px;"></div>
+                    </div>
+                    <div class="spacing-example">
+                        <div class="spacing-example-label">--space-6 (24px)</div>
+                        <div class="spacing-visual" style="width: 24px; height: 24px;"></div>
+                    </div>
+                    <div class="spacing-example">
+                        <div class="spacing-example-label">--space-8 (32px)</div>
+                        <div class="spacing-visual" style="width: 32px; height: 32px;"></div>
+                    </div>
+                    <div class="spacing-example">
+                        <div class="spacing-example-label">--space-12 (48px)</div>
+                        <div class="spacing-visual" style="width: 48px; height: 48px;"></div>
+                    </div>
+                    <div class="spacing-example">
+                        <div class="spacing-example-label">--space-16 (64px)</div>
+                        <div class="spacing-visual" style="width: 64px; height: 64px;"></div>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Practical Examples</h3>
+                <div class="spacing-demo-container">
+                    <div class="spacing-demo-box" style="margin-bottom: var(--space-2);">
+                        Margin Bottom: --space-2 (8px)
+                    </div>
+                    <div class="spacing-demo-box" style="padding: var(--space-4);">
+                        Padding: --space-4 (16px)
+                    </div>
+                </div>
+
+                <div class="spacing-demo-container">
+                    <div class="spacing-demo-box" style="margin-bottom: var(--space-6);">
+                        Margin Bottom: --space-6 (24px)
+                    </div>
+                    <div class="spacing-demo-box" style="padding: var(--space-8);">
+                        Padding: --space-8 (32px)
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Use the spacing system to create consistent layouts and maintain visual hierarchy. Smaller spacing values work well for tight groupings, while larger values help separate distinct sections.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Use consistent spacing tokens throughout your design</li>
+                            <li>Apply larger spacing between unrelated elements</li>
+                            <li>Use smaller spacing for closely related content</li>
+                            <li>Stick to the predefined spacing scale</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Use arbitrary spacing values outside the scale</li>
+                            <li>Apply the same spacing everywhere</li>
+                            <li>Ignore the visual hierarchy created by spacing</li>
+                            <li>Use extremely large spacing for small components</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>/* Using spacing variables */
+.element {
+  margin: var(--space-4);           /* 16px */
+  padding: var(--space-6);          /* 24px */
+  margin-bottom: var(--space-8);    /* 32px */
+}
+
+/* Available spacing tokens */
+--space-0: 0;        /* 0px */
+--space-1: 0.25rem;  /* 4px */
+--space-2: 0.5rem;   /* 8px */
+--space-3: 0.75rem;  /* 12px */
+--space-4: 1rem;     /* 16px */
+--space-5: 1.25rem;  /* 20px */
+--space-6: 1.5rem;   /* 24px */
+--space-8: 2rem;     /* 32px */
+--space-12: 3rem;    /* 48px */
+--space-16: 4rem;    /* 64px */</code></pre>
+            </section>
+
+            <!-- Shadows Section -->
+            <section class="section">
+                <h2 class="section__title">Shadows & Elevation</h2>
+
+                <p class="section-intro">Our shadow system creates visual hierarchy and depth using layered shadows. Different shadow levels indicate elevation and importance, helping users understand interface structure.</p>
+
+                <h3 class="subsection__title">Shadow Scale</h3>
+                <div class="shadow-grid">
+                    <div class="shadow-example">
+                        <div class="shadow-example-label">shadow-none</div>
+                        <div class="shadow-demo shadow-none">No Shadow</div>
+                    </div>
+                    <div class="shadow-example">
+                        <div class="shadow-example-label">shadow-xs</div>
+                        <div class="shadow-demo shadow-xs">Extra Small</div>
+                    </div>
+                    <div class="shadow-example">
+                        <div class="shadow-example-label">shadow-sm</div>
+                        <div class="shadow-demo shadow-sm">Small</div>
+                    </div>
+                    <div class="shadow-example">
+                        <div class="shadow-example-label">shadow-md</div>
+                        <div class="shadow-demo shadow-md">Medium</div>
+                    </div>
+                    <div class="shadow-example">
+                        <div class="shadow-example-label">shadow-lg</div>
+                        <div class="shadow-demo shadow-lg">Large</div>
+                    </div>
+                    <div class="shadow-example">
+                        <div class="shadow-example-label">shadow-xl</div>
+                        <div class="shadow-demo shadow-xl">Extra Large</div>
+                    </div>
+                    <div class="shadow-example">
+                        <div class="shadow-example-label">shadow-2xl</div>
+                        <div class="shadow-demo shadow-2xl">2X Large</div>
+                    </div>
+                    <div class="shadow-example">
+                        <div class="shadow-example-label">shadow-inner</div>
+                        <div class="shadow-demo shadow-inner">Inner Shadow</div>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Practical Examples</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-8);">
+                    <div class="card shadow-sm">
+                        <h4 style="margin: 0 0 var(--space-2) 0; color: var(--color-light-primary);">Card with Small Shadow</h4>
+                        <p style="margin: 0; font-size: var(--font-size-small); color: var(--color-light-muted);">Perfect for subtle elevation</p>
+                    </div>
+                    <div class="card shadow-md">
+                        <h4 style="margin: 0 0 var(--space-2) 0; color: var(--color-light-primary);">Card with Medium Shadow</h4>
+                        <p style="margin: 0; font-size: var(--font-size-small); color: var(--color-light-muted);">Good for standard components</p>
+                    </div>
+                    <div class="card shadow-lg">
+                        <h4 style="margin: 0 0 var(--space-2) 0; color: var(--color-light-primary);">Card with Large Shadow</h4>
+                        <p style="margin: 0; font-size: var(--font-size-small); color: var(--color-light-muted);">Great for modals and overlays</p>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Interactive Shadow Demo</h3>
+                <div style="display: flex; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-8);">
+                    <button class="btn btn--primary shadow-sm" onmouseover="this.className='btn btn--primary shadow-lg'" onmouseout="this.className='btn btn--primary shadow-sm'">
+                        Hover for Shadow Change
+                    </button>
+                    <div class="card shadow-xs" style="padding: var(--space-4); cursor: pointer; transition: all var(--transition-normal);" onmouseover="this.className='card shadow-xl'; this.style.transform='translateY(-4px)'" onmouseout="this.className='card shadow-xs'; this.style.transform='translateY(0)'">
+                        <span style="color: var(--color-light-primary); font-weight: var(--font-weight-medium);">Hover me!</span>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Use shadows strategically to create visual hierarchy. Subtle shadows work for most components, while stronger shadows should be reserved for modals, dropdowns, and floating elements.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Use consistent shadow levels throughout your interface</li>
+                            <li>Apply stronger shadows to elements that float above others</li>
+                            <li>Use subtle shadows for cards and panels</li>
+                            <li>Consider shadow intensity based on element importance</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Use heavy shadows on every element</li>
+                            <li>Mix different shadow directions inconsistently</li>
+                            <li>Apply shadows to text elements</li>
+                            <li>Overuse inner shadows</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>&lt;!-- Shadow Utility Classes --&gt;
+&lt;div class="card shadow-sm"&gt;Small shadow&lt;/div&gt;
+&lt;div class="card shadow-md"&gt;Medium shadow&lt;/div&gt;
+&lt;div class="card shadow-lg"&gt;Large shadow&lt;/div&gt;
+&lt;div class="card shadow-xl"&gt;Extra large shadow&lt;/div&gt;
+
+&lt;!-- CSS Variables --&gt;
+.custom-element {
+  box-shadow: var(--shadow-md);
+}
+
+&lt;!-- Available Shadow Variables --&gt;
+--shadow-none: none;
+--shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+--shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+--shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+--shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3);</code></pre>
+            </section>
+
+            <!-- Icons Section -->
+            <section class="section">
+                <h2 class="section__title">Icons</h2>
+
+                <p class="section-intro">Our icon system uses Lucide icons, an open-source SVG icon library with consistent design and excellent accessibility features. Icons inherit the color of their parent text and can be easily resized.</p>
+
+                <h3 class="subsection__title">Icon Sizes</h3>
+                <div class="icon-sizes-demo">
+                    <div class="icon-size-example">
+                        <i data-lucide="user" class="icon icon--xs"></i>
+                        <span class="icon-size-label">--icon-xs</span>
+                    </div>
+                    <div class="icon-size-example">
+                        <i data-lucide="user" class="icon icon--sm"></i>
+                        <span class="icon-size-label">--icon-sm</span>
+                    </div>
+                    <div class="icon-size-example">
+                        <i data-lucide="user" class="icon icon--md"></i>
+                        <span class="icon-size-label">--icon-md</span>
+                    </div>
+                    <div class="icon-size-example">
+                        <i data-lucide="user" class="icon icon--lg"></i>
+                        <span class="icon-size-label">--icon-lg</span>
+                    </div>
+                    <div class="icon-size-example">
+                        <i data-lucide="user" class="icon icon--xl"></i>
+                        <span class="icon-size-label">--icon-xl</span>
+                    </div>
+                    <div class="icon-size-example">
+                        <i data-lucide="user" class="icon icon--2xl"></i>
+                        <span class="icon-size-label">--icon-2xl</span>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Common Icons</h3>
+                <div class="icon-grid">
+                    <div class="icon-example">
+                        <i data-lucide="user" class="icon icon--lg"></i>
+                        <div class="icon-name">User</div>
+                        <div class="icon-code">data-lucide="user"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="settings" class="icon icon--lg"></i>
+                        <div class="icon-name">Settings</div>
+                        <div class="icon-code">data-lucide="settings"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="search" class="icon icon--lg"></i>
+                        <div class="icon-name">Search</div>
+                        <div class="icon-code">data-lucide="search"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="x" class="icon icon--lg"></i>
+                        <div class="icon-name">Close</div>
+                        <div class="icon-code">data-lucide="x"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="menu" class="icon icon--lg"></i>
+                        <div class="icon-name">Menu</div>
+                        <div class="icon-code">data-lucide="menu"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="home" class="icon icon--lg"></i>
+                        <div class="icon-name">Home</div>
+                        <div class="icon-code">data-lucide="home"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="mail" class="icon icon--lg"></i>
+                        <div class="icon-name">Mail</div>
+                        <div class="icon-code">data-lucide="mail"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="bell" class="icon icon--lg"></i>
+                        <div class="icon-name">Notification</div>
+                        <div class="icon-code">data-lucide="bell"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="heart" class="icon icon--lg"></i>
+                        <div class="icon-name">Heart</div>
+                        <div class="icon-code">data-lucide="heart"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="download" class="icon icon--lg"></i>
+                        <div class="icon-name">Download</div>
+                        <div class="icon-code">data-lucide="download"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="upload" class="icon icon--lg"></i>
+                        <div class="icon-name">Upload</div>
+                        <div class="icon-code">data-lucide="upload"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="edit" class="icon icon--lg"></i>
+                        <div class="icon-name">Edit</div>
+                        <div class="icon-code">data-lucide="edit"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="trash-2" class="icon icon--lg"></i>
+                        <div class="icon-name">Delete</div>
+                        <div class="icon-code">data-lucide="trash-2"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="plus" class="icon icon--lg"></i>
+                        <div class="icon-name">Add</div>
+                        <div class="icon-code">data-lucide="plus"</div>
+                    </div>
+                    <div class="icon-example">
+                        <i data-lucide="check" class="icon icon--lg"></i>
+                        <div class="icon-name">Check</div>
+                        <div class="icon-code">data-lucide="check"</div>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Color Inheritance</h3>
+                <div class="component-grid">
+                    <button class="btn btn--primary">
+                        <i data-lucide="download" class="icon icon--sm" style="margin-right: var(--space-2);"></i>
+                        Download
+                    </button>
+                    <button class="btn btn--secondary">
+                        <i data-lucide="settings" class="icon icon--sm" style="margin-right: var(--space-2);"></i>
+                        Settings
+                    </button>
+                    <div style="color: var(--color-success);">
+                        <i data-lucide="check" class="icon icon--md" style="margin-right: var(--space-2);"></i>
+                        Success message with inherited green color
+                    </div>
+                    <div style="color: var(--color-error);">
+                        <i data-lucide="x" class="icon icon--md" style="margin-right: var(--space-2);"></i>
+                        Error message with inherited red color
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Icons should enhance usability and provide visual context. Use them consistently and ensure they have appropriate sizing and contrast for accessibility.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Use icons to support and clarify actions</li>
+                            <li>Keep icon usage consistent throughout the interface</li>
+                            <li>Ensure icons are large enough to be easily recognizable</li>
+                            <li>Use aria-labels for standalone icons</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Use icons as the sole means of communication</li>
+                            <li>Mix different icon styles within the same interface</li>
+                            <li>Use overly complex or unclear icons</li>
+                            <li>Make icons too small to be accessible</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>&lt;!-- Basic Icon --&gt;
+&lt;i data-lucide="user" class="icon"&gt;&lt;/i&gt;
+
+&lt;!-- Sized Icons --&gt;
+&lt;i data-lucide="search" class="icon icon--sm"&gt;&lt;/i&gt;
+&lt;i data-lucide="search" class="icon icon--md"&gt;&lt;/i&gt;
+&lt;i data-lucide="search" class="icon icon--lg"&gt;&lt;/i&gt;
+
+&lt;!-- Icon with Button --&gt;
+&lt;button class="btn btn--primary"&gt;
+    &lt;i data-lucide="download" class="icon icon--sm"&gt;&lt;/i&gt;
+    Download
+&lt;/button&gt;
+
+&lt;!-- Icon with Accessible Label --&gt;
+&lt;i data-lucide="settings" class="icon" aria-label="Settings"&gt;&lt;/i&gt;
+
+&lt;!-- CSS Icon Sizes --&gt;
+.icon--xs  { width: 12px; height: 12px; }
+.icon--sm  { width: 16px; height: 16px; }
+.icon--md  { width: 20px; height: 20px; }
+.icon--lg  { width: 24px; height: 24px; }
+.icon--xl  { width: 32px; height: 32px; }</code></pre>
+            </section>
+
+            <!-- Button Components -->
+            <section class="section">
+                <h2 class="section__title">Buttons</h2>
+                <div class="component-grid">
+                    <button class="btn btn--primary">Primary Button</button>
+                    <button class="btn btn--secondary">Secondary Button</button>
+                    <button class="btn btn--outline">Outline Button</button>
+                    <button class="btn btn--ghost">Ghost Button</button>
+                    <button class="btn btn--primary" disabled>Disabled Button</button>
+                </div>
+                <div class="component-grid">
+                    <button class="btn btn--primary btn--small">Small Primary</button>
+                    <button class="btn btn--secondary btn--small">Small Secondary</button>
+                    <button class="btn btn--primary btn--large">Large Primary</button>
+                </div>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Buttons are interactive elements that trigger actions when clicked. Use them to guide users through key workflows and enable important interactions throughout your interface.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Use primary buttons for the main call to action</li>
+                            <li>Use consistent button sizes within the same context</li>
+                            <li>Provide clear, action-oriented labels</li>
+                            <li>Use disabled state when actions are temporarily unavailable</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Use multiple primary buttons in the same view</li>
+                            <li>Use buttons for navigation (use links instead)</li>
+                            <li>Make button labels too long or vague</li>
+                            <li>Use different button styles inconsistently</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>&lt;!-- Primary Button --&gt;
+&lt;button class="btn btn--primary"&gt;Primary Action&lt;/button&gt;
+
+&lt;!-- Secondary Button --&gt;
+&lt;button class="btn btn--secondary"&gt;Secondary Action&lt;/button&gt;
+
+&lt;!-- Outline Button --&gt;
+&lt;button class="btn btn--outline"&gt;Outline Action&lt;/button&gt;
+
+&lt;!-- Ghost Button --&gt;
+&lt;button class="btn btn--ghost"&gt;Ghost Action&lt;/button&gt;
+
+&lt;!-- Small Button --&gt;
+&lt;button class="btn btn--primary btn--small"&gt;Small Action&lt;/button&gt;
+
+&lt;!-- Large Button --&gt;
+&lt;button class="btn btn--primary btn--large"&gt;Large Action&lt;/button&gt;
+
+&lt;!-- Disabled Button --&gt;
+&lt;button class="btn btn--primary" disabled&gt;Disabled Action&lt;/button&gt;</code></pre>
+            </section>
+
+            <!-- Card Components -->
+            <section class="section">
+                <h2 class="section__title">Cards</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <h3 class="card__title">Basic Card</h3>
+                        <p class="card__content">This is a basic card with some content. It uses the dark theme and maintains good contrast.</p>
+                        <div class="card__actions">
+                            <button class="btn btn--primary btn--small">Action</button>
+                        </div>
+                    </div>
+                    <div class="card card--elevated">
+                        <h3 class="card__title">Elevated Card</h3>
+                        <p class="card__content">This is an elevated card with enhanced shadow and visual depth.</p>
+                        <div class="card__actions">
+                            <button class="btn btn--secondary btn--small">Learn More</button>
+                            <button class="btn btn--ghost btn--small">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="card card--interactive">
+                        <h3 class="card__title">Interactive Card</h3>
+                        <p class="card__content">This card has hover states and can be clicked or interacted with.</p>
+                        <div class="card__actions">
+                            <button class="btn btn--outline btn--small">Interact</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Cards are flexible containers that group related information and actions. They provide a clean way to organize content while maintaining visual hierarchy and scannability.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Use cards to group related content logically</li>
+                            <li>Keep card content concise and scannable</li>
+                            <li>Use elevated cards to highlight important content</li>
+                            <li>Place primary actions in the card footer</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Overcrowd cards with too much information</li>
+                            <li>Use cards for single pieces of information</li>
+                            <li>Mix different card styles inconsistently</li>
+                            <li>Make interactive cards without clear hover states</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>&lt;!-- Basic Card --&gt;
+&lt;div class="card"&gt;
+    &lt;h3 class="card__title"&gt;Card Title&lt;/h3&gt;
+    &lt;p class="card__content"&gt;Card content goes here. Keep it concise and relevant.&lt;/p&gt;
+    &lt;div class="card__actions"&gt;
+        &lt;button class="btn btn--primary btn--small"&gt;Action&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Elevated Card --&gt;
+&lt;div class="card card--elevated"&gt;
+    &lt;h3 class="card__title"&gt;Elevated Card&lt;/h3&gt;
+    &lt;p class="card__content"&gt;This card has enhanced shadow for emphasis.&lt;/p&gt;
+    &lt;div class="card__actions"&gt;
+        &lt;button class="btn btn--secondary btn--small"&gt;Primary&lt;/button&gt;
+        &lt;button class="btn btn--ghost btn--small"&gt;Secondary&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Interactive Card --&gt;
+&lt;div class="card card--interactive"&gt;
+    &lt;h3 class="card__title"&gt;Interactive Card&lt;/h3&gt;
+    &lt;p class="card__content"&gt;This card responds to hover and click interactions.&lt;/p&gt;
+    &lt;div class="card__actions"&gt;
+        &lt;button class="btn btn--outline btn--small"&gt;Interact&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+            </section>
+
+            <!-- Form Elements -->
+            <section class="section">
+                <h2 class="section__title">Form Elements</h2>
+                <form class="form-demo">
+                    <div class="form-group">
+                        <label class="form-label" for="text-input">Text Input</label>
+                        <input type="text" id="text-input" class="form-input" placeholder="Enter some text">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email-input">Email Input</label>
+                        <input type="email" id="email-input" class="form-input" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="select-input">Select Input</label>
+                        <select id="select-input" class="form-select">
+                            <option value="">Choose an option</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="textarea-input">Textarea</label>
+                        <textarea id="textarea-input" class="form-textarea" rows="4" placeholder="Enter your message here"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="checkbox1" class="form-checkbox">
+                            <label for="checkbox1" class="checkbox-label">I agree to the terms and conditions</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="checkbox2" class="form-checkbox">
+                            <label for="checkbox2" class="checkbox-label">Subscribe to newsletter</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Preferred Contact Method</label>
+                        <div class="radio-group">
+                            <input type="radio" id="contact-email" name="contact-method" value="email" class="form-radio" checked>
+                            <label for="contact-email" class="radio-label">Email</label>
+                        </div>
+                        <div class="radio-group">
+                            <input type="radio" id="contact-phone" name="contact-method" value="phone" class="form-radio">
+                            <label for="contact-phone" class="radio-label">Phone</label>
+                        </div>
+                        <div class="radio-group">
+                            <input type="radio" id="contact-sms" name="contact-method" value="sms" class="form-radio">
+                            <label for="contact-sms" class="radio-label">SMS</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Account Type</label>
+                        <div style="display: flex; gap: var(--space-6); flex-wrap: wrap;">
+                            <div class="radio-group radio-group--inline">
+                                <input type="radio" id="account-personal" name="account-type" value="personal" class="form-radio" checked>
+                                <label for="account-personal" class="radio-label">Personal</label>
+                            </div>
+                            <div class="radio-group radio-group--inline">
+                                <input type="radio" id="account-business" name="account-type" value="business" class="form-radio">
+                                <label for="account-business" class="radio-label">Business</label>
+                            </div>
+                            <div class="radio-group radio-group--inline">
+                                <input type="radio" id="account-enterprise" name="account-type" value="enterprise" class="form-radio">
+                                <label for="account-enterprise" class="radio-label">Enterprise</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn--primary">Submit Form</button>
+                        <button type="reset" class="btn btn--ghost">Reset</button>
+                    </div>
+                </form>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Form elements collect user input and should be designed for clarity, accessibility, and ease of use. Proper labeling and validation help users complete forms successfully.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Use clear, descriptive labels for all form fields</li>
+                            <li>Provide helpful placeholder text as examples</li>
+                            <li>Group related fields logically</li>
+                            <li>Show validation feedback clearly</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Use placeholder text as a replacement for labels</li>
+                            <li>Make forms unnecessarily long or complex</li>
+                            <li>Use vague error messages</li>
+                            <li>Hide required field indicators</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>&lt;!-- Text Input --&gt;
+&lt;div class="form-group"&gt;
+    &lt;label class="form-label" for="input-id"&gt;Label Text&lt;/label&gt;
+    &lt;input type="text" id="input-id" class="form-input" placeholder="Placeholder text"&gt;
+&lt;/div&gt;
+
+&lt;!-- Email Input --&gt;
+&lt;div class="form-group"&gt;
+    &lt;label class="form-label" for="email-id"&gt;Email Address&lt;/label&gt;
+    &lt;input type="email" id="email-id" class="form-input" placeholder="your@email.com"&gt;
+&lt;/div&gt;
+
+&lt;!-- Select Input --&gt;
+&lt;div class="form-group"&gt;
+    &lt;label class="form-label" for="select-id"&gt;Choose Option&lt;/label&gt;
+    &lt;select id="select-id" class="form-select"&gt;
+        &lt;option value=""&gt;Select an option&lt;/option&gt;
+        &lt;option value="1"&gt;Option 1&lt;/option&gt;
+        &lt;option value="2"&gt;Option 2&lt;/option&gt;
+    &lt;/select&gt;
+&lt;/div&gt;
+
+&lt;!-- Textarea --&gt;
+&lt;div class="form-group"&gt;
+    &lt;label class="form-label" for="textarea-id"&gt;Message&lt;/label&gt;
+    &lt;textarea id="textarea-id" class="form-textarea" rows="4" placeholder="Enter your message"&gt;&lt;/textarea&gt;
+&lt;/div&gt;
+
+&lt;!-- Checkbox --&gt;
+&lt;div class="checkbox-group"&gt;
+    &lt;input type="checkbox" id="checkbox-id" class="form-checkbox"&gt;
+    &lt;label for="checkbox-id" class="checkbox-label"&gt;Checkbox label&lt;/label&gt;
+&lt;/div&gt;
+
+&lt;!-- Radio Buttons --&gt;
+&lt;div class="radio-group"&gt;
+    &lt;input type="radio" id="radio-id" name="radio-group" class="form-radio" checked&gt;
+    &lt;label for="radio-id" class="radio-label"&gt;Radio option&lt;/label&gt;
+&lt;/div&gt;
+
+&lt;!-- Inline Radio Buttons --&gt;
+&lt;div class="radio-group radio-group--inline"&gt;
+    &lt;input type="radio" id="inline-radio" name="inline-group" class="form-radio"&gt;
+    &lt;label for="inline-radio" class="radio-label"&gt;Inline option&lt;/label&gt;
+&lt;/div&gt;</code></pre>
+            </section>
+
+            <!-- Navigation Components -->
+            <section class="section">
+                <h2 class="section__title">Navigation</h2>
+                <nav class="nav-demo">
+                    <a href="#" class="nav-link nav-link--active">Home</a>
+                    <a href="#" class="nav-link">About</a>
+                    <a href="#" class="nav-link">Services</a>
+                    <a href="#" class="nav-link">Portfolio</a>
+                    <a href="#" class="nav-link">Contact</a>
+                </nav>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Navigation helps users understand where they are and move through your application. Clear, consistent navigation patterns improve user experience and discoverability.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Keep navigation labels short and descriptive</li>
+                            <li>Clearly indicate the current page or section</li>
+                            <li>Use consistent navigation patterns throughout</li>
+                            <li>Order items logically by importance or workflow</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Use overly technical or unclear navigation labels</li>
+                            <li>Include too many top-level navigation items</li>
+                            <li>Change navigation structure frequently</li>
+                            <li>Hide important navigation behind multiple clicks</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>&lt;!-- Basic Navigation --&gt;
+&lt;nav class="nav-demo"&gt;
+    &lt;a href="#" class="nav-link nav-link--active"&gt;Home&lt;/a&gt;
+    &lt;a href="#" class="nav-link"&gt;About&lt;/a&gt;
+    &lt;a href="#" class="nav-link"&gt;Services&lt;/a&gt;
+    &lt;a href="#" class="nav-link"&gt;Contact&lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;!-- Single Navigation Link --&gt;
+&lt;a href="#" class="nav-link"&gt;Link Text&lt;/a&gt;
+
+&lt;!-- Active Navigation Link --&gt;
+&lt;a href="#" class="nav-link nav-link--active"&gt;Current Page&lt;/a&gt;</code></pre>
+            </section>
+
+            <!-- Modal Components -->
+            <section class="section">
+                <h2 class="section__title">Modals</h2>
+                <div class="component-grid">
+                    <button class="btn btn--primary" onclick="openModal('modal-basic')">Open Basic Modal</button>
+                    <button class="btn btn--secondary" onclick="openModal('modal-form')">Open Form Modal</button>
+                    <button class="btn btn--outline" onclick="openModal('modal-confirmation')">Open Confirmation Modal</button>
+                </div>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Modals are overlay windows that focus user attention on specific content or tasks. They should be used sparingly for critical interactions that require user focus or confirmation.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Use modals for critical actions that need confirmation</li>
+                            <li>Provide clear ways to close the modal (X button, overlay click, escape key)</li>
+                            <li>Keep modal content focused and concise</li>
+                            <li>Use modals for forms that require user focus</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Use modals for non-essential information</li>
+                            <li>Chain multiple modals together</li>
+                            <li>Make modals too large or complex</li>
+                            <li>Open modals automatically without user action</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>&lt;!-- Modal Trigger Button --&gt;
+&lt;button class="btn btn--primary" onclick="openModal('modal-id')"&gt;Open Modal&lt;/button&gt;
+
+&lt;!-- Modal Structure --&gt;
+&lt;div id="modal-id" class="modal"&gt;
+    &lt;div class="modal__overlay" onclick="closeModal('modal-id')"&gt;&lt;/div&gt;
+    &lt;div class="modal__content"&gt;
+        &lt;div class="modal__header"&gt;
+            &lt;h3 class="modal__title"&gt;Modal Title&lt;/h3&gt;
+            &lt;button class="modal__close" onclick="closeModal('modal-id')"&gt;&amp;times;&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class="modal__body"&gt;
+            &lt;p&gt;Modal content goes here.&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div class="modal__footer"&gt;
+            &lt;button class="btn btn--primary"&gt;Confirm&lt;/button&gt;
+            &lt;button class="btn btn--ghost" onclick="closeModal('modal-id')"&gt;Cancel&lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Small Modal --&gt;
+&lt;div class="modal__content modal__content--small"&gt;
+    &lt;!-- content --&gt;
+&lt;/div&gt;</code></pre>
+            </section>
+
+            <!-- Tooltip Components -->
+            <section class="section">
+                <h2 class="section__title">Tooltips</h2>
+                <div class="component-grid">
+                    <button class="btn btn--primary tooltip" data-tooltip="This is a basic tooltip">Hover for Tooltip</button>
+                    <button class="btn btn--secondary tooltip tooltip--top" data-tooltip="Tooltip positioned at top">Top Tooltip</button>
+                    <button class="btn btn--outline tooltip tooltip--right" data-tooltip="Tooltip positioned at right">Right Tooltip</button>
+                    <button class="btn btn--ghost tooltip tooltip--left" data-tooltip="Tooltip positioned at left">Left Tooltip</button>
+                </div>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Tooltips provide additional context or help text when users hover over elements. They should contain brief, helpful information that clarifies functionality without cluttering the interface.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Keep tooltip text short and informative</li>
+                            <li>Use tooltips to explain icons or abbreviated text</li>
+                            <li>Position tooltips to avoid covering important content</li>
+                            <li>Provide keyboard accessibility for tooltips</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Use tooltips for essential information</li>
+                            <li>Include complex content or multiple lines in tooltips</li>
+                            <li>Use tooltips on mobile where hover doesn't exist</li>
+                            <li>Cover the element being described</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>&lt;!-- Basic Tooltip (bottom) --&gt;
+&lt;button class="btn btn--primary tooltip" data-tooltip="Helpful information"&gt;
+    Hover me
+&lt;/button&gt;
+
+&lt;!-- Top Tooltip --&gt;
+&lt;button class="btn btn--secondary tooltip tooltip--top" data-tooltip="Top positioned tooltip"&gt;
+    Top Tooltip
+&lt;/button&gt;
+
+&lt;!-- Right Tooltip --&gt;
+&lt;button class="btn btn--outline tooltip tooltip--right" data-tooltip="Right positioned tooltip"&gt;
+    Right Tooltip
+&lt;/button&gt;
+
+&lt;!-- Left Tooltip --&gt;
+&lt;button class="btn btn--ghost tooltip tooltip--left" data-tooltip="Left positioned tooltip"&gt;
+    Left Tooltip
+&lt;/button&gt;
+
+&lt;!-- Tooltip on other elements --&gt;
+&lt;span class="tooltip" data-tooltip="Information about this text"&gt;
+    Text with tooltip
+&lt;/span&gt;</code></pre>
+            </section>
+
+            <!-- Notification Components -->
+            <section class="section">
+                <h2 class="section__title">Notifications & Alerts</h2>
+                <div class="component-grid">
+                    <button class="btn btn--primary" onclick="showNotification('success')">Show Success</button>
+                    <button class="btn btn--secondary" onclick="showNotification('error')">Show Error</button>
+                    <button class="btn btn--outline" onclick="showNotification('warning')">Show Warning</button>
+                    <button class="btn btn--ghost" onclick="showNotification('info')">Show Info</button>
+                </div>
+
+                <div class="notification-examples">
+                    <div class="notification notification--success">
+                        <div class="notification__icon">✓</div>
+                        <div class="notification__content">
+                            <h4 class="notification__title">Success!</h4>
+                            <p class="notification__message">Your action was completed successfully.</p>
+                        </div>
+                        <button class="notification__close">&times;</button>
+                    </div>
+
+                    <div class="notification notification--error">
+                        <div class="notification__icon">✕</div>
+                        <div class="notification__content">
+                            <h4 class="notification__title">Error</h4>
+                            <p class="notification__message">Something went wrong. Please try again.</p>
+                        </div>
+                        <button class="notification__close">&times;</button>
+                    </div>
+
+                    <div class="notification notification--warning">
+                        <div class="notification__icon">⚠</div>
+                        <div class="notification__content">
+                            <h4 class="notification__title">Warning</h4>
+                            <p class="notification__message">Please review your input before proceeding.</p>
+                        </div>
+                        <button class="notification__close">&times;</button>
+                    </div>
+
+                    <div class="notification notification--info">
+                        <div class="notification__icon">ⓘ</div>
+                        <div class="notification__content">
+                            <h4 class="notification__title">Information</h4>
+                            <p class="notification__message">Here's some helpful information for you.</p>
+                        </div>
+                        <button class="notification__close">&times;</button>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Notifications provide feedback about user actions or system status. They should be timely, relevant, and non-intrusive while clearly communicating the message type and any required actions.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Use appropriate notification types for different message severities</li>
+                            <li>Include clear, actionable messages</li>
+                            <li>Auto-dismiss non-critical notifications</li>
+                            <li>Position notifications where they won't block important content</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Overuse notifications for minor status updates</li>
+                            <li>Use error styling for non-error messages</li>
+                            <li>Make critical notifications auto-dismiss too quickly</li>
+                            <li>Stack too many notifications at once</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>&lt;!-- Success Notification --&gt;
+&lt;div class="notification notification--success"&gt;
+    &lt;div class="notification__icon"&gt;✓&lt;/div&gt;
+    &lt;div class="notification__content"&gt;
+        &lt;h4 class="notification__title"&gt;Success!&lt;/h4&gt;
+        &lt;p class="notification__message"&gt;Your action was completed successfully.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;button class="notification__close"&gt;&amp;times;&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- Error Notification --&gt;
+&lt;div class="notification notification--error"&gt;
+    &lt;div class="notification__icon"&gt;✕&lt;/div&gt;
+    &lt;div class="notification__content"&gt;
+        &lt;h4 class="notification__title"&gt;Error&lt;/h4&gt;
+        &lt;p class="notification__message"&gt;Something went wrong. Please try again.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;button class="notification__close"&gt;&amp;times;&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- Warning Notification --&gt;
+&lt;div class="notification notification--warning"&gt;
+    &lt;div class="notification__icon"&gt;⚠&lt;/div&gt;
+    &lt;div class="notification__content"&gt;
+        &lt;h4 class="notification__title"&gt;Warning&lt;/h4&gt;
+        &lt;p class="notification__message"&gt;Please review before proceeding.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;button class="notification__close"&gt;&amp;times;&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- Info Notification --&gt;
+&lt;div class="notification notification--info"&gt;
+    &lt;div class="notification__icon"&gt;ⓘ&lt;/div&gt;
+    &lt;div class="notification__content"&gt;
+        &lt;h4 class="notification__title"&gt;Information&lt;/h4&gt;
+        &lt;p class="notification__message"&gt;Here's some helpful information.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;button class="notification__close"&gt;&amp;times;&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- JavaScript functions --&gt;
+&lt;!-- showNotification('success') --&gt;
+&lt;!-- showNotification('error') --&gt;
+&lt;!-- showNotification('warning') --&gt;
+&lt;!-- showNotification('info') --&gt;</code></pre>
+            </section>
+
+            <!-- Table Components -->
+            <section class="section">
+                <h2 class="section__title">Tables</h2>
+
+                <p class="section-intro">Tables organize and display data in rows and columns, making it easy to scan, compare, and analyze information. Use them for structured data that benefits from tabular presentation.</p>
+
+                <h3 class="subsection__title">Basic Table</h3>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John Smith</td>
+                                <td>john.smith@example.com</td>
+                                <td>Admin</td>
+                                <td>
+                                    <span class="table__status table__status--active">
+                                        <i data-lucide="check" class="icon icon--xs"></i>
+                                        Active
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="table__actions">
+                                        <button class="table__action-btn" aria-label="Edit user">
+                                            <i data-lucide="edit" class="icon icon--sm"></i>
+                                        </button>
+                                        <button class="table__action-btn" aria-label="Delete user">
+                                            <i data-lucide="trash-2" class="icon icon--sm"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sarah Johnson</td>
+                                <td>sarah.johnson@example.com</td>
+                                <td>Editor</td>
+                                <td>
+                                    <span class="table__status table__status--pending">
+                                        <i data-lucide="clock" class="icon icon--xs"></i>
+                                        Pending
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="table__actions">
+                                        <button class="table__action-btn" aria-label="Edit user">
+                                            <i data-lucide="edit" class="icon icon--sm"></i>
+                                        </button>
+                                        <button class="table__action-btn" aria-label="Delete user">
+                                            <i data-lucide="trash-2" class="icon icon--sm"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Mike Wilson</td>
+                                <td>mike.wilson@example.com</td>
+                                <td>Viewer</td>
+                                <td>
+                                    <span class="table__status table__status--inactive">
+                                        <i data-lucide="x" class="icon icon--xs"></i>
+                                        Inactive
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="table__actions">
+                                        <button class="table__action-btn" aria-label="Edit user">
+                                            <i data-lucide="edit" class="icon icon--sm"></i>
+                                        </button>
+                                        <button class="table__action-btn" aria-label="Delete user">
+                                            <i data-lucide="trash-2" class="icon icon--sm"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="subsection__title">Table Variations</h3>
+
+                <!-- Striped Table -->
+                <h4 style="margin: var(--space-4) 0 var(--space-3) 0; color: var(--color-light-primary);">Striped Table</h4>
+                <div class="table-container">
+                    <table class="table table--striped">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Category</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Wireless Headphones</td>
+                                <td>$89.99</td>
+                                <td>24</td>
+                                <td>Electronics</td>
+                            </tr>
+                            <tr>
+                                <td>Smartphone Case</td>
+                                <td>$19.99</td>
+                                <td>156</td>
+                                <td>Accessories</td>
+                            </tr>
+                            <tr>
+                                <td>USB Cable</td>
+                                <td>$12.99</td>
+                                <td>89</td>
+                                <td>Accessories</td>
+                            </tr>
+                            <tr>
+                                <td>Laptop Stand</td>
+                                <td>$45.99</td>
+                                <td>12</td>
+                                <td>Office</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Compact Table -->
+                <h4 style="margin: var(--space-4) 0 var(--space-3) 0; color: var(--color-light-primary);">Compact Table</h4>
+                <div class="table-container">
+                    <table class="table table--compact table--hover">
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Date</th>
+                                <th>Attendees</th>
+                                <th>Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Design Workshop</td>
+                                <td>2024-02-15</td>
+                                <td>25</td>
+                                <td>Conference Room A</td>
+                            </tr>
+                            <tr>
+                                <td>Team Meeting</td>
+                                <td>2024-02-16</td>
+                                <td>12</td>
+                                <td>Video Call</td>
+                            </tr>
+                            <tr>
+                                <td>Product Demo</td>
+                                <td>2024-02-17</td>
+                                <td>45</td>
+                                <td>Main Hall</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Tables work best for comparing data across multiple attributes. Use them when users need to scan, sort, or analyze structured information efficiently.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Use clear, descriptive column headers</li>
+                            <li>Align numeric data to the right</li>
+                            <li>Use status indicators for quick scanning</li>
+                            <li>Provide sorting and filtering for large datasets</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Use tables for non-tabular content</li>
+                            <li>Make tables too wide for mobile screens</li>
+                            <li>Use complex nested structures</li>
+                            <li>Forget to include action buttons where needed</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>&lt;!-- Basic Table --&gt;
+&lt;div class="table-container"&gt;
+    &lt;table class="table"&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;Column Header&lt;/th&gt;
+                &lt;th&gt;Another Header&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            &lt;tr&gt;
+                &lt;td&gt;Cell Data&lt;/td&gt;
+                &lt;td&gt;More Data&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;/div&gt;
+
+&lt;!-- Table Variants --&gt;
+&lt;table class="table table--striped"&gt;&lt;/table&gt;
+&lt;table class="table table--hover"&gt;&lt;/table&gt;
+&lt;table class="table table--compact"&gt;&lt;/table&gt;
+
+&lt;!-- Status Badge --&gt;
+&lt;span class="table__status table__status--active"&gt;
+    &lt;i data-lucide="check" class="icon icon--xs"&gt;&lt;/i&gt;
+    Active
+&lt;/span&gt;
+
+&lt;!-- Action Buttons --&gt;
+&lt;div class="table__actions"&gt;
+    &lt;button class="table__action-btn" aria-label="Edit"&gt;
+        &lt;i data-lucide="edit" class="icon icon--sm"&gt;&lt;/i&gt;
+    &lt;/button&gt;
+&lt;/div&gt;</code></pre>
+            </section>
+
+            <!-- Chat Interface Components -->
+            <section class="section">
+                <h2 class="section__title">Chat Interface</h2>
+
+                <p class="section-intro">Chat interfaces enable real-time conversations between users and assistants. This component system provides all the elements needed to create engaging, accessible chat experiences.</p>
+
+                <h3 class="subsection__title">Interactive Chat Demo</h3>
+                <div class="chat-container" id="demo-chat">
+                    <div class="chat-header">
+                        <div class="chat-avatar chat-avatar--assistant">AI</div>
+                        <div class="chat-header-info">
+                            <h3 class="chat-title">Design Assistant</h3>
+                            <p class="chat-status">Online</p>
+                        </div>
+                        <button class="table__action-btn" aria-label="Chat settings">
+                            <i data-lucide="settings" class="icon icon--sm"></i>
+                        </button>
+                    </div>
+
+                    <div class="chat-messages" id="demo-messages">
+                        <div class="chat-message chat-message--assistant">
+                            <div class="chat-avatar chat-avatar--assistant">AI</div>
+                            <div>
+                                <div class="chat-message__content">
+                                    Hello! I'm your design assistant. I can help you with design questions, component usage, and best practices. How can I assist you today?
+                                </div>
+                                <div class="chat-message__time">10:30 AM</div>
+                            </div>
+                        </div>
+
+                        <div class="chat-message chat-message--user">
+                            <div class="chat-avatar">You</div>
+                            <div>
+                                <div class="chat-message__content">
+                                    Can you explain when to use the different button variants?
+                                </div>
+                                <div class="chat-message__time">10:31 AM</div>
+                            </div>
+                        </div>
+
+                        <div class="chat-message chat-message--assistant">
+                            <div class="chat-avatar chat-avatar--assistant">AI</div>
+                            <div>
+                                <div class="chat-message__content">
+                                    Great question! Here's a quick guide:
+                                    <br><br>
+                                    • <strong>Primary buttons</strong> - Use for the main action (one per view)
+                                    <br>
+                                    • <strong>Secondary buttons</strong> - For important but not primary actions
+                                    <br>
+                                    • <strong>Outline buttons</strong> - For alternative actions
+                                    <br>
+                                    • <strong>Ghost buttons</strong> - For subtle actions or cancellation
+                                </div>
+                                <div class="chat-message__time">10:32 AM</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-container">
+                        <div class="chat-input-wrapper">
+                            <textarea class="chat-input" placeholder="Type your message..." id="demo-chat-input" rows="1"></textarea>
+                            <button class="chat-send-btn" onclick="sendDemoMessage()" id="demo-send-btn">
+                                <i data-lucide="send" class="icon icon--sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Component Breakdown</h3>
+
+                <h4 style="margin: var(--space-4) 0 var(--space-3) 0; color: var(--color-light-primary);">Chat Avatars</h4>
+                <div style="display: flex; gap: var(--space-4); align-items: center; margin-bottom: var(--space-6); padding: var(--space-4); background-color: var(--color-surface); border-radius: var(--radius-md);">
+                    <div class="chat-avatar">U</div>
+                    <div class="chat-avatar chat-avatar--assistant">AI</div>
+                    <div class="chat-avatar chat-avatar--large">JS</div>
+                    <div class="chat-avatar chat-avatar--large chat-avatar--assistant">Bot</div>
+                </div>
+
+                <h4 style="margin: var(--space-4) 0 var(--space-3) 0; color: var(--color-light-primary);">Typing Indicator</h4>
+                <div style="padding: var(--space-4); background-color: var(--color-surface); border-radius: var(--radius-md); margin-bottom: var(--space-6);">
+                    <div class="chat-typing-indicator">
+                        <div class="chat-avatar chat-avatar--assistant">AI</div>
+                        <span>Assistant is typing</span>
+                        <div class="chat-typing-dots">
+                            <div class="chat-typing-dot"></div>
+                            <div class="chat-typing-dot"></div>
+                            <div class="chat-typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Chat interfaces should feel natural and responsive. Focus on clear message hierarchy, proper spacing, and smooth interactions to create engaging conversations.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Use distinct styling for user vs assistant messages</li>
+                            <li>Include timestamps for message context</li>
+                            <li>Show typing indicators during responses</li>
+                            <li>Make the input area easily accessible</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Make messages too wide on large screens</li>
+                            <li>Use the same styling for all message types</li>
+                            <li>Hide important chat controls</li>
+                            <li>Forget to handle empty or long messages</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>&lt;!-- Chat Container --&gt;
+&lt;div class="chat-container"&gt;
+    &lt;!-- Chat Header --&gt;
+    &lt;div class="chat-header"&gt;
+        &lt;div class="chat-avatar chat-avatar--assistant"&gt;AI&lt;/div&gt;
+        &lt;div class="chat-header-info"&gt;
+            &lt;h3 class="chat-title"&gt;Assistant&lt;/h3&gt;
+            &lt;p class="chat-status"&gt;Online&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Messages --&gt;
+    &lt;div class="chat-messages"&gt;
+        &lt;!-- Assistant Message --&gt;
+        &lt;div class="chat-message chat-message--assistant"&gt;
+            &lt;div class="chat-avatar chat-avatar--assistant"&gt;AI&lt;/div&gt;
+            &lt;div&gt;
+                &lt;div class="chat-message__content"&gt;Hello! How can I help?&lt;/div&gt;
+                &lt;div class="chat-message__time"&gt;10:30 AM&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- User Message --&gt;
+        &lt;div class="chat-message chat-message--user"&gt;
+            &lt;div class="chat-avatar"&gt;You&lt;/div&gt;
+            &lt;div&gt;
+                &lt;div class="chat-message__content"&gt;I need help with design&lt;/div&gt;
+                &lt;div class="chat-message__time"&gt;10:31 AM&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Input Area --&gt;
+    &lt;div class="chat-input-container"&gt;
+        &lt;div class="chat-input-wrapper"&gt;
+            &lt;textarea class="chat-input" placeholder="Type message..."&gt;&lt;/textarea&gt;
+            &lt;button class="chat-send-btn"&gt;
+                &lt;i data-lucide="send" class="icon icon--sm"&gt;&lt;/i&gt;
+            &lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Typing Indicator --&gt;
+&lt;div class="chat-typing-indicator"&gt;
+    &lt;span&gt;Assistant is typing&lt;/span&gt;
+    &lt;div class="chat-typing-dots"&gt;
+        &lt;div class="chat-typing-dot"&gt;&lt;/div&gt;
+        &lt;div class="chat-typing-dot"&gt;&lt;/div&gt;
+        &lt;div class="chat-typing-dot"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+            </section>
+
+            <!-- Tab Components -->
+            <section class="section">
+                <h2 class="section__title">Tabs</h2>
+                <div class="tabs">
+                    <div class="tab-nav">
+                        <button class="tab-button tab-button--active" onclick="switchTab(event, 'tab-overview')">Overview</button>
+                        <button class="tab-button" onclick="switchTab(event, 'tab-features')">Features</button>
+                        <button class="tab-button" onclick="switchTab(event, 'tab-pricing')">Pricing</button>
+                        <button class="tab-button" onclick="switchTab(event, 'tab-support')">Support</button>
+                    </div>
+
+                    <div class="tab-content">
+                        <div id="tab-overview" class="tab-pane tab-pane--active">
+                            <h3>Overview</h3>
+                            <p>This is the overview section. Here you'll find general information about our product and its main benefits.</p>
+                            <p>Our design system provides a comprehensive set of components and guidelines for building professional, accessible user interfaces.</p>
+                        </div>
+
+                        <div id="tab-features" class="tab-pane">
+                            <h3>Features</h3>
+                            <p>Here are the key features of our design system:</p>
+                            <ul>
+                                <li>Dark theme with professional styling</li>
+                                <li>Blue and purple accent colors</li>
+                                <li>Comprehensive component library</li>
+                                <li>Responsive design principles</li>
+                                <li>Accessibility considerations</li>
+                            </ul>
+                        </div>
+
+                        <div id="tab-pricing" class="tab-pane">
+                            <h3>Pricing</h3>
+                            <p>Our design system is open source and free to use for both personal and commercial projects.</p>
+                            <div class="pricing-card">
+                                <h4>Free Forever</h4>
+                                <p class="price">$0</p>
+                                <ul>
+                                    <li>Complete component library</li>
+                                    <li>Source code access</li>
+                                    <li>Community support</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div id="tab-support" class="tab-pane">
+                            <h3>Support</h3>
+                            <p>Get help with implementing and customizing the design system:</p>
+                            <p>Visit our documentation for detailed implementation guides, component API references, and best practices.</p>
+                            <div class="support-links">
+                                <button class="btn btn--primary btn--small">Documentation</button>
+                                <button class="btn btn--outline btn--small">Community Forum</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Usage Guidelines</h3>
+                <p class="usage-text">Tabs organize related content into separate views within the same context. They help users navigate between different sections while maintaining their current location in the application.</p>
+                <div class="usage-guidelines">
+                    <div class="usage-do">
+                        <h4>Do</h4>
+                        <ul>
+                            <li>Use tabs for content that's at the same level of hierarchy</li>
+                            <li>Keep tab labels short and descriptive</li>
+                            <li>Limit the number of tabs to avoid overcrowding</li>
+                            <li>Clearly indicate which tab is currently active</li>
+                        </ul>
+                    </div>
+                    <div class="usage-dont">
+                        <h4>Don't</h4>
+                        <ul>
+                            <li>Use tabs for sequential workflows (use steps instead)</li>
+                            <li>Nest tabs within tabs</li>
+                            <li>Use tabs for unrelated content</li>
+                            <li>Make tabs too small to read or click easily</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="subsection__title">Code Snippet</h3>
+                <pre class="code-block"><code>&lt;!-- Tab Component --&gt;
+&lt;div class="tabs"&gt;
+    &lt;div class="tab-nav"&gt;
+        &lt;button class="tab-button tab-button--active" onclick="switchTab(event, 'tab-1')"&gt;Tab 1&lt;/button&gt;
+        &lt;button class="tab-button" onclick="switchTab(event, 'tab-2')"&gt;Tab 2&lt;/button&gt;
+        &lt;button class="tab-button" onclick="switchTab(event, 'tab-3')"&gt;Tab 3&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;div class="tab-content"&gt;
+        &lt;div id="tab-1" class="tab-pane tab-pane--active"&gt;
+            &lt;h3&gt;Tab 1 Content&lt;/h3&gt;
+            &lt;p&gt;Content for the first tab goes here.&lt;/p&gt;
+        &lt;/div&gt;
+
+        &lt;div id="tab-2" class="tab-pane"&gt;
+            &lt;h3&gt;Tab 2 Content&lt;/h3&gt;
+            &lt;p&gt;Content for the second tab goes here.&lt;/p&gt;
+        &lt;/div&gt;
+
+        &lt;div id="tab-3" class="tab-pane"&gt;
+            &lt;h3&gt;Tab 3 Content&lt;/h3&gt;
+            &lt;p&gt;Content for the third tab goes here.&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- JavaScript function --&gt;
+&lt;!-- switchTab(event, 'tab-id') --&gt;</code></pre>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal Overlays -->
+    <div id="modal-basic" class="modal">
+        <div class="modal__overlay" onclick="closeModal('modal-basic')"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h3 class="modal__title">Basic Modal</h3>
+                <button class="modal__close" onclick="closeModal('modal-basic')">&times;</button>
+            </div>
+            <div class="modal__body">
+                <p>This is a basic modal dialog. It demonstrates the overlay and content structure.</p>
+                <p>You can click the overlay or the close button to dismiss this modal.</p>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--primary" onclick="closeModal('modal-basic')">Got it</button>
+                <button class="btn btn--ghost" onclick="closeModal('modal-basic')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-form" class="modal">
+        <div class="modal__overlay" onclick="closeModal('modal-form')"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h3 class="modal__title">Contact Form</h3>
+                <button class="modal__close" onclick="closeModal('modal-form')">&times;</button>
+            </div>
+            <div class="modal__body">
+                <form class="modal-form">
+                    <div class="form-group">
+                        <label class="form-label" for="modal-name">Name</label>
+                        <input type="text" id="modal-name" class="form-input" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="modal-email">Email</label>
+                        <input type="email" id="modal-email" class="form-input" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="modal-message">Message</label>
+                        <textarea id="modal-message" class="form-textarea" rows="3" placeholder="Your message"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--primary">Send Message</button>
+                <button class="btn btn--ghost" onclick="closeModal('modal-form')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-confirmation" class="modal">
+        <div class="modal__overlay" onclick="closeModal('modal-confirmation')"></div>
+        <div class="modal__content modal__content--small">
+            <div class="modal__header">
+                <h3 class="modal__title">Confirm Action</h3>
+                <button class="modal__close" onclick="closeModal('modal-confirmation')">&times;</button>
+            </div>
+            <div class="modal__body">
+                <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--primary" style="background-color: var(--color-error);" onclick="closeModal('modal-confirmation')">Delete</button>
+                <button class="btn btn--ghost" onclick="closeModal('modal-confirmation')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="footer__text">Professional Design System - Dark Theme</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

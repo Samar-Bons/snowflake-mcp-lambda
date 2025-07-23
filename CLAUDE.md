@@ -159,3 +159,7 @@ claude mcp remove <server-name>    # Remove a server
 - Use slash commands for server-exposed prompts
 - Set required API keys/tokens as environment variables
 - Test servers with non-sensitive data first
+
+## UI/UX Guidelines
+
+- refer to @styleGuide/ for any UI/UX related work
