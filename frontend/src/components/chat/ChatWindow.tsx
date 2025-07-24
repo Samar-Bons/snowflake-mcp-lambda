@@ -1,7 +1,7 @@
 // ABOUTME: Main chat interface component with message display and input handling
 // ABOUTME: Handles user messages, SQL generation, query confirmation, and results display
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { ChatMessage } from '../chat/ChatMessage';
@@ -114,7 +114,6 @@ export function ChatWindow({
                 <ChatMessage
                   message={message}
                   onExecuteQuery={onExecuteQuery}
-                  settings={settings}
                 />
 
                 {/* Display query results if available */}

@@ -35,13 +35,13 @@ describe('ChatService', () => {
       const result = await chatService.sendMessage(
         'Show me the first 10 customers',
         'file-123',
-        'session-456'
+        false
       );
 
-      expect(apiClient.post).toHaveBeenCalledWith('/chat/generate-sql', {
-        message: 'Show me the first 10 customers',
+      expect(apiClient.post).toHaveBeenCalledWith('/chat/', {
+        prompt: 'Show me the first 10 customers',
         file_id: 'file-123',
-        session_id: 'session-456',
+        autorun: false,
       });
 
       expect(result).toEqual({
@@ -77,14 +77,12 @@ describe('ChatService', () => {
 
       const result = await chatService.executeQuery(
         'SELECT * FROM customers LIMIT 5;',
-        'file-123',
-        'msg-123'
+        'file-123'
       );
 
-      expect(apiClient.post).toHaveBeenCalledWith('/chat/execute-query', {
-        sql_query: 'SELECT * FROM customers LIMIT 5;',
+      expect(apiClient.post).toHaveBeenCalledWith('/chat/execute', {
+        sql: 'SELECT * FROM customers LIMIT 5;',
         file_id: 'file-123',
-        message_id: 'msg-123',
       });
 
       expect(result).toEqual({

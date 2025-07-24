@@ -1,7 +1,7 @@
 // ABOUTME: Theme toggle component for switching between dark and light modes
 // ABOUTME: Styled to match the design system with smooth icon transitions
 
-import React from 'react';
+// Remove React import as it's not needed
 import { Sun, Moon } from 'lucide-react';
 import { clsx } from 'clsx';
 

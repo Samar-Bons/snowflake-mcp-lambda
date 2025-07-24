@@ -17,6 +17,7 @@ export interface UploadedFile {
   errorMessage?: string;
   rowCount?: number;
   columnCount?: number;
+  estimatedRows?: number;
 }
 
 export interface ColumnSchema {
@@ -91,7 +92,7 @@ export interface AppSettings {
 }
 
 export interface FileUploadError {
-  code: 'FILE_TOO_LARGE' | 'INVALID_FORMAT' | 'PROCESSING_FAILED' | 'NETWORK_ERROR';
+  code: 'FILE_TOO_LARGE' | 'INVALID_FORMAT' | 'PROCESSING_FAILED' | 'NETWORK_ERROR' | 'SAMPLE_LOAD_ERROR';
   message: string;
   details?: string;
 }

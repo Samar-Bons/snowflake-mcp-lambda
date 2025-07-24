@@ -1,7 +1,7 @@
 // ABOUTME: Authentication context and hook for managing user authentication state
 // ABOUTME: Provides login, logout, and user session management throughout the app
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import Cookies from 'js-cookie';
 import { User } from '../types';
 import { authService } from '../services/auth';

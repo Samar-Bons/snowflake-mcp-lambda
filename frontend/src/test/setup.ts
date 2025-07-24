@@ -21,7 +21,7 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // Mock ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
+(global as any).ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
@@ -36,11 +36,11 @@ Object.assign(navigator, {
 });
 
 // Mock URL.createObjectURL
-global.URL.createObjectURL = vi.fn().mockReturnValue('blob:mock-url');
-global.URL.revokeObjectURL = vi.fn();
+(global as any).URL.createObjectURL = vi.fn().mockReturnValue('blob:mock-url');
+(global as any).URL.revokeObjectURL = vi.fn();
 
 // Mock fetch for API calls
-global.fetch = vi.fn();
+(global as any).fetch = vi.fn();
 
 // Clean up after each test
 afterEach(() => {

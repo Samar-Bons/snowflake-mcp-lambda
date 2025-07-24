@@ -1,19 +1,18 @@
 // ABOUTME: Individual chat message component with SQL display and execution controls
 // ABOUTME: Handles user and assistant messages with syntax highlighting and action buttons
 
-import React from 'react';
+import { useState } from 'react';
 import { User, Bot, Play, Edit3, Copy, Check } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { ChatMessage as ChatMessageType, AppSettings } from '../../types';
+import { ChatMessage as ChatMessageType } from '../../types';
 
 interface ChatMessageProps {
   message: ChatMessageType;
   onExecuteQuery: (messageId: string, sqlQuery: string) => void;
-  settings: AppSettings;
 }
 
-export function ChatMessage({ message, onExecuteQuery, settings }: ChatMessageProps) {
-  const [copied, setCopied] = React.useState(false);
+export function ChatMessage({ message, onExecuteQuery }: ChatMessageProps) {
+  const [copied, setCopied] = useState(false);
 
   const handleCopySQL = async (sql: string) => {
     try {

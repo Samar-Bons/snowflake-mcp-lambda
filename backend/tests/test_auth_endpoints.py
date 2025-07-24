@@ -46,7 +46,7 @@ class TestAuthEndpoints:
     def test_login_endpoint_redirects_to_google(
         self, client: TestClient, mock_oauth_service: Mock
     ) -> None:
-        """Test that login endpoint redirects to Google OAuth."""
+        """Test that login endpoint returns JSON with redirect URL."""
         mock_oauth_service.get_authorization_url.return_value = (
             "https://accounts.google.com/oauth/authorize?...",
             "random_state",
@@ -57,8 +57,10 @@ class TestAuthEndpoints:
         ):
             response = client.get("/api/v1/auth/login")
 
-        assert response.status_code == 302
-        assert response.headers["location"].startswith(
+        assert response.status_code == 200
+        data = response.json()
+        assert "redirect_url" in data
+        assert data["redirect_url"].startswith(
             "https://accounts.google.com/oauth/authorize"
         )
         mock_oauth_service.get_authorization_url.assert_called_once()
@@ -77,7 +79,9 @@ class TestAuthEndpoints:
         ):
             response = client.get("/api/v1/auth/login?redirect=/dashboard")
 
-        assert response.status_code == 302
+        assert response.status_code == 200
+        data = response.json()
+        assert "redirect_url" in data
         # State should be passed to OAuth service for redirect preservation
         mock_oauth_service.get_authorization_url.assert_called_once()
 

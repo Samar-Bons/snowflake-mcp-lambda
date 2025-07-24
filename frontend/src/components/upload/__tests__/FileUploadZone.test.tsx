@@ -7,7 +7,6 @@ import { FileUploadZone } from '../FileUploadZone';
 import { createMockFile } from '../../../test/utils';
 
 const mockOnUpload = vi.fn();
-const mockOnError = vi.fn();
 
 const defaultProps = {
   onUpload: mockOnUpload,
@@ -35,7 +34,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         {...defaultProps}
         state="uploading"
-        progress={{ percentage: 45, bytesUploaded: 500000, totalBytes: 1000000 }}
+        progress={{ percentage: 45, currentOperation: 'Uploading...', bytesUploaded: 500000, totalBytes: 1000000 }}
       />
     );
 
@@ -48,7 +47,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         {...defaultProps}
         state="processing"
-        progress={{ currentOperation: "Analyzing file structure..." }}
+        progress={{ percentage: 0, currentOperation: "Analyzing file structure...", bytesUploaded: 0, totalBytes: 0 }}
       />
     );
 
@@ -73,7 +72,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         {...defaultProps}
         state="error"
-        error={{ message: "File too large", details: "Maximum file size is 100MB" }}
+        error={{ code: 'FILE_TOO_LARGE', message: "File too large", details: "Maximum file size is 100MB" }}
       />
     );
 
@@ -198,7 +197,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         {...defaultProps}
         state="error"
-        error={{ message: "Upload failed", details: "Please try again" }}
+        error={{ code: 'NETWORK_ERROR', message: "Upload failed", details: "Please try again" }}
       />
     );
 

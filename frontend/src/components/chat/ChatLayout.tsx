@@ -1,7 +1,7 @@
 // ABOUTME: Main chat layout with responsive sidebar and chat area
 // ABOUTME: Handles desktop sidebar + mobile bottom navigation for chat interface
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Menu,
   X,
@@ -9,8 +9,7 @@ import {
   Database,
   Settings,
   Upload,
-  MessageSquare,
-  BarChart3
+  MessageSquare
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { UploadedFile, TableSchema } from '../../types';

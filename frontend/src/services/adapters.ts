@@ -5,11 +5,9 @@ import {
   UploadedFile,
   TableSchema,
   ColumnSchema,
-  ChatMessage,
   QueryResult,
   ApiResponse,
-  ChatQueryResponse,
-  FileUploadResponse
+  ChatQueryResponse
 } from '../types';
 
 // Backend response types (based on verified API contract)
@@ -192,34 +190,34 @@ export class BackendAdapters {
    * Extract original filename from backend table name
    */
   private static extractFilenameFromTableName(tableName: string): string {
-    // Table name format: "table_uuid_originalfilename" 
+    // Table name format: "table_uuid_originalfilename"
     // But we want just clean, readable names
     const parts = tableName.split('_');
-    
+
     if (parts.length >= 3) {
       // Get the original filename part and clean it up
       let filename = parts.slice(2).join('_');
-      
+
       // Remove common prefixes and clean up the name
       filename = filename
         .replace(/^sample[\s_-]*/, '') // Remove "sample" prefix
         .replace(/^data[\s_-]*/, '')   // Remove "data" prefix
         .replace(/[\s_-]+/g, '_')      // Normalize separators
         .replace(/^_+|_+$/g, '');      // Remove leading/trailing underscores
-      
+
       // If we end up with an empty name, use a fallback
       if (!filename) {
         filename = 'data';
       }
-      
+
       // Ensure it ends with .csv
       if (!filename.endsWith('.csv')) {
         filename += '.csv';
       }
-      
+
       return filename;
     }
-    
+
     return 'uploaded_file.csv';
   }
 

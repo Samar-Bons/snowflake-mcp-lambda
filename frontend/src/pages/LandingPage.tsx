@@ -1,14 +1,14 @@
 // ABOUTME: Landing page with hero section and CSV upload functionality
 // ABOUTME: Implements the complete upload flow from drag-drop to processing to chat redirect
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Database, MessageSquare, Zap } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { Button } from '../components/ui/Button';
 import { FileUploadZone } from '../components/upload/FileUploadZone';
 import { fileUploadService } from '../services/fileUpload';
-import { UploadProgress, FileUploadError, UploadedFile } from '../types';
+import { UploadProgress, FileUploadError } from '../types';
 
 interface LandingPageProps {
   theme: 'dark' | 'light';

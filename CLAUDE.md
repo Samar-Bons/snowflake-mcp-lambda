@@ -160,6 +160,11 @@ claude mcp remove <server-name>    # Remove a server
 - Set required API keys/tokens as environment variables
 - Test servers with non-sensitive data first
 
+## MCP Tool Recommendations
+
+- Feel free to use the gemini-cli MCP tool in order to leverage a similar AI agent to you, whose speciality is much bigger context windows which can be used to understand large pieces of codebases, or just to have an external opinion.
+- Use gemini-cli MCP tool when we know that reading files will exceed our context window.
+
 ## UI/UX Guidelines
 
 - refer to @styleGuide/ for any UI/UX related work

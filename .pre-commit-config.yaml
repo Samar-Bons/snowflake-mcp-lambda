@@ -68,15 +68,14 @@ repos:
         pass_filenames: false
 
       # Pytest - full test suite with coverage (exactly as CI runs it)
-      # NOTE: Disabled for initial commits, enable after poetry install
-      # - id: pytest
-      #   name: pytest with coverage
-      #   entry: ./scripts/poetry-wrapper.sh run pytest
-      #   language: system
-      #   pass_filenames: false
-      #   always_run: true
-      #   args: [--cov=app, --cov-report=term-missing, --cov-fail-under=85]
-      #   stages: [commit]
+      - id: pytest-backend
+        name: pytest with coverage
+        entry: ./scripts/poetry-wrapper.sh run pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+        args: [--cov=app, --cov-report=term-missing, --cov-fail-under=85]
+        stages: [commit]
 
       # Poetry check - ensure lock file is up to date
       - id: poetry-check
@@ -120,6 +119,24 @@ repos:
         entry: bash -c 'cd frontend && npx tsc --noEmit'
         language: system
         files: ^frontend/.*\.(ts|tsx)$
+        pass_filenames: false
+        require_serial: true
+
+      # Frontend unit tests with Vitest
+      - id: vitest-frontend
+        name: Frontend unit tests
+        entry: bash -c 'cd frontend && npm run test -- --run --reporter=verbose'
+        language: system
+        files: ^frontend/.*\.(ts|tsx)$
+        pass_filenames: false
+        require_serial: true
+
+      # Frontend build verification
+      - id: frontend-build
+        name: Frontend build check
+        entry: bash -c 'cd frontend && npm run build'
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|jsx|html|css)$
         pass_filenames: false
         require_serial: true
 

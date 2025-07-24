@@ -1,7 +1,7 @@
 // ABOUTME: Main chat interface page with desktop sidebar and mobile responsive layout
 // ABOUTME: Handles chat conversations, file management, and query results display
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Menu, X, Upload, Settings, FileText, MessageSquare } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
@@ -99,15 +99,15 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
   const loadFileData = async (selectedFileId: string) => {
     try {
       let file = files.find(f => f.id === selectedFileId);
-      
+
       if (!file) {
         // If file not found in current list, try to reload files first
         const uploadedFiles = await fileUploadService.getUploadedFiles();
         setFiles(uploadedFiles);
-        
+
         // Now try to find the file in the fresh list
         file = uploadedFiles.find(f => f.id === selectedFileId);
-        
+
         if (!file) {
           console.error('File not found after reload:', selectedFileId);
           return;

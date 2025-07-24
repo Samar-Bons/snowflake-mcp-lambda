@@ -1,7 +1,7 @@
 // ABOUTME: Sidebar component showing uploaded files and database schema information
 // ABOUTME: Provides file management, column details, and navigation between datasets
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   FileText,
   Database,
@@ -187,10 +187,7 @@ export function SchemaSidebar({
                     <Button
                       variant="ghost"
                       size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteFile(file.id);
-                      }}
+                      onClick={() => onDeleteFile(file.id)}
                       className="opacity-0 group-hover:opacity-100 p-1 ml-2"
                     >
                       <Trash2 className="h-3 w-3 text-error" />

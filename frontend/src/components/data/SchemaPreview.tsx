@@ -1,7 +1,7 @@
 // ABOUTME: Schema preview component showing detected columns and sample data
 // ABOUTME: Displays CSV structure with confirmation options to proceed to chat
 
-import React from 'react';
+// Remove React import as it's not needed
 import {
   Database,
   FileSpreadsheet,
@@ -42,16 +42,18 @@ export function SchemaPreview({
     if (value === null || value === undefined) return 'null';
 
     switch (type) {
-      case 'number':
+      case 'INTEGER':
+      case 'DECIMAL':
         return typeof value === 'number' ? value.toLocaleString() : String(value);
-      case 'date':
+      case 'DATE':
+      case 'DATETIME':
         try {
           const date = value instanceof Date ? value : new Date(value);
           return isNaN(date.getTime()) ? String(value) : date.toLocaleDateString();
         } catch {
           return String(value);
         }
-      case 'boolean':
+      case 'BOOLEAN':
         return value ? 'true' : 'false';
       default:
         const str = String(value);
@@ -61,11 +63,13 @@ export function SchemaPreview({
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'number':
+      case 'INTEGER':
+      case 'DECIMAL':
         return '🔢';
-      case 'date':
+      case 'DATE':
+      case 'DATETIME':
         return '📅';
-      case 'boolean':
+      case 'BOOLEAN':
         return '✓';
       default:
         return '📝';
@@ -138,12 +142,9 @@ export function SchemaPreview({
                     </tr>
                   </thead>
                   <tbody>
-                    {schema.columns.map((column, index) => {
+                    {schema.columns.map((column) => {
                       // Get sample values for this column
-                      const sampleValues = sampleData
-                        .slice(0, 3)
-                        .map(row => row[column.name])
-                        .filter(val => val !== null && val !== undefined);
+                      const sampleValues = column.sampleValues || [];
 
                       return (
                         <tr
@@ -230,7 +231,7 @@ export function SchemaPreview({
                             key={column.name}
                             className="px-4 py-3 text-sm text-light-secondary"
                           >
-                            <div className={`${column.type === 'number' ? 'text-right font-mono' : ''}`}>
+                            <div className={`${(column.type === 'INTEGER' || column.type === 'DECIMAL') ? 'text-right font-mono' : ''}`}>
                               {formatSampleValue(row[column.name], column.type)}
                             </div>
                           </td>

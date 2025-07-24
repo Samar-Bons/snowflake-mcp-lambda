@@ -1,18 +1,15 @@
 // ABOUTME: CSV file processing screen with real-time progress updates
 // ABOUTME: Shows upload progress, processing status, and transitions to chat interface
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
-  Upload,
   FileSpreadsheet,
   CheckCircle,
   AlertCircle,
   Loader2,
-  ArrowRight,
   Database,
   Zap
 } from 'lucide-react';
-import { Button } from '../ui/Button';
 import { UploadedFile } from '../../types';
 
 interface ProcessingScreenProps {
@@ -29,7 +26,7 @@ interface ProcessingStep {
   description: string;
 }
 
-export function ProcessingScreen({ file, onComplete, onError }: ProcessingScreenProps) {
+export function ProcessingScreen({ file, onComplete }: ProcessingScreenProps) {
   const [steps, setSteps] = useState<ProcessingStep[]>([
     {
       id: 'upload',
@@ -68,7 +65,6 @@ export function ProcessingScreen({ file, onComplete, onError }: ProcessingScreen
     }
   ]);
 
-  const [currentStepIndex, setCurrentStepIndex] = useState(1);
   const [overallProgress, setOverallProgress] = useState(20);
 
   useEffect(() => {
@@ -89,7 +85,6 @@ export function ProcessingScreen({ file, onComplete, onError }: ProcessingScreen
 
   const simulateStep = (stepIndex: number): Promise<void> => {
     return new Promise((resolve) => {
-      setCurrentStepIndex(stepIndex);
 
       // Update step to processing
       setSteps(prev => prev.map((step, index) =>
@@ -193,7 +188,7 @@ export function ProcessingScreen({ file, onComplete, onError }: ProcessingScreen
           </h3>
 
           <div className="space-y-4">
-            {steps.map((step, index) => (
+            {steps.map((step) => (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex-shrink-0 mt-0.5">
                   {getStepIcon(step)}

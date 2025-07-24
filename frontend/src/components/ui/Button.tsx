@@ -1,7 +1,7 @@
 // ABOUTME: Reusable Button component with multiple variants and loading states
 // ABOUTME: Follows the design system styling with primary, secondary, outline, and ghost variants
 
-import React from 'react';
+// Remove React import as it's not needed
 import { Loader2 } from 'lucide-react';
 import { ButtonProps } from '../../types';
 import { clsx } from 'clsx';

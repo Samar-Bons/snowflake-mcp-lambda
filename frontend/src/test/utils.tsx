@@ -1,11 +1,11 @@
 // ABOUTME: Test utilities and helpers for component testing
 // ABOUTME: Custom render function with providers and mock data factories
 
-import React from 'react';
+import { Component } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../hooks/useAuth';
-import { UploadedFile, TableSchema, ChatMessage, User } from '../types';
+import { UploadedFile, TableSchema, ChatMessage, User, QueryResult } from '../types';
 
 // Mock providers wrapper
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
@@ -33,55 +33,60 @@ export const mockUser: User = {
   email: 'test@example.com',
   name: 'Test User',
   picture: 'https://example.com/avatar.jpg',
-  sub: 'google-oauth-sub',
 };
 
 export const mockUploadedFile: UploadedFile = {
   id: 'test-file-id',
   name: 'test-data.csv',
   size: 1024000,
-  type: 'text/csv',
   uploadedAt: new Date('2025-01-20T10:00:00Z'),
-  status: 'completed',
+  processingStatus: 'completed',
   estimatedRows: 1000,
-  processingProgress: 100,
+  rowCount: 1000,
+  columnCount: 5,
 };
 
 export const mockTableSchema: TableSchema = {
   tableName: 'test_data',
   rowCount: 1000,
+  filePath: '/tmp/test_data.db',
   columns: [
     {
       name: 'id',
-      type: 'number',
+      type: 'INTEGER',
       nullable: false,
+      sampleValues: ['1', '2', '3'],
     },
     {
       name: 'name',
-      type: 'text',
+      type: 'TEXT',
       nullable: false,
+      sampleValues: ['John', 'Jane', 'Bob'],
     },
     {
       name: 'email',
-      type: 'text',
+      type: 'TEXT',
       nullable: true,
+      sampleValues: ['john@example.com', 'jane@example.com'],
     },
     {
       name: 'created_at',
-      type: 'date',
+      type: 'DATE',
       nullable: false,
+      sampleValues: ['2025-01-01', '2025-01-02'],
     },
     {
       name: 'revenue',
-      type: 'number',
+      type: 'DECIMAL',
       nullable: true,
+      sampleValues: ['1000.50', '2000.75'],
     },
   ],
 };
 
 export const mockChatMessage: ChatMessage = {
   id: 'test-message-id',
-  role: 'user',
+  type: 'user',
   content: 'Show me the top 5 customers by revenue',
   timestamp: new Date('2025-01-20T10:05:00Z'),
   status: 'sent',
@@ -89,18 +94,16 @@ export const mockChatMessage: ChatMessage = {
 
 export const mockAssistantMessage: ChatMessage = {
   id: 'test-assistant-message-id',
-  role: 'assistant',
+  type: 'assistant',
   content: 'I\'ll help you find the top customers by revenue.',
   timestamp: new Date('2025-01-20T10:05:30Z'),
   status: 'sent',
   sqlQuery: 'SELECT name, email, revenue FROM customers ORDER BY revenue DESC LIMIT 5;',
-  queryStatus: 'success',
-  executionTime: 45,
-  resultRowCount: 5,
 };
 
-export const mockQueryResult = {
+export const mockQueryResult: QueryResult = {
   id: 'test-result-id',
+  query: 'SELECT name, email, revenue FROM customers ORDER BY revenue DESC LIMIT 5',
   columns: [
     { key: 'name', label: 'Customer Name', type: 'text' },
     { key: 'email', label: 'Email', type: 'text' },
@@ -146,7 +149,7 @@ export const mockApiResponse = (data: any, status: number = 200) => {
 };
 
 // Error boundary for testing
-export class TestErrorBoundary extends React.Component<
+export class TestErrorBoundary extends Component<
   { children: React.ReactNode; onError?: (error: Error) => void },
   { hasError: boolean }
 > {

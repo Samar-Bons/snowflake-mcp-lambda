@@ -1,7 +1,6 @@
 // ABOUTME: Core API client with authentication, error handling, and request/response types
 // ABOUTME: Provides base functionality for all backend communication with proper error handling
 
-import { ApiResponse } from '../types';
 import { BackendAdapters } from './adapters';
 
 class ApiClient {

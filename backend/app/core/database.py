@@ -4,7 +4,7 @@
 import logging
 import time
 from collections.abc import Generator
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import redis
 

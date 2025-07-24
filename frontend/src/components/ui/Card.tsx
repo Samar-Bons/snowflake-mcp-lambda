@@ -1,7 +1,7 @@
 // ABOUTME: Reusable Card component with elevation and interactive variants
 // ABOUTME: Provides consistent styling for content containers throughout the app
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { clsx } from 'clsx';
 
 interface CardProps {

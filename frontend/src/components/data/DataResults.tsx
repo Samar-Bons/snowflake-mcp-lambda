@@ -1,7 +1,7 @@
 // ABOUTME: Data results table component with pagination, sorting, and export functionality
 // ABOUTME: Displays query results in a formatted table with metadata and action buttons
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Download,
   Copy,
@@ -27,7 +27,7 @@ export function DataResults({ result, onExport }: DataResultsProps) {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [copied, setCopied] = useState(false);
   const pageSize = 10; // Show 10 rows per page in results
-  
+
 
   // Calculate pagination
   const totalPages = Math.ceil(result.data.length / pageSize);
@@ -69,7 +69,7 @@ export function DataResults({ result, onExport }: DataResultsProps) {
   };
 
   const formatCellValue = (value: any, type: string) => {
-    
+
     if (value === null || value === undefined) {
       return <span className="text-light-subtle italic">null</span>;
     }

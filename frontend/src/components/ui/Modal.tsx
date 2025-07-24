@@ -1,7 +1,7 @@
 // ABOUTME: Modal component with backdrop and animation for dialogs and confirmations
 // ABOUTME: Provides consistent modal behavior with focus management and escape key handling
 
-import React, { useEffect, ReactNode } from 'react';
+import { useEffect, ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { clsx } from 'clsx';
 

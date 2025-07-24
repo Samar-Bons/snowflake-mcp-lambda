@@ -313,12 +313,18 @@ class FileUploadService {
     // Create a mock EventSource for MVP - in real app this would be apiClient.createEventSource()
     const mockEventSource = {
       onmessage: null as ((event: any) => void) | null,
+      onerror: null as ((event: any) => void) | null,
+      onopen: null as ((event: any) => void) | null,
       close: () => {},
       addEventListener: () => {},
       removeEventListener: () => {},
       dispatchEvent: () => false,
-      readyState: EventSource.OPEN,
+      readyState: 1, // EventSource.OPEN
       url: `/api/v1/processing/${fileId}/stream`,
+      withCredentials: false,
+      CONNECTING: 0,
+      OPEN: 1,
+      CLOSED: 2,
     } as EventSource;
 
     // Simulate processing completion after a short delay
@@ -370,6 +376,25 @@ class FileUploadService {
       sessionStorage.setItem('uploadedFiles', JSON.stringify(updated));
     } catch (error) {
       console.warn('Failed to store uploaded file:', error);
+    }
+  }
+
+  /**
+   * Delete a file from the session
+   * MVP: Removes from sessionStorage only, backend handles actual deletion
+   */
+  async deleteFile(fileId: string): Promise<void> {
+    try {
+      // In a real implementation, this would call the backend API
+      // await apiClient.delete(`/data/files/${fileId}`);
+
+      // For MVP, just remove from session storage
+      const existing = await this.getUploadedFiles();
+      const updated = existing.filter(f => f.id !== fileId);
+      sessionStorage.setItem('uploadedFiles', JSON.stringify(updated));
+    } catch (error) {
+      console.error('Failed to delete file:', error);
+      throw error;
     }
   }
 }
