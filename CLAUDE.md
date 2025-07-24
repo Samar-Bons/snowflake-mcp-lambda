@@ -4,167 +4,162 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Data Chat MVP** - A web application enabling non-technical users to upload CSV files and query them using natural language via chat interface. Expandable to support multiple database types in the future.
+**Data Chat MVP** - A full-stack web application enabling non-technical users to upload CSV files and query them using natural language via an AI-powered chat interface. The project is essentially complete at ~95% implementation status.
 
-## Architecture (Current Implementation Status)
+## Architecture
 
 **Core Stack:**
-- Backend: FastAPI (Python) with Poetry dependency management ✅
-- Frontend: React + Vite + TypeScript + Tailwind CSS (dark mode) ✅
-- Auth: Google OAuth with JWT cookies (optional for MVP) ✅
-- Data: PostgreSQL (users), Redis (sessions), SQLite (uploaded CSV data)
-- LLM: Gemini API (BYOK - user provides API key) ✅
-- Deploy: Docker + Docker Compose ✅
+- **Backend**: FastAPI (Python) with Poetry dependency management
+- **Frontend**: React + Vite + TypeScript + Tailwind CSS (dark mode)
+- **Auth**: Google OAuth with JWT cookies and Redis session management
+- **Data**: PostgreSQL (users), Redis (sessions), SQLite (uploaded CSV data)  
+- **LLM**: Google Gemini API (BYOK - user provides API key)
+- **Deploy**: Docker Compose for development environment
 
-**MVP Key Flow:**
-1. User uploads CSV file → auto-conversion to SQLite
-2. Schema detection and preview → ready for queries
-3. Natural language input → Gemini LLM → SQL generation
-4. SQL confirmation modal → execution → paginated results
-5. Session-based data (cleanup after session expires)
+**Key Flow:**
+1. User uploads CSV file → auto-conversion to SQLite with schema detection
+2. Natural language input → Gemini LLM → SQL generation with confirmation modal
+3. SQL execution → paginated results display with export capabilities
+4. Session-based temporary data storage (cleanup after session expires)
 
 ## Development Commands
 
-**Current Status:** Backend foundation complete (85%), frontend auth complete, CSV upload MVP next priority.
+**Python Package Management:**
+- **Poetry** - Dependency management (backend/pyproject.toml)
+- Install deps: `docker compose exec backend poetry install`
+- Add packages: `docker compose exec backend poetry add <package>`
+- Run scripts: `docker compose exec backend poetry run <script>`
+- No requirements.txt needed - packages stored in pyproject.toml
 
-**Working commands:**
+**Development Workflow:**
 ```bash
-# Setup
-poetry install                    # Install Python dependencies
-npm install                      # Install frontend dependencies (when added)
+# Complete Setup
+make dev-setup                  # Full environment setup with health checks
+make setup                      # Copy .env.example to .env (edit required)
 
-# Development
-uvicorn app.main:app --reload    # Run backend server
-npm run dev                      # Run frontend dev server (when added)
+# Daily Development  
+make up                         # Start all services
+make down                       # Stop all services
+make logs                       # View all logs
+make wait-healthy               # Wait for all services ready
 
-# Testing (TDD approach required)
-pytest                          # Run all tests
-pytest -k test_name             # Run specific test
-pytest --cov=backend            # Run with coverage (target: 85%+)
+# Backend Development
+make shell-backend              # Open backend container shell
+make logs-backend               # Backend logs only
+docker compose exec backend poetry run uvicorn app.main:app --reload
 
-# Quality
-pre-commit run --all-files      # Lint/format (black, ruff, isort, mypy)
-mypy --strict backend/          # Type checking
+# Frontend Development
+make shell-frontend             # Open frontend container shell  
+make logs-frontend              # Frontend logs only
 
-# Docker
-docker compose up               # Development environment
-docker compose -f prod.yml up  # Production environment
+# Testing (MUST pass before task completion)
+make test                       # Backend tests with 85%+ coverage requirement
+make test-frontend              # Frontend tests with Vitest
+make test-all                   # All tests (backend + frontend)
+
+# Inside backend container for specific tests:
+poetry run pytest -k test_name              # Run specific test
+poetry run pytest --cov=app --cov-report=html  # Coverage report
+
+# Quality Checks (MUST pass before task completion)
+make lint-frontend              # Frontend ESLint/Prettier
+make type-check-frontend        # TypeScript type checking  
+pre-commit run --all-files      # All quality checks (Ruff, MyPy, tests)
+
+# Database Operations
+make db-migrate                 # Run Alembic migrations
+make db-reset                   # Reset database (destroys data)
+
+# Health & Validation
+make health                     # Check all service health
+make validate-config            # Validate project configuration
+make deep-health-check          # Comprehensive health validation
 ```
 
-## Implementation Phases (Current Status)
+## Architecture Details
 
-**Phase 0-1:** Foundation + Backend Core ✅ COMPLETED
-- Git setup, pre-commit hooks, CI pipeline ✅
-- FastAPI skeleton with health routes ✅
-- Config system with Pydantic + environment support ✅
-- Database client abstraction ready for CSV/SQLite ✅
+**Backend Structure (`backend/app/`):**
+- `main.py` - FastAPI application entry point with middleware and routing
+- `auth/` - Google OAuth, JWT utilities, user management
+- `llm/` - Gemini API integration for natural language to SQL conversion
+- `data/` - CSV upload, SQLite adapter, file processing pipeline
+- `snowflake/` - Snowflake connection management (future expansion)
+- `models/` - SQLAlchemy models (User, Connection)
+- `core/` - Database configuration and shared utilities
 
-**Phase 2:** Auth Stack ✅ COMPLETED
-- Google OAuth flow with callback handling ✅
-- PostgreSQL user model + SQLAlchemy ✅
-- Redis session management with 24h expiry ✅
-- JWT middleware for route protection ✅
+**Frontend Structure (`frontend/src/`):**  
+- `main.tsx` - React application entry point
+- `pages/` - Main application pages (Landing, Chat)
+- `components/` - Reusable UI components organized by feature
+- `services/` - API client, authentication, file upload, chat logic
+- `hooks/` - Custom React hooks (useAuth)
+- `types/` - TypeScript type definitions
 
-**Phase 3:** Data Integration ✅ PARTIAL COMPLETED
-- Gemini LLM integration working ✅
-- Schema introspection system ready for SQLite ✅
-- `/chat` endpoint: NL → SQL → confirmation → execution ✅
-- Read-only query validation + 500 row limit ✅
-- ⚠️ CSV upload processing (needs implementation for MVP)
-- ⚠️ File management and SQLite conversion (needs implementation)
+**Key Configuration Files:**
+- `backend/pyproject.toml` - Poetry dependencies, pytest config, Ruff/MyPy settings
+- `docker-compose.yml` - Multi-service development environment
+- `Makefile` - Development commands and Docker operations
+- `.env` - Environment variables (copy from .env.example)
 
-**Phase 4:** Frontend Foundation ✅ COMPLETED
-- React app with complete auth flow ✅
-- Dashboard layout ready for components ✅
-- ⚠️ CSV upload components (next priority)
-- ⚠️ Chat interface components (next priority)
+## Testing Philosophy
 
-**Phase 5:** 🟡 CSV Upload MVP (CURRENT PRIORITY)
-- Backend: CSV upload, processing, SQLite conversion
-- Frontend: File upload, schema preview, chat interface
-- Integration: Complete upload → chat → results flow
+**TDD Required:** Write failing test → minimal implementation → refactor
+**All test types mandatory:** unit, integration, end-to-end  
+**85%+ coverage requirement** enforced by pytest configuration
+**Real data/APIs only** - no mocking implementations
+**Pristine test output required** - must pass completely before task completion
 
-**Phase 6:** Future Features (After MVP)
-- Multiple file formats (Excel, JSON, Parquet)
-- Database connections (PostgreSQL, MySQL)
-- Query history, favorites, advanced settings
+**Backend Testing (`backend/tests/`):**
+- 165+ passing tests with comprehensive coverage
+- Test markers: `slow`, `integration`, `e2e`
+- Key test files: `test_chat_endpoints.py`, `test_csv_processor.py`, `test_gemini_service.py`
 
-## Code Standards
+**Frontend Testing (`frontend/src/`):**
+- Component tests with React Testing Library
+- Service layer tests for API integration  
+- Vitest + jsdom testing environment
 
-**File Headers:** All code files start with:
+## Security Constraints
+
+- **Read-only SQL queries** only (SELECT statements enforced)
+- **Intent classification** to detect unsafe prompts
+- **Secure file upload** validation (size limits, type checking)
+- **Session-based temporary data** storage with cleanup
+- **User-provided API keys** (BYOK model) - never stored server-side
+- **No sensitive data** in logs or commits
+
+## Current Implementation Status
+
+**✅ Completed (95%):**
+- Complete backend API with all endpoints functional
+- Google OAuth authentication with JWT and Redis sessions
+- CSV file upload and processing pipeline with SQLite conversion
+- Gemini LLM integration for natural language to SQL conversion  
+- React frontend with authentication flow and responsive design
+- Docker development environment with health checks
+- Comprehensive testing suite with 85%+ coverage
+
+**🔄 Minor Remaining:**
+- ~60 TypeScript errors to resolve
+- Mobile responsiveness validation  
+- Production deployment configuration
+
+## File Headers Standard
+
+All code files must start with:
 ```python
 # ABOUTME: [Brief description of file purpose]
 # ABOUTME: [Second line of description]
 ```
 
-**Testing Philosophy:**
-- TDD required: Write failing test → minimal implementation → refactor
-- All test types mandatory: unit, integration, end-to-end
-- Real data/APIs only - no mocking
-- Pristine test output required to pass
+## Key References
 
-**Security Constraints:**
-- Read-only SQL queries only (SELECT statements)
-- Intent classification to detect unsafe prompts
-- Secure file upload validation (size limits, type checking)
-- Session-based temporary data storage
-- No sensitive data in logs or commits
-
-## Key Files to Reference
-
-- `docs/planning/PROJECT_STATUS.md` - **Primary reference**: Current status and next prompts
-- `docs/planning/spec.md` - Complete feature requirements and UX flows
-- `DEVELOPMENT.md` - Developer setup and troubleshooting guide
-- `README.md` - Basic project description
+- `docs/PROJECT_STATUS.md` - Current implementation status and next steps
+- `README.md` - Project overview and quick start guide  
+- `DEVELOPMENT.md` - Developer setup and troubleshooting
+- `API_CONTRACT.md` - API endpoint specifications
+- `MVP_UI_UX_DESIGN_SPEC.md` - UI/UX design requirements
 
 ## Next Implementation Priority
 
-**Prompt 11 - CSV Upload MVP**: Implement file upload backend + frontend components to enable users to upload CSV files and query them via chat interface. This creates a complete MVP that works without external database credentials.
-
-See `docs/planning/PROJECT_STATUS.md` for detailed implementation requirements.
-
-## MCP Servers Configuration
-
-**Active MCP Servers** (configured via `claude mcp list`):
-
-- **GitHub MCP Server** (`github`) - Repository management
-  - Manage issues, PRs, commits, and repository operations
-  - Usage: Natural language requests for GitHub operations
-
-- **File System MCP Server** (`filesystem`) - Enhanced file operations
-  - Advanced file read/write capabilities beyond built-in tools
-  - Usage: File management and bulk operations
-
-- **PostgreSQL MCP Server** (`postgres`) - Database integration
-  - Direct database querying and management
-  - Perfect for data analysis and database operations
-
-- **Docker MCP Server** (`docker`) - Container management
-  - Manage Docker containers, images, and compose files
-  - Usage: `docker compose up/down`, container operations
-
-- **Puppeteer MCP Server** (`puppeteer`) - Web automation
-  - Browser automation and web scraping capabilities
-  - Usage: Testing, screenshots, web interactions
-
-**MCP Server Commands:**
-```bash
-claude mcp list                    # View all configured servers
-claude mcp get <server-name>       # Get server details
-claude mcp remove <server-name>    # Remove a server
-```
-
-**Usage Tips:**
-- Reference resources with "@" mentions (e.g., @filename)
-- Use slash commands for server-exposed prompts
-- Set required API keys/tokens as environment variables
-- Test servers with non-sensitive data first
-
-## MCP Tool Recommendations
-
-- Feel free to use the gemini-cli MCP tool in order to leverage a similar AI agent to you, whose speciality is much bigger context windows which can be used to understand large pieces of codebases, or just to have an external opinion.
-- Use gemini-cli MCP tool when we know that reading files will exceed our context window.
-
-## UI/UX Guidelines
-
-- refer to @styleGuide/ for any UI/UX related work
+**TypeScript Error Resolution** - The primary remaining task is resolving ~60 TypeScript compilation errors to achieve a fully production-ready state. Most errors are type annotation issues that don't affect runtime functionality.
