@@ -108,7 +108,7 @@ repos:
       # ESLint for frontend
       - id: eslint-frontend
         name: ESLint (frontend)
-        entry: bash -c 'cd frontend && npx eslint . --ext ts,tsx --report-unused-disable-directives'
+        entry: bash -c 'cd frontend && npm run lint'
         language: system
         files: ^frontend/.*\.(ts|tsx|js|jsx)$
         pass_filenames: false
