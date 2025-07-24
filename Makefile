@@ -86,12 +86,31 @@ db-reset: ## Reset database (WARNING: destroys project database data only)
 	done
 	@echo "✅ Database reset complete"
 
-# Testing
+# Testing - Backend
 test: ## Run backend tests with coverage (matches CI/pre-commit)
 	docker compose exec backend poetry run pytest --cov=app --cov-report=term-missing --cov-fail-under=85
 
 test-cov: ## Run backend tests with detailed HTML coverage report
 	docker compose exec backend poetry run pytest --cov=app --cov-report=html --cov-report=term-missing --cov-fail-under=85
+
+# Testing - Frontend
+test-frontend: ## Run frontend tests
+	docker compose exec frontend npm run test -- --run --reporter=verbose
+
+test-frontend-watch: ## Run frontend tests in watch mode
+	docker compose exec frontend npm run test
+
+test-frontend-coverage: ## Run frontend tests with coverage
+	docker compose exec frontend npm run coverage
+
+lint-frontend: ## Run frontend linting
+	docker compose exec frontend npm run lint
+
+type-check-frontend: ## Run TypeScript type checking
+	docker compose exec frontend npx tsc --noEmit
+
+# Testing - Combined
+test-all: test test-frontend ## Run all tests (backend + frontend)
 
 # Cleanup
 clean: ## Stop containers and remove project volumes (WARNING: destroys project data only)
