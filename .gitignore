@@ -347,3 +347,8 @@ social_media_posts_*.md
 # Keep docs organized but ignore temporary files
 docs/journal/*
 docs/social_media_posts_*
+
+# Temporary files
+env
+my_archive.tar.gz
+newClaude/

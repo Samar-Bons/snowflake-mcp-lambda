@@ -251,8 +251,18 @@ class FileUploadService {
       // Store file info for session management
       if (adaptedResponse.success && adaptedResponse.data) {
         // Extract just the UploadedFile properties (without schema)
-        const { schema, ...uploadedFile } = adaptedResponse.data;
-        await this.storeUploadedFile(uploadedFile as UploadedFile);
+        const uploadedFile: UploadedFile = {
+          id: adaptedResponse.data.id,
+          name: adaptedResponse.data.name,
+          size: adaptedResponse.data.size,
+          uploadedAt: adaptedResponse.data.uploadedAt,
+          processingStatus: adaptedResponse.data.processingStatus,
+          errorMessage: adaptedResponse.data.errorMessage,
+          rowCount: adaptedResponse.data.rowCount,
+          columnCount: adaptedResponse.data.columnCount,
+          estimatedRows: adaptedResponse.data.estimatedRows,
+        };
+        await this.storeUploadedFile(uploadedFile);
       }
 
       return adaptedResponse;

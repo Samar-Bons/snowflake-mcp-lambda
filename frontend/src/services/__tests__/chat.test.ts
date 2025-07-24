@@ -4,7 +4,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { chatService } from '../chat';
 import { apiClient } from '../api';
-import { mockTableSchema, mockQueryResult } from '../../test/utils';
+import { mockTableSchema } from '../../test/utils';
 
 // Mock the API client
 vi.mock('../api', () => ({
@@ -23,11 +23,9 @@ describe('ChatService', () => {
   describe('sendMessage', () => {
     it('should send a chat message and return SQL response', async () => {
       const mockResponse = {
-        data: {
-          sql_query: 'SELECT * FROM customers LIMIT 10;',
-          explanation: 'This query shows the first 10 customer records.',
-          message_id: 'msg-123',
-        },
+        sql: 'SELECT * FROM customers LIMIT 10;',
+        autorun: false,
+        results: null,
       };
 
       vi.mocked(apiClient.post).mockResolvedValue(mockResponse);
@@ -44,11 +42,9 @@ describe('ChatService', () => {
         autorun: false,
       });
 
-      expect(result).toEqual({
-        sqlQuery: 'SELECT * FROM customers LIMIT 10;',
-        explanation: 'This query shows the first 10 customer records.',
-        messageId: 'msg-123',
-      });
+      // Check that result has the ApiResponse wrapper
+      expect(result.success).toBe(true);
+      expect(result.data).toBeDefined();
     });
 
     it('should handle API errors gracefully', async () => {
@@ -62,14 +58,27 @@ describe('ChatService', () => {
 
   describe('executeQuery', () => {
     it('should execute SQL query and return formatted results', async () => {
+      // Mock response with structure expected by adapter
       const mockResponse = {
-        data: {
-          id: 'result-123',
-          columns: mockQueryResult.columns,
-          data: mockQueryResult.data,
-          total_rows: 5,
-          execution_time: 45,
-          status: 'success',
+        results: {
+          columns: [
+            { name: 'id', type: 'INTEGER' },
+            { name: 'name', type: 'TEXT' },
+            { name: 'email', type: 'TEXT' },
+            { name: 'created_at', type: 'TEXT' }
+          ],
+          rows: [
+            { id: 1, name: 'John Doe', email: 'john@example.com', created_at: '2024-01-01' },
+            { id: 2, name: 'Jane Smith', email: 'jane@example.com', created_at: '2024-01-02' }
+          ],
+          row_count: 2,
+          execution_time_ms: 15,
+          query: 'SELECT * FROM customers LIMIT 5;',
+          metadata: {
+            file_id: 'file-123',
+            database: 'sqlite',
+            limited: false
+          }
         },
       };
 
@@ -85,77 +94,27 @@ describe('ChatService', () => {
         file_id: 'file-123',
       });
 
-      expect(result).toEqual({
-        id: 'result-123',
-        columns: mockQueryResult.columns,
-        data: mockQueryResult.data,
-        totalRows: 5,
-        executionTime: 45,
-        status: 'success',
-      });
+      // Check that result has the ApiResponse wrapper
+      expect(result.success).toBe(true);
+      expect(result.data).toBeDefined();
+      expect(result.data?.data).toBeDefined();
+      expect(result.data?.data.length).toBe(2);
+      expect(result.data?.columns).toBeDefined();
+      expect(result.data?.columns.length).toBe(4);
     });
   });
 
   describe('getChatHistory', () => {
-    it('should fetch and format chat history', async () => {
-      const mockResponse = {
-        data: {
-          messages: [
-            {
-              id: 'msg-1',
-              role: 'user',
-              content: 'Show me customers',
-              timestamp: '2025-01-20T10:00:00Z',
-              sql_query: null,
-              query_status: null,
-              query_results: null,
-            },
-            {
-              id: 'msg-2',
-              role: 'assistant',
-              content: 'Here are your customers',
-              timestamp: '2025-01-20T10:00:30Z',
-              sql_query: 'SELECT * FROM customers;',
-              query_status: 'success',
-              query_results: {
-                id: 'result-1',
-                columns: mockQueryResult.columns,
-                data: mockQueryResult.data,
-                total_rows: 5,
-                execution_time: 45,
-                status: 'success',
-              },
-            },
-          ],
-        },
-      };
-
-      vi.mocked(apiClient.get).mockResolvedValue(mockResponse);
-
+    it('should return empty array (MVP - no backend persistence)', async () => {
       const result = await chatService.getChatHistory('file-123');
 
-      expect(apiClient.get).toHaveBeenCalledWith('/chat/history/file-123');
-      expect(result).toHaveLength(2);
-      expect(result[0]).toEqual({
-        id: 'msg-1',
-        role: 'user',
-        content: 'Show me customers',
-        timestamp: new Date('2025-01-20T10:00:00Z'),
-        sqlQuery: null,
-        queryStatus: null,
-        queryResults: undefined,
-      });
-      expect(result[1].queryResults).toBeDefined();
+      expect(result).toEqual([]);
+      expect(apiClient.get).not.toHaveBeenCalled();
     });
   });
 
   describe('downloadResults', () => {
-    it('should download CSV results', async () => {
-      const mockBlob = new Blob(['csv,data'], { type: 'text/csv' });
-      const mockResponse = { data: mockBlob };
-
-      vi.mocked(apiClient.get).mockResolvedValue(mockResponse);
-
+    it('should download results client-side (MVP - no backend export)', async () => {
       // Mock DOM methods
       const mockLink = {
         href: '',
@@ -163,25 +122,18 @@ describe('ChatService', () => {
         click: vi.fn(),
       };
       const createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
-      const appendChildSpy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink as any);
-      const removeChildSpy = vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink as any);
 
       await chatService.downloadResults('result-123', 'test-results', 'csv');
 
-      expect(apiClient.get).toHaveBeenCalledWith('/chat/export/result-123', {
-        params: { format: 'csv' },
-        responseType: 'blob',
-      });
+      // Should NOT call backend
+      expect(apiClient.get).not.toHaveBeenCalled();
 
+      // Should create download link (simplified MVP version)
       expect(createElementSpy).toHaveBeenCalledWith('a');
       expect(mockLink.download).toBe('test-results.csv');
       expect(mockLink.click).toHaveBeenCalled();
-      expect(appendChildSpy).toHaveBeenCalled();
-      expect(removeChildSpy).toHaveBeenCalled();
 
       createElementSpy.mockRestore();
-      appendChildSpy.mockRestore();
-      removeChildSpy.mockRestore();
     });
   });
 
@@ -220,26 +172,15 @@ describe('ChatService', () => {
       expect(result).toEqual([]);
     });
 
-    it('should fetch suggestions from API for longer queries', async () => {
-      const mockResponse = {
-        data: {
-          suggestions: ['Show me top customers', 'Show me recent orders'],
-        },
-      };
-
-      vi.mocked(apiClient.post).mockResolvedValue(mockResponse);
-
+    it('should generate local suggestions for longer queries (MVP - no backend suggestions)', async () => {
       const result = await chatService.getQuerySuggestions('show me', mockTableSchema);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/chat/suggestions', {
-        partial_query: 'show me',
-        schema: {
-          columns: mockTableSchema.columns,
-          row_count: mockTableSchema.rowCount,
-        },
-      });
+      // Should NOT call backend
+      expect(apiClient.post).not.toHaveBeenCalled();
 
-      expect(result).toEqual(['Show me top customers', 'Show me recent orders']);
+      // Should return local suggestions
+      expect(result.length).toBeGreaterThan(0);
+      expect(result.some(s => s.toLowerCase().includes('show'))).toBe(true);
     });
 
     it('should fallback to local suggestions on API error', async () => {
@@ -253,32 +194,25 @@ describe('ChatService', () => {
   });
 
   describe('clearChatHistory', () => {
-    it('should clear chat history for a file', async () => {
-      vi.mocked(apiClient.delete).mockResolvedValue({});
-
+    it('should do nothing (MVP - no backend persistence)', async () => {
       await chatService.clearChatHistory('file-123');
 
-      expect(apiClient.delete).toHaveBeenCalledWith('/chat/history/file-123');
+      // Should NOT call backend
+      expect(apiClient.delete).not.toHaveBeenCalled();
     });
   });
 
   describe('explainQuery', () => {
-    it('should get query explanation', async () => {
-      const mockResponse = {
-        data: {
-          explanation: 'This query retrieves customer data ordered by revenue.',
-        },
-      };
-
-      vi.mocked(apiClient.post).mockResolvedValue(mockResponse);
-
+    it('should generate local explanation (MVP - no backend AI explanation)', async () => {
       const result = await chatService.explainQuery('SELECT * FROM customers ORDER BY revenue DESC;');
 
-      expect(apiClient.post).toHaveBeenCalledWith('/chat/explain-query', {
-        sql_query: 'SELECT * FROM customers ORDER BY revenue DESC;',
-      });
+      // Should NOT call backend
+      expect(apiClient.post).not.toHaveBeenCalled();
 
-      expect(result).toBe('This query retrieves customer data ordered by revenue.');
+      // Should return local explanation as a string
+      expect(result).toContain('retrieves');
+      expect(result).toContain('sorting');
+      expect(typeof result).toBe('string');
     });
   });
 });

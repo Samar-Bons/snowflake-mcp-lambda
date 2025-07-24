@@ -55,9 +55,10 @@ export function SchemaPreview({
         }
       case 'BOOLEAN':
         return value ? 'true' : 'false';
-      default:
+      default: {
         const str = String(value);
         return str.length > 20 ? str.substring(0, 20) + '...' : str;
+      }
     }
   };
 

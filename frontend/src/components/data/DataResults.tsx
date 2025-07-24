@@ -81,13 +81,14 @@ export function DataResults({ result, onExport }: DataResultsProps) {
             {typeof value === 'number' ? value.toLocaleString() : value}
           </span>
         );
-      case 'date':
+      case 'date': {
         const date = value instanceof Date ? value : new Date(value);
         return (
           <span className="font-mono">
             {isNaN(date.getTime()) ? value : date.toLocaleDateString()}
           </span>
         );
+      }
       case 'boolean':
         return (
           <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
