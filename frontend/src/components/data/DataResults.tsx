@@ -2,13 +2,13 @@
 // ABOUTME: Displays query results in a formatted table with metadata and action buttons
 
 import React, { useState } from 'react';
-import { 
-  Download, 
-  Copy, 
-  Check, 
-  ChevronLeft, 
-  ChevronRight, 
-  ArrowUp, 
+import {
+  Download,
+  Copy,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUp,
   ArrowDown,
   FileText,
   BarChart3
@@ -27,6 +27,7 @@ export function DataResults({ result, onExport }: DataResultsProps) {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [copied, setCopied] = useState(false);
   const pageSize = 10; // Show 10 rows per page in results
+  
 
   // Calculate pagination
   const totalPages = Math.ceil(result.data.length / pageSize);
@@ -47,13 +48,13 @@ export function DataResults({ result, onExport }: DataResultsProps) {
     try {
       const csvContent = [
         result.columns.map(col => col.label).join(','),
-        ...result.data.map(row => 
+        ...result.data.map(row =>
           result.columns.map(col => {
             const value = row[col.key];
             // Escape quotes and wrap in quotes if contains comma
             const stringValue = String(value ?? '');
-            return stringValue.includes(',') || stringValue.includes('"') 
-              ? `"${stringValue.replace(/"/g, '""')}"` 
+            return stringValue.includes(',') || stringValue.includes('"')
+              ? `"${stringValue.replace(/"/g, '""')}"`
               : stringValue;
           }).join(',')
         )
@@ -68,6 +69,7 @@ export function DataResults({ result, onExport }: DataResultsProps) {
   };
 
   const formatCellValue = (value: any, type: string) => {
+    
     if (value === null || value === undefined) {
       return <span className="text-light-subtle italic">null</span>;
     }
@@ -105,11 +107,11 @@ export function DataResults({ result, onExport }: DataResultsProps) {
     return [...currentData].sort((a, b) => {
       const aValue = a[sortColumn];
       const bValue = b[sortColumn];
-      
+
       // Handle null/undefined values
       if (aValue === null || aValue === undefined) return sortDirection === 'asc' ? 1 : -1;
       if (bValue === null || bValue === undefined) return sortDirection === 'asc' ? -1 : 1;
-      
+
       // Compare values
       const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
       return sortDirection === 'asc' ? comparison : -comparison;
@@ -127,7 +129,7 @@ export function DataResults({ result, onExport }: DataResultsProps) {
             <BarChart3 className="h-5 w-5 text-blue-primary" />
             <span className="font-medium text-light-primary">Query Results</span>
           </div>
-          
+
           <div className="text-sm text-light-muted">
             Showing {Math.min(result.data.length, pageSize)} of {result.totalRows} rows
             {result.executionTime && (
@@ -150,7 +152,7 @@ export function DataResults({ result, onExport }: DataResultsProps) {
             )}
             Copy
           </Button>
-          
+
           <Button
             variant="outline"
             size="small"
@@ -160,7 +162,7 @@ export function DataResults({ result, onExport }: DataResultsProps) {
             <Download className="h-4 w-4" />
             CSV
           </Button>
-          
+
           <Button
             variant="outline"
             size="small"
@@ -180,7 +182,7 @@ export function DataResults({ result, onExport }: DataResultsProps) {
             <thead>
               <tr>
                 {result.columns.map((column) => (
-                  <th 
+                  <th
                     key={column.key}
                     className="cursor-pointer hover:bg-surface-elevated transition-colors"
                     onClick={() => handleSort(column.key)}
@@ -235,7 +237,7 @@ export function DataResults({ result, onExport }: DataResultsProps) {
           <div className="text-sm text-light-muted">
             Page {currentPage} of {totalPages}
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -247,7 +249,7 @@ export function DataResults({ result, onExport }: DataResultsProps) {
               <ChevronLeft className="h-4 w-4" />
               Previous
             </Button>
-            
+
             <div className="flex items-center gap-1">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 let pageNum;
@@ -274,7 +276,7 @@ export function DataResults({ result, onExport }: DataResultsProps) {
                 );
               })}
             </div>
-            
+
             <Button
               variant="outline"
               size="small"
@@ -302,7 +304,7 @@ export function DataResults({ result, onExport }: DataResultsProps) {
             <span className="font-medium">Execution Time:</span> {result.executionTime}ms
           </div>
           <div>
-            <span className="font-medium">Status:</span> 
+            <span className="font-medium">Status:</span>
             <span className={`ml-1 ${result.status === 'success' ? 'text-success' : 'text-error'}`}>
               {result.status}
             </span>

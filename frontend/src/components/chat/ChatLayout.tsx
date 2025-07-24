@@ -2,12 +2,12 @@
 // ABOUTME: Handles desktop sidebar + mobile bottom navigation for chat interface
 
 import React, { useState } from 'react';
-import { 
-  Menu, 
-  X, 
-  FileSpreadsheet, 
-  Database, 
-  Settings, 
+import {
+  Menu,
+  X,
+  FileSpreadsheet,
+  Database,
+  Settings,
   Upload,
   MessageSquare,
   BarChart3
@@ -25,14 +25,14 @@ interface ChatLayoutProps {
   onSettingsOpen: () => void;
 }
 
-export function ChatLayout({ 
-  files, 
-  activeFile, 
-  schema, 
-  children, 
-  onFileSelect, 
-  onUploadNew, 
-  onSettingsOpen 
+export function ChatLayout({
+  files,
+  activeFile,
+  schema,
+  children,
+  onFileSelect,
+  onUploadNew,
+  onSettingsOpen
 }: ChatLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'files' | 'schema' | 'settings'>('files');
@@ -98,7 +98,7 @@ export function ChatLayout({
           >
             <Menu className="h-5 w-5" />
           </Button>
-          
+
           <div className="flex items-center gap-2">
             {activeFile && (
               <>
@@ -109,7 +109,7 @@ export function ChatLayout({
               </>
             )}
           </div>
-          
+
           <Button
             variant="ghost"
             size="small"
@@ -141,15 +141,15 @@ interface SidebarProps {
   onSettingsOpen: () => void;
 }
 
-function Sidebar({ 
-  files, 
-  activeFile, 
-  schema, 
-  activeTab, 
-  onTabChange, 
-  onFileSelect, 
-  onUploadNew, 
-  onSettingsOpen 
+function Sidebar({
+  files,
+  activeFile,
+  schema,
+  activeTab,
+  onTabChange,
+  onFileSelect,
+  onUploadNew,
+  onSettingsOpen
 }: SidebarProps) {
   const tabs = [
     { id: 'files' as const, label: 'Files', icon: FileSpreadsheet },
@@ -195,11 +195,11 @@ function Sidebar({
             onUploadNew={onUploadNew}
           />
         )}
-        
+
         {activeTab === 'schema' && (
           <SchemaPanel schema={schema} />
         )}
-        
+
         {activeTab === 'settings' && (
           <SettingsPanel onSettingsOpen={onSettingsOpen} />
         )}
@@ -335,7 +335,7 @@ function SettingsPanel({ onSettingsOpen }: SettingsPanelProps) {
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-medium text-light-primary">Quick Settings</h3>
-      
+
       <div className="space-y-3">
         <div className="p-3 rounded-lg border border-surface bg-surface/20">
           <div className="flex items-center justify-between">

@@ -2,11 +2,11 @@
 // ABOUTME: Shows upload progress, processing status, and transitions to chat interface
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Upload, 
-  FileSpreadsheet, 
-  CheckCircle, 
-  AlertCircle, 
+import {
+  Upload,
+  FileSpreadsheet,
+  CheckCircle,
+  AlertCircle,
   Loader2,
   ArrowRight,
   Database,
@@ -77,7 +77,7 @@ export function ProcessingScreen({ file, onComplete, onError }: ProcessingScreen
       for (let i = 1; i < steps.length; i++) {
         await simulateStep(i);
       }
-      
+
       // Complete processing
       setTimeout(() => {
         onComplete();
@@ -90,10 +90,10 @@ export function ProcessingScreen({ file, onComplete, onError }: ProcessingScreen
   const simulateStep = (stepIndex: number): Promise<void> => {
     return new Promise((resolve) => {
       setCurrentStepIndex(stepIndex);
-      
+
       // Update step to processing
-      setSteps(prev => prev.map((step, index) => 
-        index === stepIndex 
+      setSteps(prev => prev.map((step, index) =>
+        index === stepIndex
           ? { ...step, status: 'processing', progress: 0 }
           : step
       ));
@@ -102,30 +102,30 @@ export function ProcessingScreen({ file, onComplete, onError }: ProcessingScreen
       let progress = 0;
       const interval = setInterval(() => {
         progress += Math.random() * 25 + 5; // Random progress increment
-        
+
         if (progress >= 100) {
           progress = 100;
           clearInterval(interval);
-          
+
           // Mark step as completed
-          setSteps(prev => prev.map((step, index) => 
-            index === stepIndex 
+          setSteps(prev => prev.map((step, index) =>
+            index === stepIndex
               ? { ...step, status: 'completed', progress: 100 }
               : step
           ));
-          
+
           // Update overall progress
           setOverallProgress(((stepIndex + 1) / steps.length) * 100);
-          
+
           resolve();
         } else {
           // Update step progress
-          setSteps(prev => prev.map((step, index) => 
-            index === stepIndex 
+          setSteps(prev => prev.map((step, index) =>
+            index === stepIndex
               ? { ...step, progress }
               : step
           ));
-          
+
           // Update overall progress
           const baseProgress = (stepIndex / steps.length) * 100;
           const stepProgress = (progress / 100) * (100 / steps.length);
@@ -161,7 +161,7 @@ export function ProcessingScreen({ file, onComplete, onError }: ProcessingScreen
               </div>
             </div>
           </div>
-          
+
           <h1 className="text-2xl font-bold text-light-primary mb-2">
             Processing Your Data
           </h1>
@@ -176,9 +176,9 @@ export function ProcessingScreen({ file, onComplete, onError }: ProcessingScreen
             <span className="text-sm font-medium text-light-primary">Overall Progress</span>
             <span className="text-sm text-light-muted">{Math.round(overallProgress)}%</span>
           </div>
-          
+
           <div className="progress-bar">
-            <div 
+            <div
               className="progress-fill"
               style={{ width: `${overallProgress}%` }}
             />
@@ -191,14 +191,14 @@ export function ProcessingScreen({ file, onComplete, onError }: ProcessingScreen
             <Database className="h-5 w-5" />
             Processing Steps
           </h3>
-          
+
           <div className="space-y-4">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex-shrink-0 mt-0.5">
                   {getStepIcon(step)}
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <h4 className="text-sm font-medium text-light-primary">
@@ -210,14 +210,14 @@ export function ProcessingScreen({ file, onComplete, onError }: ProcessingScreen
                       </span>
                     )}
                   </div>
-                  
+
                   <p className="text-xs text-light-muted mb-2">
                     {step.description}
                   </p>
-                  
+
                   {step.status === 'processing' && step.progress !== undefined && (
                     <div className="progress-bar h-1">
-                      <div 
+                      <div
                         className="progress-fill"
                         style={{ width: `${step.progress}%` }}
                       />

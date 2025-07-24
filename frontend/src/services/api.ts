@@ -16,7 +16,7 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      
+
       // Handle non-JSON responses (like redirects)
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
@@ -58,10 +58,10 @@ class ApiClient {
 
   // GET request
   async get<T>(endpoint: string, params?: Record<string, string>): Promise<T> {
-    const url = params 
+    const url = params
       ? `${endpoint}?${new URLSearchParams(params).toString()}`
       : endpoint;
-    
+
     return this.request<T>(url, {
       method: 'GET',
     });

@@ -14,7 +14,7 @@ describe('FileUploadService', () => {
     it('should accept valid CSV files', () => {
       const file = createMockFile('test.csv', 1024 * 1024, 'text/csv'); // 1MB
       const result = fileUploadService.validateFile(file);
-      
+
       expect(result.isValid).toBe(true);
       expect(result.errors).toEqual([]);
     });
@@ -22,7 +22,7 @@ describe('FileUploadService', () => {
     it('should accept valid Excel files', () => {
       const file = createMockFile('test.xlsx', 2 * 1024 * 1024, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'); // 2MB
       const result = fileUploadService.validateFile(file);
-      
+
       expect(result.isValid).toBe(true);
       expect(result.errors).toEqual([]);
     });
@@ -30,7 +30,7 @@ describe('FileUploadService', () => {
     it('should reject files that are too large', () => {
       const file = createMockFile('huge.csv', 150 * 1024 * 1024, 'text/csv'); // 150MB
       const result = fileUploadService.validateFile(file);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('File size must be less than 100MB');
     });
@@ -38,7 +38,7 @@ describe('FileUploadService', () => {
     it('should reject unsupported file types', () => {
       const file = createMockFile('test.txt', 1024, 'text/plain');
       const result = fileUploadService.validateFile(file);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Only CSV and Excel files are supported');
     });
@@ -46,7 +46,7 @@ describe('FileUploadService', () => {
     it('should reject empty files', () => {
       const file = createMockFile('empty.csv', 0, 'text/csv');
       const result = fileUploadService.validateFile(file);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('File cannot be empty');
     });
@@ -54,7 +54,7 @@ describe('FileUploadService', () => {
     it('should handle multiple validation errors', () => {
       const file = createMockFile('huge.txt', 150 * 1024 * 1024, 'text/plain');
       const result = fileUploadService.validateFile(file);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(1);
       expect(result.errors).toContain('File size must be less than 100MB');
@@ -65,7 +65,7 @@ describe('FileUploadService', () => {
   describe('getAcceptedFileTypes', () => {
     it('should return correct MIME types for file input', () => {
       const acceptedTypes = fileUploadService.getAcceptedFileTypes();
-      
+
       expect(acceptedTypes).toContain('.csv');
       expect(acceptedTypes).toContain('.xlsx');
       expect(acceptedTypes).toContain('.xls');
@@ -95,18 +95,18 @@ describe('FileUploadService', () => {
     it('should estimate rows for CSV files', () => {
       const csvContent = 'id,name,email\n1,John,john@example.com\n2,Jane,jane@example.com';
       const file = new File([csvContent], 'test.csv', { type: 'text/csv' });
-      
+
       const estimate = fileUploadService.estimateRows(file);
-      
+
       expect(estimate).toBeGreaterThan(0);
       expect(typeof estimate).toBe('number');
     });
 
     it('should estimate rows for Excel files', () => {
       const file = createMockFile('test.xlsx', 50 * 1024, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      
+
       const estimate = fileUploadService.estimateRows(file);
-      
+
       expect(estimate).toBeGreaterThan(0);
       expect(typeof estimate).toBe('number');
     });
@@ -114,10 +114,10 @@ describe('FileUploadService', () => {
     it('should return reasonable estimates', () => {
       const smallFile = createMockFile('small.csv', 1024, 'text/csv'); // 1KB
       const largeFile = createMockFile('large.csv', 10 * 1024 * 1024, 'text/csv'); // 10MB
-      
+
       const smallEstimate = fileUploadService.estimateRows(smallFile);
       const largeEstimate = fileUploadService.estimateRows(largeFile);
-      
+
       expect(largeEstimate).toBeGreaterThan(smallEstimate);
       expect(smallEstimate).toBeGreaterThan(0);
     });
@@ -126,7 +126,7 @@ describe('FileUploadService', () => {
   describe('createProgressTracker', () => {
     it('should create a progress tracker with initial state', () => {
       const tracker = fileUploadService.createProgressTracker();
-      
+
       expect(tracker.progress).toBe(0);
       expect(tracker.stage).toBe('preparing');
       expect(tracker.message).toBe('Preparing upload...');
@@ -135,9 +135,9 @@ describe('FileUploadService', () => {
 
     it('should allow progress updates', () => {
       const tracker = fileUploadService.createProgressTracker();
-      
+
       tracker.updateProgress(50, 'uploading', 'Uploading file...', 30);
-      
+
       expect(tracker.progress).toBe(50);
       expect(tracker.stage).toBe('uploading');
       expect(tracker.message).toBe('Uploading file...');
@@ -146,9 +146,9 @@ describe('FileUploadService', () => {
 
     it('should handle complete stage', () => {
       const tracker = fileUploadService.createProgressTracker();
-      
+
       tracker.complete('File uploaded successfully');
-      
+
       expect(tracker.progress).toBe(100);
       expect(tracker.stage).toBe('complete');
       expect(tracker.message).toBe('File uploaded successfully');
@@ -157,9 +157,9 @@ describe('FileUploadService', () => {
 
     it('should handle error stage', () => {
       const tracker = fileUploadService.createProgressTracker();
-      
+
       tracker.error('Upload failed');
-      
+
       expect(tracker.progress).toBe(0);
       expect(tracker.stage).toBe('error');
       expect(tracker.message).toBe('Upload failed');
@@ -181,7 +181,7 @@ describe('FileUploadService', () => {
     it('should validate proper CSV content', async () => {
       const validCsv = 'id,name,email\n1,John,john@example.com\n2,Jane,jane@example.com';
       const file = new File([validCsv], 'test.csv', { type: 'text/csv' });
-      
+
       const isValid = await fileUploadService.isValidCSVContent(file);
       expect(isValid).toBe(true);
     });
@@ -189,7 +189,7 @@ describe('FileUploadService', () => {
     it('should reject malformed CSV content', async () => {
       const invalidCsv = 'id,name,email\n1,John\n2,Jane,jane@example.com,extra';
       const file = new File([invalidCsv], 'test.csv', { type: 'text/csv' });
-      
+
       const isValid = await fileUploadService.isValidCSVContent(file);
       expect(isValid).toBe(false);
     });
@@ -197,7 +197,7 @@ describe('FileUploadService', () => {
     it('should handle empty CSV files', async () => {
       const emptyCsv = '';
       const file = new File([emptyCsv], 'test.csv', { type: 'text/csv' });
-      
+
       const isValid = await fileUploadService.isValidCSVContent(file);
       expect(isValid).toBe(false);
     });
@@ -205,7 +205,7 @@ describe('FileUploadService', () => {
     it('should handle CSV with only headers', async () => {
       const headerOnlyCsv = 'id,name,email';
       const file = new File([headerOnlyCsv], 'test.csv', { type: 'text/csv' });
-      
+
       const isValid = await fileUploadService.isValidCSVContent(file);
       expect(isValid).toBe(false);
     });

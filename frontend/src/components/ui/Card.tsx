@@ -12,12 +12,12 @@ interface CardProps {
   onClick?: () => void;
 }
 
-export function Card({ 
-  children, 
-  elevated = false, 
-  interactive = false, 
+export function Card({
+  children,
+  elevated = false,
+  interactive = false,
   className,
-  onClick 
+  onClick
 }: CardProps) {
   const cardClasses = clsx(
     'card',

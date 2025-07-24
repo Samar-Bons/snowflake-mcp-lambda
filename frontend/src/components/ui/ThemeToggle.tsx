@@ -12,11 +12,11 @@ interface ThemeToggleProps {
   className?: string;
 }
 
-export function ThemeToggle({ 
-  theme, 
-  onToggle, 
+export function ThemeToggle({
+  theme,
+  onToggle,
   variant = 'default',
-  className 
+  className
 }: ThemeToggleProps) {
   const baseClasses = clsx(
     'relative bg-none border-2 border-surface-elevated rounded-full w-12 h-12 cursor-pointer transition-all duration-300',
@@ -35,19 +35,19 @@ export function ThemeToggle({
       className={baseClasses}
       aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
     >
-      <Sun 
+      <Sun
         className={clsx(
           'absolute h-5 w-5 transition-all duration-300',
-          theme === 'light' 
-            ? 'opacity-100 rotate-0 scale-100' 
+          theme === 'light'
+            ? 'opacity-100 rotate-0 scale-100'
             : 'opacity-0 -rotate-90 scale-50'
         )}
       />
-      <Moon 
+      <Moon
         className={clsx(
           'absolute h-5 w-5 transition-all duration-300',
-          theme === 'dark' 
-            ? 'opacity-100 rotate-0 scale-100' 
+          theme === 'dark'
+            ? 'opacity-100 rotate-0 scale-100'
             : 'opacity-0 rotate-90 scale-50'
         )}
       />

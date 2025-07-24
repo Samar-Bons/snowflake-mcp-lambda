@@ -69,7 +69,7 @@ export function ChatWindow({
       <div className="w-16 h-16 bg-purple-primary/20 rounded-full flex items-center justify-center mx-auto">
         <Sparkles className="h-8 w-8 text-purple-primary" />
       </div>
-      
+
       <div className="space-y-2">
         <h3 className="text-xl font-medium text-light-primary">
           Ready to explore your data!
@@ -116,7 +116,7 @@ export function ChatWindow({
                   onExecuteQuery={onExecuteQuery}
                   settings={settings}
                 />
-                
+
                 {/* Display query results if available */}
                 {message.queryResults && (
                   <div className="mt-4">
@@ -136,7 +136,7 @@ export function ChatWindow({
                 )}
               </div>
             ))}
-            
+
             {isTyping && (
               <div className="flex items-start gap-3">
                 <div className="chat-avatar chat-avatar--assistant">
@@ -154,7 +154,7 @@ export function ChatWindow({
                 </div>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </>
         )}
@@ -174,7 +174,7 @@ export function ChatWindow({
               rows={1}
               disabled={isTyping}
             />
-            
+
             {/* Send Button */}
             <Button
               type="submit"

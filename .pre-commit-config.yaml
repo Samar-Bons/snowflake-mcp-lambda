@@ -41,10 +41,10 @@ repos:
   # Backend hooks (Python) - Use local hooks to ensure exact CI parity
   - repo: local
     hooks:
-      # Ruff - linting and formatting for backend
+      # Ruff - linting and formatting for backend (exact CI parity)
       - id: ruff-check-backend
         name: ruff check (backend)
-        entry: ./scripts/poetry-wrapper.sh run ruff check app/ tests/ --output-format=concise
+        entry: ./scripts/poetry-wrapper.sh run ruff check --output-format=github .
         language: system
         files: ^backend/.*\.py$
         require_serial: true
@@ -52,16 +52,16 @@ repos:
 
       - id: ruff-format-backend
         name: ruff format (backend)
-        entry: ./scripts/poetry-wrapper.sh run ruff format --check app/ tests/
+        entry: ./scripts/poetry-wrapper.sh run ruff format --check .
         language: system
         files: ^backend/.*\.py$
         require_serial: true
         pass_filenames: false
 
-      # MyPy - type checking for backend
+      # MyPy - type checking for backend (exact CI parity)
       - id: mypy-backend
         name: mypy (backend)
-        entry: ./scripts/poetry-wrapper.sh run mypy app/
+        entry: ./scripts/poetry-wrapper.sh run mypy .
         language: system
         files: ^backend/.*\.py$
         require_serial: true

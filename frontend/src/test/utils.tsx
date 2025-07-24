@@ -131,7 +131,7 @@ export const createMockFile = (
 };
 
 // Async utility for waiting for state updates
-export const waitForNextUpdate = () => 
+export const waitForNextUpdate = () =>
   new Promise(resolve => setTimeout(resolve, 0));
 
 // Mock API response helper

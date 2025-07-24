@@ -43,7 +43,7 @@ class ChatService {
     };
 
     const adaptedResponse = BackendAdapters.adaptChatResponse(chatFormatResponse);
-    
+
     return {
       success: true,
       data: adaptedResponse.data!.results!,
@@ -74,7 +74,7 @@ class ChatService {
     if (format === 'csv') {
       // Generate CSV content
       const headers = queryResult.columns.map(col => col.label).join(',');
-      const rows = queryResult.data.map(row => 
+      const rows = queryResult.data.map(row =>
         queryResult.columns.map(col => {
           const value = row[col.key];
           // Escape CSV values that contain commas or quotes
@@ -129,7 +129,7 @@ class ChatService {
 
     if (numericColumns.length > 0) {
       // Prefer meaningful columns like revenue, price, amount, value, etc.
-      const preferredNumCol = numericColumns.find(col => 
+      const preferredNumCol = numericColumns.find(col =>
         ['revenue', 'price', 'amount', 'value', 'cost', 'total', 'salary'].includes(col.name.toLowerCase())
       ) || numericColumns[0];
       const numCol = preferredNumCol.name;
@@ -151,7 +151,7 @@ class ChatService {
 
     // Combination queries
     if (numericColumns.length > 0 && textColumns.length > 0) {
-      const preferredNumCol = numericColumns.find(col => 
+      const preferredNumCol = numericColumns.find(col =>
         ['revenue', 'price', 'amount', 'value', 'cost', 'total', 'salary'].includes(col.name.toLowerCase())
       ) || numericColumns[0];
       const numCol = preferredNumCol.name;
@@ -179,7 +179,7 @@ class ChatService {
 
     // Client-side suggestion filtering from sample queries
     return this.getSampleQueries(schema)
-      .filter(suggestion => 
+      .filter(suggestion =>
         suggestion.toLowerCase().includes(partialQuery.toLowerCase())
       )
       .slice(0, 5);
@@ -200,27 +200,27 @@ class ChatService {
   async explainQuery(sqlQuery: string): Promise<string> {
     // Basic client-side SQL explanation
     const query = sqlQuery.trim().toLowerCase();
-    
+
     if (query.startsWith('select')) {
       const hasWhere = query.includes('where');
       const hasGroupBy = query.includes('group by');
       const hasOrderBy = query.includes('order by');
       const hasLimit = query.includes('limit');
-      
+
       let explanation = 'This query retrieves data from your uploaded file';
-      
+
       if (hasWhere) explanation += ', filtering results based on specific conditions';
       if (hasGroupBy) explanation += ', grouping the results by specified columns';
       if (hasOrderBy) explanation += ', sorting the results in a specific order';
       if (hasLimit) explanation += ', limiting the number of results returned';
-      
+
       return explanation + '.';
     }
-    
+
     if (query.startsWith('with')) {
       return 'This query uses a Common Table Expression (CTE) to create a temporary result set that is then used in the main query.';
     }
-    
+
     return 'This query retrieves and processes data from your uploaded file.';
   }
 

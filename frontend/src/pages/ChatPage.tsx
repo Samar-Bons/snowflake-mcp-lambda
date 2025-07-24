@@ -12,13 +12,13 @@ import { FileUploadZone } from '../components/upload/FileUploadZone';
 import { Modal } from '../components/ui/Modal';
 import { fileUploadService } from '../services/fileUpload';
 import { chatService } from '../services/chat';
-import { 
-  UploadedFile, 
-  TableSchema, 
-  ChatMessage, 
-  AppSettings, 
-  UploadProgress, 
-  FileUploadError 
+import {
+  UploadedFile,
+  TableSchema,
+  ChatMessage,
+  AppSettings,
+  UploadProgress,
+  FileUploadError
 } from '../types';
 
 interface ChatPageProps {
@@ -29,25 +29,25 @@ interface ChatPageProps {
 export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
   const { fileId } = useParams<{ fileId?: string }>();
   const navigate = useNavigate();
-  
+
   // State management
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  
+
   // Data state
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [activeFile, setActiveFile] = useState<UploadedFile | null>(null);
   const [schema, setSchema] = useState<TableSchema | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
-  
+
   // Upload state
   const [uploadState, setUploadState] = useState<'idle' | 'uploading' | 'processing' | 'success' | 'error'>('idle');
   const [uploadProgress, setUploadProgress] = useState<UploadProgress>();
   const [uploadError, setUploadError] = useState<FileUploadError>();
-  
+
   // Settings
   const [settings, setSettings] = useState<AppSettings>({
     rowLimit: 500,
@@ -64,7 +64,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
         setSidebarOpen(false);
       }
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -86,7 +86,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
     try {
       const uploadedFiles = await fileUploadService.getUploadedFiles();
       setFiles(uploadedFiles);
-      
+
       // If no fileId in URL but files exist, redirect to first file
       if (!fileId && uploadedFiles.length > 0) {
         navigate(`/chat/${uploadedFiles[0].id}`, { replace: true });
@@ -151,17 +151,17 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
       );
 
       setUploadState('processing');
-      
+
       // Create event source for processing updates
       if (!uploadResponse.success || !uploadResponse.data) {
         throw new Error(uploadResponse.error || 'Upload failed');
       }
-      
+
       const eventSource = fileUploadService.createProcessingEventSource(uploadResponse.data.id);
-      
+
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        
+
         if (data.type === 'complete') {
           setUploadState('success');
           eventSource.close();
@@ -203,7 +203,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
     try {
       await fileUploadService.deleteFile(fileIdToDelete);
       await loadFiles();
-      
+
       // If deleted file was active, navigate to another file or home
       if (fileId === fileIdToDelete) {
         const remainingFiles = files.filter(f => f.id !== fileIdToDelete);
@@ -255,7 +255,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
       const assistantMessage: ChatMessage = {
         id: response.data.messageId,
         type: 'assistant',
-        content: response.data.requiresConfirmation 
+        content: response.data.requiresConfirmation
           ? `I'll run this query for you:\n\`\`\`sql\n${response.data.sqlQuery}\n\`\`\``
           : 'Query executed successfully!',
         timestamp: new Date(),
@@ -288,14 +288,14 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
 
     try {
       const result = await chatService.executeQuery(sqlQuery, fileId);
-      
+
       if (!result.success || !result.data) {
         throw new Error(result.error || 'Query execution failed');
       }
-      
+
       // Update the message with results
-      setMessages(prev => prev.map(msg => 
-        msg.id === messageId 
+      setMessages(prev => prev.map(msg =>
+        msg.id === messageId
           ? { ...msg, queryResults: result.data }
           : msg
       ));
@@ -314,7 +314,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
     <div className="h-screen bg-primary text-light-primary flex overflow-hidden">
       {/* Mobile Sidebar Overlay */}
       {isMobile && sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40"
           onClick={() => setSidebarOpen(false)}
         />
@@ -322,8 +322,8 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
 
       {/* Sidebar */}
       <div className={`
-        ${isMobile ? 'fixed left-0 top-0 h-full z-50' : 'relative'} 
-        ${sidebarOpen ? 'w-80' : 'w-0'} 
+        ${isMobile ? 'fixed left-0 top-0 h-full z-50' : 'relative'}
+        ${sidebarOpen ? 'w-80' : 'w-0'}
         transition-all duration-300 bg-secondary border-r border-surface
         ${isMobile && !sidebarOpen ? '-translate-x-full' : 'translate-x-0'}
       `}>
@@ -353,7 +353,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
             >
               {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
-            
+
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-blue-primary" />
               <span className="font-medium truncate">
@@ -377,7 +377,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
               <Upload className="h-4 w-4" />
               {!isMobile && 'Upload'}
             </Button>
-            
+
             <Button
               variant="ghost"
               size="small"
@@ -410,7 +410,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
                   {activeFile ? 'Processing File...' : 'Select a File to Start Chatting'}
                 </h3>
                 <p className="text-sm text-light-muted">
-                  {activeFile 
+                  {activeFile
                     ? 'Your file is being processed. This usually takes a few moments.'
                     : 'Choose a CSV file from the sidebar or upload a new one to begin asking questions about your data.'
                   }
@@ -446,7 +446,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
           progress={uploadProgress}
           error={uploadError}
         />
-        
+
         {uploadState === 'error' && (
           <div className="mt-4 flex justify-end">
             <Button

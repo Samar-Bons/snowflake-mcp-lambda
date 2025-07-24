@@ -1,12 +1,12 @@
 // ABOUTME: Backend response adapters that transform API responses to frontend format
 // ABOUTME: Preserves frontend UI expectations while adapting to actual backend contract
 
-import { 
-  UploadedFile, 
-  TableSchema, 
-  ColumnSchema, 
-  ChatMessage, 
-  QueryResult, 
+import {
+  UploadedFile,
+  TableSchema,
+  ColumnSchema,
+  ChatMessage,
+  QueryResult,
   ApiResponse,
   ChatQueryResponse,
   FileUploadResponse
@@ -178,13 +178,13 @@ export class BackendAdapters {
     if (typeof sampleValue === 'boolean') return 'boolean';
 
     const stringValue = String(sampleValue);
-    
+
     // Check for date patterns
     if (this.isDateString(stringValue)) return 'date';
-    
+
     // Check for numeric strings
     if (this.isNumericString(stringValue)) return 'number';
-    
+
     return 'text';
   }
 

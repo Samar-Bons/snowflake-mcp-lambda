@@ -194,16 +194,16 @@ describe('ChatService', () => {
 
       expect(samples).toContain('Show me the first 10 rows of data');
       expect(samples).toContain('How many total rows are in this dataset?');
-      
+
       // Should include queries for numeric columns
       expect(samples.some(s => s.includes('revenue'))).toBe(true);
-      
+
       // Should include queries for text columns
       expect(samples.some(s => s.includes('name'))).toBe(true);
-      
+
       // Should include queries for date columns
       expect(samples.some(s => s.includes('created_at'))).toBe(true);
-      
+
       expect(samples.length).toBeLessThanOrEqual(12);
     });
 

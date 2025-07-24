@@ -13,7 +13,7 @@ function App() {
   useEffect(() => {
     // Apply theme to document
     document.documentElement.setAttribute('data-theme', theme);
-    
+
     // Update Tailwind dark mode class
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -31,32 +31,32 @@ function App() {
       <Router>
         <div className="min-h-screen bg-primary text-light-primary">
           <Routes>
-            <Route 
-              path="/" 
+            <Route
+              path="/"
               element={
-                <LandingPage 
-                  theme={theme} 
-                  onToggleTheme={toggleTheme} 
+                <LandingPage
+                  theme={theme}
+                  onToggleTheme={toggleTheme}
                 />
-              } 
+              }
             />
-            <Route 
-              path="/chat" 
+            <Route
+              path="/chat"
               element={
-                <ChatPage 
-                  theme={theme} 
-                  onToggleTheme={toggleTheme} 
+                <ChatPage
+                  theme={theme}
+                  onToggleTheme={toggleTheme}
                 />
-              } 
+              }
             />
-            <Route 
-              path="/chat/:fileId" 
+            <Route
+              path="/chat/:fileId"
               element={
-                <ChatPage 
-                  theme={theme} 
-                  onToggleTheme={toggleTheme} 
+                <ChatPage
+                  theme={theme}
+                  onToggleTheme={toggleTheme}
                 />
-              } 
+              }
             />
           </Routes>
         </div>

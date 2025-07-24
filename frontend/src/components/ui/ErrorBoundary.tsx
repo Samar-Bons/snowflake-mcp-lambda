@@ -28,7 +28,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
-    
+
     this.setState({
       error,
       errorInfo,
@@ -71,11 +71,11 @@ export class ErrorBoundary extends Component<Props, State> {
               <div className="w-16 h-16 bg-error/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <AlertTriangle className="h-8 w-8 text-error" />
               </div>
-              
+
               <h1 className="text-2xl font-bold text-light-primary mb-2">
                 Something went wrong
               </h1>
-              
+
               <p className="text-light-muted mb-6">
                 We encountered an unexpected error. This has been logged and we'll look into it.
               </p>
@@ -90,7 +90,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 <RefreshCw className="h-4 w-4" />
                 Try Again
               </Button>
-              
+
               <Button
                 variant="outline"
                 onClick={this.handleGoHome}
@@ -151,6 +151,6 @@ export function withErrorBoundary<P extends object>(
   );
 
   WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name})`;
-  
+
   return WrappedComponent;
 }

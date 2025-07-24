@@ -14,13 +14,13 @@ interface ModalProps {
   className?: string;
 }
 
-export function Modal({ 
-  isOpen, 
-  onClose, 
-  title, 
-  children, 
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
   size = 'medium',
-  className 
+  className
 }: ModalProps) {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -50,7 +50,7 @@ export function Modal({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div 
+      <div
         className={clsx(
           'modal-content w-full m-4',
           sizeClasses[size],
@@ -72,7 +72,7 @@ export function Modal({
             </button>
           </div>
         )}
-        
+
         <div className="p-6">
           {children}
         </div>

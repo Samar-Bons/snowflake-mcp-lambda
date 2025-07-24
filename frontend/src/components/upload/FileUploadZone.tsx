@@ -59,7 +59,7 @@ export function FileUploadZone({
     if (state !== 'idle' && state !== 'error') {
       return;
     }
-    
+
     const files = e.target.files;
     if (files && files.length > 0) {
       handleFileSelection(files[0]);
@@ -98,7 +98,7 @@ export function FileUploadZone({
   const getStateMessage = () => {
     switch (state) {
       case 'uploading':
-        return progress 
+        return progress
           ? `Uploading... ${Math.round(progress.percentage)}%`
           : 'Uploading file...';
       case 'processing':
@@ -115,7 +115,7 @@ export function FileUploadZone({
   const getSubMessage = () => {
     switch (state) {
       case 'uploading':
-        return progress 
+        return progress
           ? `${formatFileSize(progress.bytesUploaded)} of ${formatFileSize(progress.totalBytes)}`
           : 'Please wait...';
       case 'processing':
@@ -157,7 +157,7 @@ export function FileUploadZone({
 
       <div className="flex flex-col items-center justify-center space-y-4 text-center">
         {getStateIcon()}
-        
+
         <div className="space-y-2">
           <p className="text-lg font-medium text-light-primary">
             {getStateMessage()}
@@ -171,7 +171,7 @@ export function FileUploadZone({
         {(state === 'uploading' || state === 'processing') && progress && (
           <div className="w-full max-w-xs">
             <div className="w-full bg-surface rounded-full h-2">
-              <div 
+              <div
                 className="progress-bar h-2 rounded-full transition-all duration-300"
                 style={{ width: `${progress.percentage}%` }}
               />

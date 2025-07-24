@@ -15,11 +15,11 @@ interface ProgressTracker {
   stage: 'preparing' | 'uploading' | 'processing' | 'complete' | 'error';
   message: string;
   estimatedTimeRemaining: number | null;
-  
+
   updateProgress: (
-    progress: number, 
-    stage?: ProgressTracker['stage'], 
-    message?: string, 
+    progress: number,
+    stage?: ProgressTracker['stage'],
+    message?: string,
     estimatedTime?: number
   ) => void;
   complete: (message?: string) => void;
@@ -50,9 +50,9 @@ class FileUploadService {
 
     // Check file type
     const extension = this.getFileExtension(file.name);
-    const isValidType = this.ACCEPTED_TYPES.includes(file.type) || 
+    const isValidType = this.ACCEPTED_TYPES.includes(file.type) ||
                        this.ACCEPTED_EXTENSIONS.includes(`.${extension}`);
-    
+
     if (!isValidType) {
       errors.push('Only CSV and Excel files are supported');
     }
@@ -75,14 +75,14 @@ class FileUploadService {
    */
   formatFileSize(bytes: number): string {
     if (bytes <= 0 || !Number.isFinite(bytes) || bytes < 1) return '0 Bytes';
-    
+
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
+
     // Ensure i is within bounds
     const sizeIndex = Math.min(i, sizes.length - 1);
-    
+
     return (bytes / Math.pow(k, sizeIndex)).toFixed(1) + ' ' + sizes[sizeIndex];
   }
 
@@ -108,7 +108,7 @@ class FileUploadService {
   async isValidCSVContent(file: File): Promise<boolean> {
     return new Promise((resolve) => {
       const reader = new FileReader();
-      
+
       reader.onload = (e) => {
         try {
           const text = e.target?.result as string;
@@ -188,11 +188,11 @@ class FileUploadService {
    */
   calculateETA(startTime: number, progress: number): number | null {
     if (progress <= 0) return null;
-    
+
     const elapsed = Date.now() - startTime;
     const rate = progress / elapsed;
     const remaining = 100 - progress;
-    
+
     return remaining / rate;
   }
 
@@ -201,7 +201,7 @@ class FileUploadService {
    */
   isFileTypeSupported(file: File): boolean {
     const extension = this.getFileExtension(file.name);
-    return this.ACCEPTED_TYPES.includes(file.type) || 
+    return this.ACCEPTED_TYPES.includes(file.type) ||
            this.ACCEPTED_EXTENSIONS.includes(`.${extension}`);
   }
 
@@ -247,14 +247,14 @@ class FileUploadService {
 
       // Adapt backend response to frontend format
       const adaptedResponse = BackendAdapters.adaptUploadResponse(backendResponse as any);
-      
+
       // Store file info for session management
       if (adaptedResponse.success && adaptedResponse.data) {
         // Extract just the UploadedFile properties (without schema)
         const { schema, ...uploadedFile } = adaptedResponse.data;
         await this.storeUploadedFile(uploadedFile as UploadedFile);
       }
-      
+
       return adaptedResponse;
     } catch (error) {
       return {
@@ -296,7 +296,7 @@ class FileUploadService {
   estimateProcessingTime(fileSize: number): string {
     // Rough estimation: ~1MB per second for CSV processing
     const estimatedSeconds = Math.max(1, Math.floor(fileSize / (1024 * 1024)));
-    
+
     if (estimatedSeconds < 60) {
       return `${estimatedSeconds} second${estimatedSeconds === 1 ? '' : 's'}`;
     } else {

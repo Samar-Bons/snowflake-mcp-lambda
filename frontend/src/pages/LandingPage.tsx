@@ -64,12 +64,12 @@ export function LandingPage({ theme, onToggleTheme }: LandingPageProps) {
       if (!uploadResponse.success || !uploadResponse.data) {
         throw new Error(uploadResponse.error || 'Upload failed');
       }
-      
+
       const eventSource = fileUploadService.createProcessingEventSource(uploadResponse.data.id);
-      
+
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        
+
         if (data.type === 'progress') {
           setUploadProgress(prev => ({
             ...prev!,
@@ -79,7 +79,7 @@ export function LandingPage({ theme, onToggleTheme }: LandingPageProps) {
         } else if (data.type === 'complete') {
           setUploadState('success');
           eventSource.close();
-          
+
           // Redirect to chat after a brief success display
           setTimeout(() => {
             navigate(`/chat/${uploadResponse.data!.id}`);
@@ -131,9 +131,9 @@ export function LandingPage({ theme, onToggleTheme }: LandingPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-secondary overflow-hidden">
       {/* Theme Toggle */}
-      <ThemeToggle 
-        theme={theme} 
-        onToggle={onToggleTheme} 
+      <ThemeToggle
+        theme={theme}
+        onToggle={onToggleTheme}
         variant="hero"
       />
 
@@ -147,14 +147,14 @@ export function LandingPage({ theme, onToggleTheme }: LandingPageProps) {
       {/* Main Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="max-w-4xl mx-auto text-center space-y-12">
-          
+
           {/* Hero Title */}
           <div className="space-y-6 animate fade-in">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gradient leading-tight">
               Chat with Your CSV Data
             </h1>
             <p className="text-lg md:text-xl text-light-muted max-w-2xl mx-auto leading-relaxed">
-              Upload any CSV file and ask questions in plain English. 
+              Upload any CSV file and ask questions in plain English.
               Get instant insights without writing SQL or complex queries.
             </p>
           </div>
@@ -170,7 +170,7 @@ export function LandingPage({ theme, onToggleTheme }: LandingPageProps) {
               error={uploadError}
               className="min-h-[300px]"
             />
-            
+
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
               {uploadState === 'idle' && (
@@ -186,7 +186,7 @@ export function LandingPage({ theme, onToggleTheme }: LandingPageProps) {
                   </Button>
                 </>
               )}
-              
+
               {uploadState === 'error' && (
                 <Button
                   variant="primary"
@@ -198,7 +198,7 @@ export function LandingPage({ theme, onToggleTheme }: LandingPageProps) {
                   Try Again
                 </Button>
               )}
-              
+
               {uploadState === 'success' && (
                 <Button
                   variant="primary"
@@ -227,7 +227,7 @@ export function LandingPage({ theme, onToggleTheme }: LandingPageProps) {
                   No account required. Upload your CSV and start asking questions in under 30 seconds.
                 </p>
               </div>
-              
+
               <div className="text-center space-y-3">
                 <div className="w-12 h-12 bg-purple-primary/20 rounded-full flex items-center justify-center mx-auto">
                   <MessageSquare className="h-6 w-6 text-purple-primary" />
@@ -239,7 +239,7 @@ export function LandingPage({ theme, onToggleTheme }: LandingPageProps) {
                   Ask questions like "Show me top sales by region" - no SQL knowledge needed.
                 </p>
               </div>
-              
+
               <div className="text-center space-y-3">
                 <div className="w-12 h-12 bg-success/20 rounded-full flex items-center justify-center mx-auto">
                   <Database className="h-6 w-6 text-success" />

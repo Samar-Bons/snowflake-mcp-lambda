@@ -2,10 +2,10 @@
 // ABOUTME: Displays CSV structure with confirmation options to proceed to chat
 
 import React from 'react';
-import { 
-  Database, 
-  FileSpreadsheet, 
-  CheckCircle, 
+import {
+  Database,
+  FileSpreadsheet,
+  CheckCircle,
   ArrowRight,
   Upload,
   Download,
@@ -23,12 +23,12 @@ interface SchemaPreviewProps {
   onUploadDifferent: () => void;
 }
 
-export function SchemaPreview({ 
-  file, 
-  schema, 
-  sampleData, 
-  onStartChat, 
-  onUploadDifferent 
+export function SchemaPreview({
+  file,
+  schema,
+  sampleData,
+  onStartChat,
+  onUploadDifferent
 }: SchemaPreviewProps) {
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
@@ -40,7 +40,7 @@ export function SchemaPreview({
 
   const formatSampleValue = (value: any, type: string): string => {
     if (value === null || value === undefined) return 'null';
-    
+
     switch (type) {
       case 'number':
         return typeof value === 'number' ? value.toLocaleString() : String(value);
@@ -85,7 +85,7 @@ export function SchemaPreview({
               </div>
             </div>
           </div>
-          
+
           <h1 className="text-3xl font-bold text-light-primary mb-2">
             Your Data is Ready!
           </h1>
@@ -117,7 +117,7 @@ export function SchemaPreview({
               <Database className="h-5 w-5 text-blue-primary" />
               Data Structure
             </h3>
-            
+
             <div className="overflow-hidden rounded-lg border border-surface">
               <div className="overflow-x-auto">
                 <table className="schema-table w-full">
@@ -144,10 +144,10 @@ export function SchemaPreview({
                         .slice(0, 3)
                         .map(row => row[column.name])
                         .filter(val => val !== null && val !== undefined);
-                      
+
                       return (
-                        <tr 
-                          key={column.name} 
+                        <tr
+                          key={column.name}
                           className="border-b border-surface/50 hover:bg-surface/30 transition-colors"
                         >
                           <td className="px-4 py-3">
@@ -176,8 +176,8 @@ export function SchemaPreview({
                           </td>
                           <td className="px-4 py-3">
                             <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                              column.nullable 
-                                ? 'bg-warning/20 text-warning' 
+                              column.nullable
+                                ? 'bg-warning/20 text-warning'
                                 : 'bg-success/20 text-success'
                             }`}>
                               {column.nullable ? 'Yes' : 'No'}
@@ -203,14 +203,14 @@ export function SchemaPreview({
                 (First {Math.min(sampleData.length, 5)} rows)
               </span>
             </h3>
-            
+
             <div className="overflow-hidden rounded-lg border border-surface">
               <div className="overflow-x-auto">
                 <table className="data-table w-full">
                   <thead>
                     <tr className="bg-surface-elevated">
                       {schema.columns.map((column) => (
-                        <th 
+                        <th
                           key={column.name}
                           className="px-4 py-3 text-left text-sm font-medium text-light-primary whitespace-nowrap"
                         >
@@ -221,12 +221,12 @@ export function SchemaPreview({
                   </thead>
                   <tbody>
                     {sampleData.slice(0, 5).map((row, rowIndex) => (
-                      <tr 
+                      <tr
                         key={rowIndex}
                         className="border-b border-surface/50 hover:bg-surface/30 transition-colors"
                       >
                         {schema.columns.map((column) => (
-                          <td 
+                          <td
                             key={column.name}
                             className="px-4 py-3 text-sm text-light-secondary"
                           >
@@ -254,7 +254,7 @@ export function SchemaPreview({
             <Upload className="h-4 w-4" />
             Upload Different File
           </Button>
-          
+
           <Button
             variant="primary"
             size="large"

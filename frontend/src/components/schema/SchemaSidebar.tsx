@@ -2,12 +2,12 @@
 // ABOUTME: Provides file management, column details, and navigation between datasets
 
 import React, { useState } from 'react';
-import { 
-  FileText, 
-  Database, 
-  Settings, 
-  Upload, 
-  Trash2, 
+import {
+  FileText,
+  Database,
+  Settings,
+  Upload,
+  Trash2,
   X,
   ChevronDown,
   ChevronRight,
@@ -112,7 +112,7 @@ export function SchemaSidebar({
           <Database className="h-5 w-5 text-blue-primary" />
           <span className="font-medium text-light-primary">Data Explorer</span>
         </div>
-        
+
         {isMobile && onClose && (
           <Button
             variant="ghost"
@@ -183,7 +183,7 @@ export function SchemaSidebar({
                         </p>
                       </div>
                     </div>
-                    
+
                     <Button
                       variant="ghost"
                       size="small"
@@ -196,7 +196,7 @@ export function SchemaSidebar({
                       <Trash2 className="h-3 w-3 text-error" />
                     </Button>
                   </div>
-                  
+
                   {file.errorMessage && (
                     <div className="mt-2 p-2 bg-error/10 border border-error/20 rounded text-xs text-error">
                       {file.errorMessage}
@@ -242,7 +242,7 @@ export function SchemaSidebar({
                 <div className="text-xs text-light-muted mb-3">
                   {schema.rowCount.toLocaleString()} rows in {schema.tableName}
                 </div>
-                
+
                 {schema.columns.map((column, index) => {
                   const IconComponent = getColumnIcon(column.type);
                   return (
@@ -259,7 +259,7 @@ export function SchemaSidebar({
                           {column.type}
                         </span>
                       </div>
-                      
+
                       {column.sampleValues.length > 0 && (
                         <div className="mt-1 text-xs text-light-muted">
                           <span className="text-light-subtle">Examples: </span>
@@ -267,7 +267,7 @@ export function SchemaSidebar({
                           {column.sampleValues.length > 3 && '...'}
                         </div>
                       )}
-                      
+
                       {column.nullable && (
                         <div className="mt-1">
                           <span className="text-xs text-warning bg-warning/10 px-1 rounded">

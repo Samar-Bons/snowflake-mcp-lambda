@@ -55,7 +55,7 @@ export function ChatMessage({ message, onExecuteQuery, settings }: ChatMessagePr
               <Copy className="h-3 w-3" />
             )}
           </Button>
-          
+
           {!message.queryResults && (
             <>
               <Button
@@ -66,7 +66,7 @@ export function ChatMessage({ message, onExecuteQuery, settings }: ChatMessagePr
                 <Play className="h-3 w-3" />
                 Execute
               </Button>
-              
+
               <Button
                 variant="outline"
                 size="small"
@@ -79,7 +79,7 @@ export function ChatMessage({ message, onExecuteQuery, settings }: ChatMessagePr
           )}
         </div>
       </div>
-      
+
       <pre className="px-3 py-3 text-sm text-light-primary font-mono overflow-x-auto">
         <code>{sql}</code>
       </pre>
@@ -108,10 +108,10 @@ export function ChatMessage({ message, onExecuteQuery, settings }: ChatMessagePr
           ) : (
             message.content
           )}
-          
+
           {/* SQL Query Display */}
           {message.sqlQuery && renderSQLBlock(message.sqlQuery)}
-          
+
           {/* Query execution status */}
           {message.queryResults?.status === 'error' && (
             <div className="mt-3 p-3 bg-error/10 border border-error/20 rounded-lg">
@@ -126,18 +126,18 @@ export function ChatMessage({ message, onExecuteQuery, settings }: ChatMessagePr
         {/* Message metadata */}
         <div className="flex items-center justify-between mt-2 text-xs text-light-subtle">
           <span>{formatTimestamp(message.timestamp)}</span>
-          
+
           {message.status === 'sending' && (
             <span className="flex items-center gap-1">
               <div className="w-1 h-1 bg-blue-primary rounded-full animate-pulse" />
               Sending...
             </span>
           )}
-          
+
           {message.status === 'error' && (
             <span className="text-error">Failed to send</span>
           )}
-          
+
           {message.queryResults && message.queryResults.status === 'success' && (
             <span className="text-success">
               {message.queryResults.data.length} rows • {message.queryResults.executionTime}ms
