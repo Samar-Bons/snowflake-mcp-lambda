@@ -71,12 +71,12 @@ class SQLiteSchemaService:
                 schema["databases"][db_name]["schemas"][schema_name] = {"tables": {}}
 
                 for (table_name,) in tables:
-                    # Get table info
-                    cursor.execute(f"PRAGMA table_info({table_name})")
+                    # Get table info - properly quote table name
+                    cursor.execute(f'PRAGMA table_info("{table_name}")')
                     columns = cursor.fetchall()
 
-                    # Get row count
-                    cursor.execute(f"SELECT COUNT(*) FROM {table_name}")  # noqa: S608
+                    # Get row count - properly quote table name
+                    cursor.execute(f'SELECT COUNT(*) FROM "{table_name}"')  # noqa: S608
                     row_count = cursor.fetchone()[0]
 
                     table_info = {
