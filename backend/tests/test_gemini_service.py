@@ -26,12 +26,12 @@ class TestGeminiService:
     @pytest.fixture
     def gemini_service(self, mock_settings: Settings) -> GeminiService:
         """Create GeminiService instance for testing."""
-        with patch('app.llm.gemini_service.genai.configure'):
+        with patch("app.llm.gemini_service.genai.configure"):
             return GeminiService(settings=mock_settings)
 
     def test_gemini_service_initialization(self, mock_settings: Settings) -> None:
         """Test that GeminiService initializes correctly."""
-        with patch('app.llm.gemini_service.genai.configure'):
+        with patch("app.llm.gemini_service.genai.configure"):
             service = GeminiService(settings=mock_settings)
 
         assert service.settings == mock_settings
@@ -50,7 +50,7 @@ class TestGeminiService:
 
         assert "API key is required" in str(exc_info.value)
 
-    @patch('app.llm.gemini_service.genai.GenerativeModel')
+    @patch("app.llm.gemini_service.genai.GenerativeModel")
     def test_translate_nl_to_sql_success(
         self,
         mock_generative_model: Mock,
@@ -68,15 +68,14 @@ class TestGeminiService:
         natural_language = "Show me all customers older than 25"
 
         result = gemini_service.translate_nl_to_sql(
-            natural_language=natural_language,
-            schema_context=schema_context
+            natural_language=natural_language, schema_context=schema_context
         )
 
         assert result == "SELECT * FROM customers WHERE age > 25;"
         mock_generative_model.assert_called_once_with("gemini-1.5-flash")
         mock_model_instance.generate_content.assert_called_once()
 
-    @patch('app.llm.gemini_service.genai.GenerativeModel')
+    @patch("app.llm.gemini_service.genai.GenerativeModel")
     def test_translate_nl_to_sql_api_error(
         self,
         mock_generative_model: Mock,
@@ -93,14 +92,13 @@ class TestGeminiService:
 
         with pytest.raises(GeminiServiceError) as exc_info:
             gemini_service.translate_nl_to_sql(
-                natural_language=natural_language,
-                schema_context=schema_context
+                natural_language=natural_language, schema_context=schema_context
             )
 
         assert "Failed to generate SQL" in str(exc_info.value)
         assert "API Error" in str(exc_info.value)
 
-    @patch('app.llm.gemini_service.genai.GenerativeModel')
+    @patch("app.llm.gemini_service.genai.GenerativeModel")
     def test_translate_nl_to_sql_empty_response(
         self,
         mock_generative_model: Mock,
@@ -119,8 +117,7 @@ class TestGeminiService:
 
         with pytest.raises(GeminiServiceError) as exc_info:
             gemini_service.translate_nl_to_sql(
-                natural_language=natural_language,
-                schema_context=schema_context
+                natural_language=natural_language, schema_context=schema_context
             )
 
         assert "Received empty response" in str(exc_info.value)
@@ -131,8 +128,7 @@ class TestGeminiService:
         natural_language = "Show me all customers older than 25"
 
         prompt = gemini_service._build_prompt(
-            natural_language=natural_language,
-            schema_context=schema_context
+            natural_language=natural_language, schema_context=schema_context
         )
 
         assert "You are an expert SQL generator" in prompt
@@ -146,8 +142,7 @@ class TestGeminiService:
         natural_language = "Show me all customers older than 25"
 
         prompt = gemini_service._build_prompt(
-            natural_language=natural_language,
-            schema_context=None
+            natural_language=natural_language, schema_context=None
         )
 
         assert "You are an expert SQL generator" in prompt
@@ -188,7 +183,9 @@ class TestGeminiService:
         assert "WHERE age > 25" in result
         assert "ORDER BY name" in result
 
-    def test_validate_sql_query_valid_select(self, gemini_service: GeminiService) -> None:
+    def test_validate_sql_query_valid_select(
+        self, gemini_service: GeminiService
+    ) -> None:
         """Test validation of valid SELECT queries."""
         valid_queries = [
             "SELECT * FROM customers;",
@@ -202,7 +199,9 @@ class TestGeminiService:
             # Should not raise an exception
             gemini_service._validate_sql_query(query)
 
-    def test_validate_sql_query_invalid_non_select(self, gemini_service: GeminiService) -> None:
+    def test_validate_sql_query_invalid_non_select(
+        self, gemini_service: GeminiService
+    ) -> None:
         """Test validation rejects non-SELECT queries."""
         invalid_queries = [
             "INSERT INTO customers VALUES (1, 'John', 30);",
@@ -219,7 +218,9 @@ class TestGeminiService:
 
             assert "Only SELECT queries are allowed" in str(exc_info.value)
 
-    def test_validate_sql_query_empty_query(self, gemini_service: GeminiService) -> None:
+    def test_validate_sql_query_empty_query(
+        self, gemini_service: GeminiService
+    ) -> None:
         """Test validation of empty or whitespace-only queries."""
         invalid_queries = ["", "  ", "\n\t  \n"]
 

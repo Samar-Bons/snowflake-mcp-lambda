@@ -1,0 +1,60 @@
+# ABOUTME: Frontend CI job configuration to be merged into main CI pipeline
+# ABOUTME: Ensures frontend tests, linting, and build verification run in CI
+
+name: Frontend CI
+
+on:
+  push:
+    branches: [ main, dev-*, feat/* ]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+
+jobs:
+  frontend-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Lint with ESLint
+      run: |
+        cd frontend
+        npm run lint
+
+    - name: Type check with TypeScript
+      run: |
+        cd frontend
+        npx tsc --noEmit
+
+    - name: Run tests with Vitest
+      run: |
+        cd frontend
+        npm run test -- --run --reporter=verbose
+
+    - name: Run tests with coverage
+      run: |
+        cd frontend
+        npm run coverage
+
+    - name: Build verification
+      run: |
+        cd frontend
+        npm run build

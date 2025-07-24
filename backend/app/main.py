@@ -6,9 +6,11 @@ from typing import Any
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from starlette.middleware.sessions import SessionMiddleware
 
 from app.auth.endpoints import router as auth_router
 from app.config import get_settings
+from app.data.endpoints import router as data_router
 from app.health import get_health_status, get_readiness_status
 from app.llm.endpoints import router as chat_router
 from app.snowflake.endpoints import router as snowflake_router
@@ -31,9 +33,21 @@ app = FastAPI(
     debug=settings.DEBUG,
 )
 
+# Add session middleware
+# Use JWT secret key for session encryption (or generate a separate one)
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=settings.JWT_SECRET_KEY,
+    session_cookie="snowflake_session",
+    max_age=86400,  # 24 hours
+    same_site="lax",
+    https_only=not settings.DEBUG,
+)
+
 # Include routers
 app.include_router(auth_router)
 app.include_router(chat_router, prefix=settings.API_V1_PREFIX)
+app.include_router(data_router, prefix=settings.API_V1_PREFIX)
 app.include_router(snowflake_router, prefix=settings.API_V1_PREFIX)
 
 
@@ -63,6 +77,7 @@ async def root() -> dict[str, Any]:
             "health": "/health",
             "readiness": "/readiness",
             "chat": "/api/v1/chat",
+            "data": "/api/v1/data",
             "auth": "/api/v1/auth",
             "docs": "/docs",
         },

@@ -1,0 +1,128 @@
+# ABOUTME: Production Docker Compose configuration for Snowflake MCP Lambda
+# ABOUTME: Optimized for production deployment with proper security and performance settings
+
+version: '3.8'
+
+services:
+  # Backend API service (production)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: snowflake-mcp-backend-prod
+    restart: unless-stopped
+    environment:
+      # Production environment
+      ENV: "production"
+      DEBUG: "false"
+      LOG_LEVEL: "INFO"
+
+      # Database configuration (use external production database)
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+
+      # Auth configuration (production values)
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
+
+      # JWT configuration (production secrets)
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: "HS256"
+      JWT_EXPIRE_MINUTES: "1440"
+
+      # Gemini API (production key)
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+
+      # Snowflake configuration (if default needed)
+      SNOWFLAKE_ACCOUNT: ${SNOWFLAKE_ACCOUNT:-}
+      SNOWFLAKE_USER: ${SNOWFLAKE_USER:-}
+      SNOWFLAKE_PASSWORD: ${SNOWFLAKE_PASSWORD:-}
+      SNOWFLAKE_WAREHOUSE: ${SNOWFLAKE_WAREHOUSE:-}
+      SNOWFLAKE_DATABASE: ${SNOWFLAKE_DATABASE:-}
+      SNOWFLAKE_SCHEMA: ${SNOWFLAKE_SCHEMA:-}
+      SNOWFLAKE_ROLE: ${SNOWFLAKE_ROLE:-}
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - snowflake-network
+    # Only expose port internally (reverse proxy will handle external access)
+    expose:
+      - "8000"
+
+  # Frontend service (production)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: snowflake-mcp-frontend-prod
+    restart: unless-stopped
+    environment:
+      # Production API endpoint (update to your actual domain)
+      VITE_API_BASE_URL: ${API_BASE_URL:-https://api.yourdomain.com/api/v1}
+      VITE_APP_NAME: "Snowflake MCP Lambda"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - snowflake-network
+    # Only expose port internally (reverse proxy will handle external access)
+    expose:
+      - "3000"
+
+  # Reverse proxy (production)
+  nginx:
+    image: nginx:alpine
+    container_name: snowflake-mcp-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/ssl/certs:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    networks:
+      - snowflake-network
+
+networks:
+  snowflake-network:
+    driver: bridge
+
+# Note: No volumes defined - production should use external managed databases
+# and object storage for persistent data

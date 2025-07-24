@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Data AI</title>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter:wght@400;500;700;900&amp;family=Noto+Sans:wght@400;500;700;900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style type="text/tailwindcss">
+        :root {
+            --primary-color: #0c7ff2;
+            --background-color: #121212;
+            --text-primary: #E0E0E0;
+            --text-secondary: #A0A0A0;
+            --accent-color: #333333;
+            --card-background: #1E1E1E;
+            --button-hover: #1E60B3;
+            --input-background: #2C2C2C;
+            --input-border: #4A4A4A;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+        }
+        .main_container {
+            @apply container mx-auto px-4 py-8;
+        }
+        .card {
+            @apply bg-[var(--card-background)] rounded-lg p-6 shadow-lg;
+        }
+        .button_primary {
+            @apply bg-[var(--primary-color)] text-white py-3 px-6 rounded-md text-base font-bold hover:bg-[var(--button-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-opacity-50 transition-colors duration-300;
+        }
+        .button_secondary {
+            @apply bg-[var(--accent-color)] text-[var(--text-primary)] py-3 px-6 rounded-md text-base font-bold hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)] focus:ring-opacity-50 transition-colors duration-300;
+        }
+        .input {
+            @apply bg-[var(--input-background)] border border-[var(--input-border)] text-[var(--text-primary)] rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent;
+        }
+        .typography_h1 {
+            @apply text-5xl font-black text-[var(--text-primary)] mb-4 leading-tight tracking-tighter;
+        }
+        .typography_h2 {
+            @apply text-2xl font-semibold text-[var(--text-primary)] mb-3;
+        }
+        .typography_body {
+            @apply text-[var(--text-secondary)] text-lg;
+        }
+        .link {
+            @apply text-[var(--primary-color)] hover:underline;
+        }
+    </style>
+</head>
+<body class="bg-background-color text-text-primary">
+<div class="relative flex size-full min-h-screen flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--accent-color)] px-10 py-4">
+<div class="flex items-center gap-4 text-white">
+<div class="w-8 h-8 text-[var(--primary-color)]">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_330)">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</g>
+<defs>
+<clipPath id="clip0_6_330"><rect fill="white" height="48" width="48"></rect></clipPath>
+</defs>
+</svg>
+</div>
+<h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em]">Data AI</h2>
+</div>
+<div class="flex flex-1 justify-end items-center gap-8">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-text-secondary hover:text-text-primary text-sm font-medium leading-normal transition-colors" href="#">Product</a>
+<a class="text-text-secondary hover:text-text-primary text-sm font-medium leading-normal transition-colors" href="#">Solutions</a>
+<a class="text-text-secondary hover:text-text-primary text-sm font-medium leading-normal transition-colors" href="#">Pricing</a>
+<a class="text-text-secondary hover:text-text-primary text-sm font-medium leading-normal transition-colors" href="#">Resources</a>
+</nav>
+<button class="bg-[var(--primary-color)] text-white h-10 px-5 rounded-md text-sm font-bold hover:bg-[var(--button-hover)] transition-colors">
+<span class="truncate">Get Started</span>
+</button>
+</div>
+</header>
+<main class="main_container flex-1 flex items-center justify-center">
+<div class="text-center max-w-4xl mx-auto">
+<h1 class="typography_h1">Interact with your data using AI, no SQL required.</h1>
+<p class="typography_body max-w-2xl mx-auto mt-6 mb-10">Connect your database and start asking questions in plain English. Get instant insights without writing a single line of SQL.</p>
+<div class="flex flex-wrap gap-4 justify-center">
+<button class="button_primary">
+<span class="truncate">Upload File</span>
+</button>
+<button class="button_secondary">
+<span class="truncate">Connect Snowflake</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+</div>
+
+</body></html>

@@ -1,337 +1,319 @@
-Below is a **complete implementation plan** followed by **nested task breakdowns** and a **ready-to-copy set of code-generation prompts** you can paste into your favorite LLM (e.g., GitHub Copilot Chat or ChatGPT-Code Interpreter).
-The flow intentionally starts small, adds tests immediately, and never leaves orphaned code.
+⚠️ **UPDATED**: This file contains the current implementation status and ready-to-execute prompts for the **Data Chat MVP** project.
 
-## 🚨 IMPLEMENTATION STATUS UPDATE (2025-07-20)
-
-**REALITY CHECK**: Most backend prompts (1-9) have been completed through actual implementation, not by following these prompts. Docker Compose setup has also been completed. The frontend prompts (10-14) remain to be executed.
-
-**✅ COMPLETED INDEPENDENTLY**: Backend foundation, authentication, Snowflake integration, LLM pipeline, Docker development environment
-**❌ NEXT TO EXECUTE**: Prompts 10-14 for frontend development
-**✅ DOCKER SETUP COMPLETED**: Comprehensive development environment with PostgreSQL, Redis, and hot reload
+**For complete status and detailed planning, also see**:
+- `docs/planning/PROJECT_STATUS.md` - Complete project status and implementation plan
+- `docs/planning/spec_v2.md` - Full technical specification with CSV upload focus
 
 ---
 
-## 1 — End-to-End Blueprint (high-level)
+## 🚨 CURRENT IMPLEMENTATION STATUS (2025-07-21)
 
-| Phase                         | What We Deliver                                                                             | Why It’s First                                                   |
+**✅ COMPLETED**: Backend foundation (85%), authentication system, LLM pipeline, frontend auth flow (Prompts 1-10)
+**🎯 CURRENT PRIORITY**: **Prompt 11 - CSV Upload MVP** (file upload + chat UI implementation)
+**❌ REMAINING**: Advanced features, query history, production optimization (Prompts 12-14)
+
+**🎯 PROJECT PIVOT**: Now focuses on **CSV file upload and querying** instead of Snowflake-only, making it accessible to all users without database credentials.
+
+---
+
+## 1 — Updated End-to-End Blueprint (CSV MVP Focus)
+
+| Phase                         | What We Deliver                                                                             | Why It's First                                                   |
 | ----------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| **P0 – Foundation**           | Git repo, pre-commit, CI pipeline, Docker skeleton, “hello world” FastAPI & React           | Ensures repeatable dev environment and green pipeline from day 1 |
-| **P1 – Backend Core**         | Config loader, Snowflake client (read-only), health + ping routes, minimal domain models    | Validates DB connectivity early; isolates infra risks            |
-| **P2 – Auth & Sessions** ✅    | Google OAuth, PostgreSQL user store, Redis sessions, login guard on protected routes        | Turns skeleton into a true multi-user app                        |
-| **P3 – LLM + Query Pipeline** | Gemini service wrapper, schema cache, NL→SQL plumbing, confirmation step, stubbed execution | Core differentiator; still CLI / cURL only                       |
-| **P4 – Frontend MVP**         | Chat UI, schema explorer, result table w/ pagination                                        | User-visible loop from prompt to data                            |
-| **P5 – History & Settings**   | Persisted query history, favorites, settings panel                                          | Adds stickiness & power features                                 |
-| **P6 – Ops & Observability**  | Structlog JSON, external log sink, Docker Compose prod profile                              | Readiness for demo / pilot users                                 |
+| **P0 – Foundation** ✅        | Git repo, pre-commit, CI pipeline, Docker skeleton, FastAPI & React foundation              | Ensures repeatable dev environment and green pipeline from day 1 |
+| **P1 – Backend Core** ✅      | Config loader, database foundations, health routes, domain models                           | Validates infrastructure early; isolates platform risks            |
+| **P2 – Auth & Sessions** ✅   | Google OAuth, PostgreSQL user store, Redis sessions, login guard on protected routes        | Turns skeleton into a true multi-user app                        |
+| **P3 – Data Integration** ✅   | Generic data processing, LLM integration, query pipeline ready for SQLite                   | Core differentiator; database-agnostic design                       |
+| **P4 – Frontend Foundation** ✅| React app with complete auth flow, dashboard layout, API client ready                      | Frontend foundation ready for data components                       |
+| **P5 – CSV Upload MVP** 🎯    | File upload, CSV processing, SQLite conversion, chat UI, complete user flow                 | **CURRENT PRIORITY**: Complete MVP without external dependencies |
+| **P6 – Advanced Features**    | Query history, multiple file formats, advanced UI components                                | Adds stickiness & power features                                 |
+| **P7 – Database Expansion**   | PostgreSQL, MySQL, Snowflake adapters, connection management UI                             | Expands to enterprise database use cases                         |
+| **P8 – Production Ready**     | Monitoring, security hardening, production deployment                                       | Readiness for production users                                   |
 
-*Each phase contains many micro-steps; see below.*
-
----
-
-## 2 — Iterative Chunking (first pass)
-
-1. **Chunk A:** Repo, Tooling, CI
-2. **Chunk B:** Backend skeleton & health test
-3. **Chunk C:** Snowflake client + config validation
-4. **Chunk D:** Auth stack (Google OAuth, PostgreSQL, Redis)
-5. **Chunk E:** LLM wrapper + NL→SQL pipeline (no UI)
-6. **Chunk F:** Frontend skeleton with auth flow
-7. **Chunk G:** Chat panel, schema sidebar, result renderer
-8. **Chunk H:** History, favorites, settings
-9. **Chunk I:** Logging, metrics, Compose prod profile
-
-*Validate after every chunk via unit + integration tests.*
+*Each phase builds safely on previous work with comprehensive testing.*
 
 ---
 
-## 3 — Micro-Tasks (second pass)
+## 2 — Current Implementation Chunks (Updated)
 
-Below is Chunk A fully expanded.
-We applied the same granularity to all later chunks (kept concise here to save space).
+**✅ COMPLETED CHUNKS:**
+1. **Chunk A-E**: Repository, backend core, auth, LLM pipeline ✅
+2. **Chunk F**: Frontend skeleton with complete auth flow ✅
 
-### Chunk A — Repo & Tooling
+**🎯 CURRENT CHUNK:**
+3. **Chunk G**: **CSV Upload MVP** - File processing + Chat UI integration
 
-| #  | Task                                                           | Acceptance Test                      |
-| -- | -------------------------------------------------------------- | ------------------------------------ |
-| A1 | `git init`, add MIT LICENSE & README                           | Repo exists, CI passes “no code yet” |
-| A2 | Create `backend/` & `frontend/` dirs with `.gitkeep`           | CI still green                       |
-| A3 | Add `pyproject.toml` (Poetry) w/ FastAPI, Uvicorn              | `poetry install` succeeds locally    |
-| A4 | Add Dockerfile.dev (backend) + `.dockerignore`                 | `docker build` completes             |
-| A5 | `.pre-commit-config.yaml` (black, ruff, isort, mypy, pytest)   | `pre-commit run --all-files` passes  |
-| A6 | GitHub Actions workflow: lint + tests on push                  | Red until A8 passes                  |
-| A7 | Write failing pytest for `/health` returning `{"status":"ok"}` | Test marked `xfail`                  |
-| A8 | Implement minimal FastAPI & make test pass                     | CI goes green                        |
+**❌ FUTURE CHUNKS:**
+4. **Chunk H**: Advanced features (history, favorites, settings)
+5. **Chunk I**: Database expansion and production deployment
 
-### Chunk B — Backend Skeleton
-
-B1 Config loader, env switching
-B2 Snowflake DSN Pydantic model
-B3 Snowflake ping function (mocked in tests)
-B4 `/ping` route calling ping
-
-### Chunk C — DB Connectivity
-
-C1 CLI util `snowflake validate …`
-C2 Unit tests with `pytest-snowflake-mock`
-C3 Error mapping to friendly message
-
-*(Chunks D–I similarly decomposed; omitted for brevity in this doc—you’ll still see them inside the prompts below.)*
+*Current focus: Complete CSV upload capability for immediate demo and user value.*
 
 ---
 
-## 4 — Right-Sizing Review
+## 3 — Ready-to-Execute Implementation Prompts
 
-* ✅  **No task > \~2 hours** for a solo dev
-* ✅  **Each introduces at least one new test**
-* ✅  **Every task leaves repo in deployable state** (`docker compose up backend` works)
-* ✅  **Early vertical slice:** By end of Chunk E a user can `curl /chat` and get results
-* ✅  **No dead code:** each stub is either used immediately or guarded by an explicit test
+### ✅ Prompts 1-10: COMPLETED
+All foundation work, backend infrastructure, authentication, LLM integration, and frontend auth flow are **completed** with high test coverage (91%+).
 
 ---
 
-## 5 — Copy-Ready Code-Generation Prompts
-
-> **Usage:** Copy **one prompt at a time** into your LLM.
-> Commit the generated code, run tests, then move to the next prompt.
-
-### Prompt 1 — Initialize Repo & Tooling
+### 🎯 CURRENT PRIORITY: Prompt 11 — Backend Foundation + Visual Design System
 
 ```text
-You are a senior Python / DevOps engineer.
-Create the initial repository structure for a full-stack project named **snowchat**.
+Implement extensible backend foundation and visual-driven UI development:
 
-**Deliverables**
-1. `.gitignore`, MIT `LICENSE`, `README.md` with project summary.
-2. `backend/` and `frontend/` directories each containing only a `.gitkeep`.
-3. `pyproject.toml` using Poetry 1.8 with deps: `fastapi`, `uvicorn[standard]`, `pytest`, `pytest-asyncio`, `ruff`, `black`, `isort`, `mypy`, `structlog`.
-4. `Dockerfile.dev` for backend (multi-stage, slim) and `.dockerignore`.
-5. `.pre-commit-config.yaml` running black, ruff, isort, mypy, and pytest.
-6. GitHub Actions workflow `.github/workflows/ci.yml`:
-   * Matrix Python {3.10, 3.11}
-   * Steps: checkout, setup Python, cache Poetry, install, run pre-commit.
+**PHASE A: Backend Extensible Foundation (Priority 1)**
 
-**Constraints**
-* No application logic yet.
-* Commands must pass locally: `pre-commit run --all-files`, `pytest` (should show 0 tests).
+1. **Create FileProcessor interface** in `backend/app/services/file_processor.py`:
+   - Abstract base class for all file type processors
+   - Methods: validate_file(), detect_schema(), convert_to_database()
+   - File type registry system for routing uploads to appropriate processors
+   - Extensible foundation for CSV, Excel, JSON, Parquet support
 
-Return a list of files with full contents.
+2. **Implement CSVProcessor** in `backend/app/services/csv_processor.py`:
+   - First concrete FileProcessor implementation
+   - pandas integration with automatic delimiter detection
+   - Handle encoding issues (UTF-8, latin1, etc.) and schema inference
+   - Convert CSV data to SQLite in-memory database for querying
+   - Error handling for malformed files with user-friendly messages
+
+3. **Create POST /data/upload endpoint** in `backend/app/api/data.py`:
+   - Multi-format file upload with type detection and routing
+   - Route to appropriate processor based on file extension
+   - File validation and security checks (size limits, type validation)
+   - Basic HTML response templates for testing backend functionality
+
+4. **SQLite adapter integration**:
+   - Compatible with existing LLM pipeline and query engine
+   - Schema introspection for uploaded data sources
+   - Query execution with same safety validations as existing code
+   - Integrate with existing result formatting and pagination
+
+5. **File management utilities**:
+   - Session-based temporary file storage with automatic cleanup
+   - File metadata tracking and retrieval system
+   - Cleanup expired uploads and session data management
+
+**PHASE B: Visual Design Implementation (Priority 2)**
+
+6. **Design Reference Collection**:
+   - SAMAR DON provides design screenshots and visual mockups
+   - Reference existing UIs (ChatGPT, Linear, etc.) for inspiration
+   - Define visual requirements and specifications for each screen
+   - Establish design system and component patterns
+
+7. **Puppeteer-Driven HTML Development**:
+   - Take baseline screenshots of current implementation state
+   - Create HTML templates matching design specifications exactly
+   - Visual iteration loop: Screenshot → Compare → Adjust → Repeat
+   - Automated visual regression testing with screenshot comparison
+
+8. **Core UI Templates Creation**:
+   - File upload interface with drag-and-drop styling and visual feedback
+   - Schema preview layout with data table and column information
+   - Chat interface mockup with message bubbles and input areas
+   - Results display with pagination controls and export options
+   - Responsive design testing across multiple viewport sizes
+
+**PHASE C: React Integration (Priority 3)**
+
+9. **Template to Component Conversion**:
+   - Convert proven HTML templates to React components systematically
+   - Maintain exact visual fidelity using screenshot validation
+   - Add proper TypeScript interfaces and component structure
+   - Integrate with existing authentication and API client infrastructure
+
+10. **State Management and API Integration**:
+    - Connect React components to backend APIs (upload, chat, results)
+    - Implement proper error handling and loading states
+    - Add file upload progress tracking and user feedback
+    - Maintain existing LLM pipeline integration with chat interface
+
+**TESTING & VALIDATION:**
+
+11. **Comprehensive Testing Strategy**:
+    - Backend: Unit tests for FileProcessor, CSV processing, SQLite conversion
+    - Visual: Screenshot comparison tests for UI regression prevention
+    - Frontend: Component tests for React integration and state management
+    - E2E: Complete flow from file upload to query results
+
+12. **Dependencies and Setup**:
+    - Add pandas, openpyxl to backend dependencies for file processing
+    - Configure Puppeteer for screenshot automation and visual testing
+    - Create sample CSV files for testing various formats and edge cases
+
+**ACCEPTANCE CRITERIA:**
+- Backend processes CSV files through extensible FileProcessor interface
+- HTML templates match provided design specifications pixel-perfect
+- Visual regression testing prevents UI degradation during development
+- React components maintain template visual fidelity exactly
+- Complete user flow: upload → preview → chat → results works end-to-end
+- Existing authentication and backend functionality remains unchanged
+- Test coverage maintained at 85%+ across all components
+
+**TECHNICAL REQUIREMENTS:**
+- Extensible FileProcessor architecture for future file type support
+- Visual-driven development using Puppeteer for design fidelity
+- Session-based storage with automatic cleanup and file management
+- Maintain existing LLM pipeline, SQL validation, result formatting
+- Responsive design working across desktop, tablet, mobile viewports
+- Support files up to 100MB with proper progress indication
+
+**METHODOLOGY INNOVATION:**
+- Backend-first approach ensures solid foundation before UI complexity
+- Visual-driven development with Puppeteer prevents design drift
+- HTML template foundation proven before React conversion
+- Screenshot validation maintains pixel-perfect design implementation
+
+This creates an extensible, visually-polished MVP with proper architectural foundation for future expansion.
 ```
-
-### Prompt 2 — Add FastAPI Skeleton & Health Test
-
-```text
-Extend the existing repo.
-
-**Tasks**
-1. Under `backend/app/` create `main.py` starting FastAPI with route `GET /health` returning `{"status":"ok"}`.
-2. Add `backend/app/core/__init__.py` (empty) to make namespace.
-3. Add `backend/app/tests/test_health.py` with an async pytest using `httpx.AsyncClient` + `asgi_lifespan`.
-4. Update `pyproject.toml` dev deps: `pytest-httpx`, `asgi-lifespan`.
-5. Update Dockerfile.dev to run `uvicorn app.main:app --port 8000 --reload`.
-
-**Acceptance**
-* `pytest` green.
-* `docker compose up backend` shows service responsive on `/health`.
-
-Output only the changed / new files.
-```
-
-### Prompt 3 — Config Loader & Snowflake DSN Model
-
-```text
-Goal: robust config system.
-
-**Deliverables**
-1. `backend/app/core/config.py`:
-   * Uses `pydantic.BaseSettings`
-   * Fields: `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PASSWORD`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`, `SNOWFLAKE_SCHEMA`, `ENV` (default="development").
-   * `.env` support.
-
-2. `backend/app/models/snowflake.py`:
-   * Pydantic model `SnowflakeDSN` combining above fields.
-   * `dsn()` method returning snowflake connector kwargs.
-
-3. Unit tests ensuring `.env` overrides and that missing required field raises `ValidationError`.
-
-No Snowflake network calls yet. Keep tests isolated.
-```
-
-### Prompt 4 — Snowflake Client Stub & Ping Route
-
-```text
-Add a minimal read-only Snowflake client with dependency injection.
-
-**Tasks**
-1. Add optional dep `snowflake-connector-python` to Poetry (extras).
-2. `backend/app/services/snowflake_client.py`
-   * Class `SnowflakeClient` with async `ping()` returning `True` if connection succeeds.
-   * Accepts a `SnowflakeDSN` object in ctor.
-3. In `backend/app/api/ping.py` add route `GET /ping` which:
-   * Reads config, instantiates client, calls `await ping()`.
-   * Returns `{ "snowflake":"ok" }` or error message.
-4. Write unit tests using `pytest-monkeypatch` to patch connector and force deterministic result.
-
-Ensure health test still passes.
-```
-
-### Prompt 5 — Google OAuth & User Model
-
-```text
-Implement auth (backend only).
-
-**Deliverables**
-1. Dependency: `authlib`, `python-jose`, `sqlalchemy`, `asyncpg`.
-2. `backend/app/db/postgres.py` engine + session factory.
-3. `backend/app/schemas/user.py` SQLAlchemy model (id, email, name, picture, created_at).
-4. OAuth flow routes:
-   * `GET /login/google` → redirect_uri
-   * `GET /auth/google/callback` → exchanges code, creates/gets user, issues JWT cookie.
-5. Middleware enforcing auth on `/api/**` (except health, ping, login).
-
-Add tests mocking Google endpoints with `respx`.
-
-**Constraint**: do **not** touch frontend yet.
-```
-
-### Prompt 6 — Session Store with Redis
-
-```text
-Add Redis for session / rate-limit metadata.
-
-**Tasks**
-1. Poetry dep `aioredis`.
-2. `backend/app/db/redis_client.py` singleton factory.
-3. On successful OAuth callback, store `session:{user_id}` with expiry 24h.
-4. Middleware attaches Redis session to `request.state.session`.
-
-Unit test session creation & expiry logic using `fakeredis`.
-```
-
-### Prompt 7 — LLM Service Wrapper
-
-```text
-Add Gemini integration (stubbed).
-
-**Deliverables**
-1. `backend/app/services/llm_service.py`
-   * `class GeminiClient` with `async translate_nl_to_sql(prompt: str, schema: str) -> str`
-   * Injects API key via config; in tests, patch to return static SQL.
-2. `backend/app/services/context_builder.py`
-   * Builds schema context from Snowflake meta (mock for now).
-3. Unit tests verifying prompt construction and that SQL string returned.
-
-No /chat route yet.
-```
-
-### Prompt 8 — Chat Route & End-to-End Pipeline (CLI only)
-
-```text
-Expose POST `/chat` that accepts `{ "prompt": "<string>", "output": "table|text|both" }`.
-
-Flow:
-1. Validate Redis session.
-2. Build context (schema cache).
-3. Call LLM translate.
-4. Return generated SQL **without executing** for now.
-
-Tests:
-* Good prompt returns `sql` key.
-* Bad prompt (empty) returns 422.
-
-Update OpenAPI docs accordingly.
-```
-
-### Prompt 9 — Execute Read-Only Query
-
-```text
-Enhance `/chat`.
-
-1. Add request field `autorun: bool`.
-2. If autorun true:
-   * Validate SQL is read-only (`SELECT` only) via simple regex + sqlparse.
-   * Run against Snowflake, fetch rows (limit 500).
-3. Structure response `{ "sql": "...", "rows":[...], "truncated": bool }`.
-4. Tests covering autorun true/false and limit truncation.
-
-Extend SnowflakeClient with `run_query(sql, limit)`; mock in tests.
-```
-
-### Prompt 10 — Frontend Skeleton w/ Auth Flow
-
-```text
-Create React app (Vite + TS) under `frontend/`.
-
-**Features**
-1. Tailwind dark-mode baseline.
-2. React-Router routes: `/login`, `/app/*`.
-3. Google OAuth button hits backend `/login/google`.
-4. After auth, store JWT in `httpOnly` cookie; frontend reads `/api/me` to hydrate user context.
-
-Add Cypress e2e test: login redirect and 200 on `/health`.
-```
-
-### Prompt 11 — Chat UI Vertical Slice
-
-```text
-Add components:
-
-* `ChatWindow`, `MessageBubble`, `PromptInput`.
-* Call backend `/chat` endpoint, show SQL confirmation modal, autorun toggle.
-* Display table using `react-table` with pagination.
-
-Tests: React Testing Library – renders, sends prompt, shows rows.
-
-Integrate schema sidebar (mocked list).
-```
-
-### Prompt 12 — History, Favorites, Settings
-
-```text
-Backend:
-* `/history` CRUD routes.
-* Update `/chat` to write history on success.
-
-Frontend:
-* Left drawer list of past queries with star icon.
-* Settings modal for row limit, autorun default.
-
-Tests: add integration for favoriting and settings persistence (localStorage).
-
-Ensure existing tests still pass.
-```
-
-### Prompt 13 — Logging, Metrics, Compose Prod
-
-```text
-1. Add structlog JSON config, log to stdout.
-2. Docker Compose `prod.yml` services: backend, nginx static frontend, redis, postgres.
-3. Healthcheck definitions for each.
-4. GitHub Action: on `main` tag push → build & push images (`ghcr.io/org/snowchat-*`).
-
-Unit test that `structlog.get_logger().info()` outputs valid JSON.
-
-Repo now deployable via `docker compose -f prod.yml up -d`.
-```
-
-### Prompt 14 — Polish & Wire-Up
-
-```text
-Goals:
-* Remove all TODOs.
-* Ensure type-checking passes (`mypy --strict`).
-* Docs: update README with setup, dev, prod commands.
-* Verify 85%+ coverage (`pytest --cov=backend`).
-
-Return only changed files plus a coverage badge snippet for README.
-```
-
-*End of prompt series.* 🎉
 
 ---
 
-### Next Steps
+### ❌ FUTURE: Prompt 12 — Advanced Features (Post-MVP)
 
-1. Start with Prompt 1, iterate, commit often.
-2. When unfamiliar libraries (e.g., Google OAuth) require secrets, inject ENV placeholders and document in README.
-3. After Prompt 14 you have a runnable MVP; future work (RBAC, multi-DB) fits cleanly as additional prompts using the same template.
+```text
+Add advanced functionality building on the CSV upload MVP:
 
-Happy building!
+**Backend Enhancements:**
+- Query history CRUD endpoints with persistence beyond sessions
+- Favorites system with user-specific organization
+- Multiple file format support (Excel, JSON, Parquet)
+- Advanced CSV processing (multi-sheet, data type optimization)
+
+**Frontend Enhancements:**
+- Query history sidebar with search and filtering
+- Favorites management with organization capabilities
+- Settings panel for user preferences and file management
+- Advanced data visualization options
+
+**Integration:**
+- Cross-session data persistence with user accounts
+- Advanced file management (rename, organize, share)
+- Query templates and saved analysis workflows
+```
+
+---
+
+### ❌ FUTURE: Prompt 13 — Database Expansion (Phase 2)
+
+```text
+Expand to multiple database types building on the CSV foundation:
+
+**Database Adapters:**
+- PostgreSQL adapter with connection management
+- MySQL adapter with secure credential handling
+- Enhanced Snowflake adapter (original scope as optional feature)
+- SQLite file adapter (in addition to CSV conversion)
+
+**Connection Management:**
+- Multi-step database connection wizard
+- Connection testing and validation interface
+- Secure credential storage and encryption
+- Multiple data source switching in UI
+
+**Advanced Features:**
+- Multi-source query capabilities (JOIN across sources)
+- Database schema exploration and browsing
+- Advanced query optimization and caching
+```
+
+---
+
+### ❌ FUTURE: Prompt 14 — Production Readiness (Phase 3)
+
+```text
+Production deployment and enterprise features:
+
+**Production Setup:**
+- Docker Compose production configuration
+- Security headers and CORS hardening
+- Performance optimization and monitoring
+- Automated deployment and scaling
+
+**Enterprise Features:**
+- Role-based access control (RBAC)
+- Team collaboration and sharing
+- Advanced security and compliance features
+- API access and integration capabilities
+
+**Monitoring & Maintenance:**
+- Comprehensive logging and monitoring
+- Error tracking and alerting
+- Performance metrics and optimization
+- Maintenance and backup procedures
+```
+
+---
+
+## 4 — Key Implementation Notes for AI Agents
+
+### **Current State (Ready for Prompt 11)**
+- **Backend Foundation**: 85% complete with 91%+ test coverage
+- **Authentication**: Complete Google OAuth flow with protected routes
+- **LLM Pipeline**: Working Gemini integration with context building
+- **Frontend Auth**: Complete React app with authentication flow
+- **Chat Infrastructure**: Backend /chat endpoint ready, needs frontend components
+
+### **What Makes This Different from Original Plan**
+- **No External Dependencies**: CSV upload removes need for database credentials
+- **Immediate Demo Value**: Works with any CSV file users already have
+- **Architecture Preserved**: Same LLM pipeline, just different data source
+- **Expanded Market**: Everyone with spreadsheets vs only Snowflake customers
+
+### **Critical Success Factors for Prompt 11**
+1. **Reuse Existing Code**: Don't rebuild LLM pipeline, just add CSV data source
+2. **Session-Based Storage**: No persistent file storage, clean up automatically
+3. **User Experience**: Upload → preview → chat flow must be intuitive
+4. **Error Handling**: Clear messages for file format issues and processing errors
+5. **Performance**: Handle 100MB files efficiently with progress indication
+
+### **Testing Strategy**
+- **Backend**: Unit tests for CSV processing, integration tests for complete flow
+- **Frontend**: Component tests for upload UI, E2E tests for complete user journey
+- **Real Data**: Test with various CSV formats, encodings, and edge cases
+- **Performance**: Validate file processing times and memory usage
+
+---
+
+## 5 — Success Metrics (Updated for CSV MVP)
+
+### **MVP Success Criteria**
+- **Time to Value**: User uploads CSV and gets first query result within 90 seconds
+- **Format Support**: Handles 95% of common CSV variations (delimiters, encodings)
+- **User Experience**: Intuitive enough that non-technical users succeed without guidance
+- **Performance**: Processes 100MB files in under 30 seconds
+- **Reliability**: No crashes or data loss during file processing
+
+### **Technical Quality Metrics**
+- **Test Coverage**: Maintain 85%+ across backend and frontend
+- **Code Quality**: All pre-commit hooks pass, no warnings or errors
+- **Security**: File validation prevents malicious uploads
+- **Performance**: Query execution under 10 seconds for typical datasets
+
+---
+
+## 6 — Risk Mitigation (Updated for CSV Focus)
+
+### **File Processing Risks**
+- **Malformed CSV Files**: Comprehensive format detection and error recovery
+- **Large File Handling**: Streaming processing and memory management
+- **Encoding Issues**: Support for multiple encodings with fallback detection
+- **Data Quality**: Validation and warnings for data quality issues
+
+### **User Experience Risks**
+- **Upload Complexity**: Simple drag-and-drop with clear progress indication
+- **Format Confusion**: Clear error messages and format guidance
+- **Performance Expectations**: Progress bars and time estimates for processing
+- **Data Privacy**: Clear communication about session-based, temporary storage
+
+### **Technical Risks**
+- **Memory Usage**: Chunked processing for large files
+- **Session Management**: Reliable cleanup and storage limits
+- **Security**: File validation and upload size limits
+- **Integration**: Maintain existing functionality while adding new features
+
+---
+
+*This prompt plan maintains the proven iterative approach while focusing on immediate user value through CSV file upload capability. The next AI agent should focus exclusively on Prompt 11 to complete the MVP.*

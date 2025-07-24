@@ -1,60 +1,154 @@
-// ABOUTME: Core API client service using Axios for backend communication
-// ABOUTME: Handles authentication headers, error handling, and request/response interceptors
+// ABOUTME: Core API client with authentication, error handling, and request/response types
+// ABOUTME: Provides base functionality for all backend communication with proper error handling
 
-import axios, { AxiosError } from 'axios';
-import type { AxiosResponse } from 'axios';
-import type { ApiError } from '../types/api';
-import { isApiErrorResponse } from '../types/api';
-import { authEvents } from '../utils/auth-events';
+import { BackendAdapters } from './adapters';
 
-// Create axios instance with base configuration
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1',
-  timeout: 30000,
-  withCredentials: true, // Important for httpOnly cookies
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+class ApiClient {
+  private baseUrl: string;
 
-// Request interceptor to add authentication if needed
-api.interceptors.request.use(
-  (config) => {
-    // Add any request modifications here
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+  constructor(baseUrl: string = '/api/v1') {
+    this.baseUrl = baseUrl;
   }
-);
 
-// Response interceptor for error handling
-api.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response;
-  },
-  (error: AxiosError) => {
-    const apiError: ApiError = {
-      message: 'An unexpected error occurred',
-      status: error.response?.status || 0,
+  private async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+
+    const config: RequestInit = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      credentials: 'include', // Include cookies for session management
+      ...options,
     };
 
-    if (error.response?.data && isApiErrorResponse(error.response.data)) {
-      const data = error.response.data;
-      apiError.message = data.message || data.detail || apiError.message;
-      apiError.code = data.code;
-    } else if (error.message) {
-      apiError.message = error.message;
-    }
+    try {
+      const response = await fetch(url, config);
 
-    // Handle specific status codes
-    if (error.response?.status === 401) {
-      // Unauthorized - signal AuthProvider to perform logout and clear state
-      authEvents.emit('logout');
-    }
+      // Handle non-JSON responses (like redirects)
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response as unknown as T;
+      }
 
-    return Promise.reject(apiError);
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle FastAPI error format and transform to frontend format
+        const errorResponse = BackendAdapters.adaptErrorResponse(data);
+        throw new Error(errorResponse.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      // Return the raw backend response - adapters will be applied at service level
+      return data as T;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error occurred');
+    }
   }
-);
 
-export default api;
+  // GET request
+  async get<T>(endpoint: string, params?: Record<string, string>): Promise<T> {
+    const url = params
+      ? `${endpoint}?${new URLSearchParams(params).toString()}`
+      : endpoint;
+
+    return this.request<T>(url, {
+      method: 'GET',
+    });
+  }
+
+  // POST request
+  async post<T>(endpoint: string, data?: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  // PUT request
+  async put<T>(endpoint: string, data?: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  // DELETE request
+  async delete<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'DELETE',
+    });
+  }
+
+  // File upload with progress tracking
+  async uploadFile<T>(
+    endpoint: string,
+    file: File,
+    onProgress?: (progress: { percentage: number; bytesUploaded: number; totalBytes: number }) => void
+  ): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Track upload progress
+      if (onProgress) {
+        xhr.upload.addEventListener('progress', (event) => {
+          if (event.lengthComputable) {
+            const percentage = Math.round((event.loaded / event.total) * 100);
+            onProgress({
+              percentage,
+              bytesUploaded: event.loaded,
+              totalBytes: event.total,
+            });
+          }
+        });
+      }
+
+      xhr.onload = () => {
+        try {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            // Parse raw backend response - adapters will be applied at service level
+            const backendResponse = JSON.parse(xhr.responseText);
+            resolve(backendResponse as T);
+          } else {
+            // Handle error response with adapter
+            const errorData = JSON.parse(xhr.responseText);
+            const errorResponse = BackendAdapters.adaptErrorResponse(errorData);
+            reject(new Error(errorResponse.error || `HTTP ${xhr.status}: ${xhr.statusText}`));
+          }
+        } catch (error) {
+          reject(new Error('Failed to parse response'));
+        }
+      };
+
+      xhr.onerror = () => {
+        reject(new Error('Network error during upload'));
+      };
+
+      xhr.open('POST', `${this.baseUrl}${endpoint}`);
+      xhr.withCredentials = true; // Include cookies
+      xhr.send(formData);
+    });
+  }
+
+  // Server-Sent Events for real-time updates
+  createEventSource(endpoint: string): EventSource {
+    const url = `${this.baseUrl}${endpoint}`;
+    const eventSource = new EventSource(url, {
+      withCredentials: true,
+    });
+    return eventSource;
+  }
+}
+
+export const apiClient = new ApiClient();

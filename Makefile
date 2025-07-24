@@ -1,11 +1,15 @@
 # ABOUTME: Makefile for common development tasks and Docker operations
 # ABOUTME: Provides convenient shortcuts for building, running, and testing the application
 
-.PHONY: help build up down logs test clean setup dev-setup db-migrate wait-healthy
+.PHONY: help build up down logs test clean setup dev-setup db-migrate wait-healthy validate-config check-prereqs clean-build
 
 # Default target
 help: ## Show this help message
 	@echo "🐳 Snowflake MCP Lambda - Development Commands"
+	@echo ""
+	@echo "⚠️  DOCKER PERMISSIONS: Some commands may require 'sudo make <command>' if Docker"
+	@echo "   daemon requires root access. Configure Docker to run without sudo for better UX:"
+	@echo "   sudo usermod -aG docker \$$USER && newgrp docker"
 	@echo ""
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -82,12 +86,31 @@ db-reset: ## Reset database (WARNING: destroys project database data only)
 	done
 	@echo "✅ Database reset complete"
 
-# Testing
-test: ## Run backend tests
-	docker compose exec backend poetry run pytest
+# Testing - Backend
+test: ## Run backend tests with coverage (matches CI/pre-commit)
+	docker compose exec backend poetry run pytest --cov=app --cov-report=term-missing --cov-fail-under=85
 
-test-cov: ## Run backend tests with coverage
-	docker compose exec backend poetry run pytest --cov=app --cov-report=html
+test-cov: ## Run backend tests with detailed HTML coverage report
+	docker compose exec backend poetry run pytest --cov=app --cov-report=html --cov-report=term-missing --cov-fail-under=85
+
+# Testing - Frontend
+test-frontend: ## Run frontend tests
+	docker compose exec frontend npm run test -- --run --reporter=verbose
+
+test-frontend-watch: ## Run frontend tests in watch mode
+	docker compose exec frontend npm run test
+
+test-frontend-coverage: ## Run frontend tests with coverage
+	docker compose exec frontend npm run coverage
+
+lint-frontend: ## Run frontend linting
+	docker compose exec frontend npm run lint
+
+type-check-frontend: ## Run TypeScript type checking
+	docker compose exec frontend npx tsc --noEmit
+
+# Testing - Combined
+test-all: test test-frontend ## Run all tests (backend + frontend)
 
 # Cleanup
 clean: ## Stop containers and remove project volumes (WARNING: destroys project data only)
@@ -161,3 +184,45 @@ install-backend: ## Install backend dependencies
 
 install-frontend: ## Install frontend dependencies
 	docker compose exec frontend npm install
+
+# Validation and safety checks
+validate-config: ## Validate project configuration consistency
+	@echo "🔍 Validating project configuration..."
+	@# Check Poetry files are in backend/
+	@test -f backend/pyproject.toml || (echo "❌ backend/pyproject.toml missing" && exit 1)
+	@test -f backend/poetry.lock || (echo "❌ backend/poetry.lock missing" && exit 1)
+	@# Check Poetry files are NOT in root
+	@test ! -f pyproject.toml || (echo "❌ pyproject.toml should not be in root directory" && exit 1)
+	@# Validate Docker Compose config
+	@docker compose config --quiet || (echo "❌ Invalid docker-compose.yml" && exit 1)
+	@echo "✅ Configuration validation passed"
+
+check-prereqs: ## Check development prerequisites
+	@echo "🔍 Checking prerequisites..."
+	@command -v docker >/dev/null 2>&1 || (echo "❌ Docker not installed" && exit 1)
+	@docker compose version >/dev/null 2>&1 || (echo "❌ Docker Compose not available" && exit 1)
+	@command -v make >/dev/null 2>&1 || (echo "❌ Make not installed" && exit 1)
+	@docker info >/dev/null 2>&1 || (echo "❌ Docker daemon not running (try: sudo make check-prereqs)" && exit 1)
+	@echo "✅ All prerequisites satisfied"
+
+clean-build: ## Test completely clean build (no cache) - requires sudo for system prune
+	@echo "🧹 Testing clean build (no cache)..."
+	@echo "ℹ️  Note: This command requires Docker access. Run with 'sudo make clean-build' if needed."
+	docker compose down -v
+	docker system prune -f --filter "label=com.docker.compose.project=snowflake-mcp-lambda"
+	docker compose build --no-cache
+	docker compose up -d
+	$(MAKE) wait-healthy
+	@echo "✅ Clean build test passed"
+
+deep-health-check: ## Comprehensive health validation
+	@echo "🔍 Running deep health checks..."
+	$(MAKE) health
+	@echo "⏳ Testing API functionality..."
+	@docker compose exec backend curl -f http://localhost:8000/health >/dev/null 2>&1 || (echo "❌ Backend API failed" && exit 1)
+	@docker compose exec frontend curl -f http://localhost:3000 >/dev/null 2>&1 || (echo "❌ Frontend failed" && exit 1)
+	@echo "⏳ Testing database connectivity..."
+	@docker compose exec backend poetry run python -c "from app.core.database import engine; engine.connect()" >/dev/null 2>&1 || (echo "❌ Database connection failed" && exit 1)
+	@echo "⏳ Testing Redis connectivity..."
+	@docker compose exec backend poetry run python -c "import redis; redis.Redis(host='redis').ping()" >/dev/null 2>&1 || (echo "❌ Redis connection failed" && exit 1)
+	@echo "✅ All deep health checks passed"

@@ -1,26 +1,90 @@
-// ABOUTME: Reusable Card component for consistent content containers
-// ABOUTME: Provides elevated surface design pattern for the application
+// ABOUTME: Reusable Card component with elevation and interactive variants
+// ABOUTME: Provides consistent styling for content containers throughout the app
 
-import type { ReactNode } from 'react';
+import { ReactNode } from 'react';
+import { clsx } from 'clsx';
 
 interface CardProps {
   children: ReactNode;
+  elevated?: boolean;
+  interactive?: boolean;
   className?: string;
-  padding?: 'none' | 'sm' | 'md' | 'lg';
+  onClick?: () => void;
 }
 
-export function Card({ children, className = '', padding = 'md' }: CardProps) {
-  const paddingClasses = {
-    none: '',
-    sm: 'p-4',
-    md: 'p-6',
-    lg: 'p-8',
-  };
-
-  const classes = `bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm ${paddingClasses[padding]} ${className}`;
+export function Card({
+  children,
+  elevated = false,
+  interactive = false,
+  className,
+  onClick
+}: CardProps) {
+  const cardClasses = clsx(
+    'card',
+    {
+      'card--elevated': elevated,
+      'card--interactive': interactive,
+    },
+    className
+  );
 
   return (
-    <div className={classes}>
+    <div className={cardClasses} onClick={onClick}>
+      {children}
+    </div>
+  );
+}
+
+interface CardHeaderProps {
+  title: string;
+  subtitle?: string;
+  actions?: ReactNode;
+  className?: string;
+}
+
+export function CardHeader({ title, subtitle, actions, className }: CardHeaderProps) {
+  return (
+    <div className={clsx('flex items-start justify-between mb-4', className)}>
+      <div className="flex-1">
+        <h3 className="text-xl font-normal text-light-primary mb-1">
+          {title}
+        </h3>
+        {subtitle && (
+          <p className="text-sm text-light-muted">
+            {subtitle}
+          </p>
+        )}
+      </div>
+      {actions && (
+        <div className="ml-4 flex-shrink-0">
+          {actions}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface CardContentProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function CardContent({ children, className }: CardContentProps) {
+  return (
+    <div className={clsx('text-light-secondary mb-6', className)}>
+      {children}
+    </div>
+  );
+}
+
+interface CardActionsProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function CardActions({ children, className }: CardActionsProps) {
+  return (
+    <div className={clsx('flex gap-3 flex-wrap', className)}>
       {children}
     </div>
   );

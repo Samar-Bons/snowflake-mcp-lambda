@@ -4,8 +4,16 @@
 import logging
 import time
 from collections.abc import Generator
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
+import redis
+
+if TYPE_CHECKING:
+    # Type hint for modern Redis versions with generics
+    RedisType = redis.Redis[str]
+else:
+    # Runtime compatibility for all Redis versions
+    RedisType = redis.Redis
 from sqlalchemy import Engine, create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
@@ -174,6 +182,35 @@ class DatabaseManager:
 
 # Global database manager instance
 _database_manager: DatabaseManager | None = None
+
+# Global Redis client
+_redis_client: RedisType | None = None
+
+
+def get_redis_client() -> RedisType | None:
+    """
+    Get or create global Redis client instance.
+
+    Returns:
+        Redis client instance or None if connection fails
+    """
+    global _redis_client  # noqa: PLW0603
+
+    if _redis_client is None:
+        try:
+            from app.config import get_settings
+
+            settings = get_settings()
+            _redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+            # Test connection
+            if _redis_client:
+                _redis_client.ping()
+                logger.info("Redis client connected successfully")
+        except Exception as e:
+            logger.warning(f"Failed to connect to Redis: {e}")
+            return None
+
+    return _redis_client
 
 
 def get_database_manager() -> DatabaseManager:
