@@ -6,6 +6,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from starlette.middleware.sessions import SessionMiddleware
 
 from app.auth.endpoints import router as auth_router
 from app.config import get_settings
@@ -30,6 +31,17 @@ app = FastAPI(
     description="A remote Model Context Protocol Server for Snowflake deployed as AWS Lambda",
     version="0.1.0",
     debug=settings.DEBUG,
+)
+
+# Add session middleware
+# Use JWT secret key for session encryption (or generate a separate one)
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=settings.JWT_SECRET_KEY,
+    session_cookie="snowflake_session",
+    max_age=86400,  # 24 hours
+    same_site="lax",
+    https_only=not settings.DEBUG,
 )
 
 # Include routers

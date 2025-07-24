@@ -60,50 +60,17 @@ export function LandingPage({ theme, onToggleTheme }: LandingPageProps) {
         totalBytes: file.size,
       });
 
-      // Create event source for real-time processing updates
+      // File is already processed by backend, no need for EventSource
       if (!uploadResponse.success || !uploadResponse.data) {
         throw new Error(uploadResponse.error || 'Upload failed');
       }
 
-      const eventSource = fileUploadService.createProcessingEventSource(uploadResponse.data.id);
+      setUploadState('success');
 
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-
-        if (data.type === 'progress') {
-          setUploadProgress(prev => ({
-            ...prev!,
-            percentage: data.percentage,
-            currentOperation: data.operation,
-          }));
-        } else if (data.type === 'complete') {
-          setUploadState('success');
-          eventSource.close();
-
-          // Redirect to chat after a brief success display
-          setTimeout(() => {
-            navigate(`/chat/${uploadResponse.data!.id}`);
-          }, 1500);
-        } else if (data.type === 'error') {
-          setUploadError({
-            code: 'PROCESSING_FAILED',
-            message: 'Processing failed',
-            details: data.error,
-          });
-          setUploadState('error');
-          eventSource.close();
-        }
-      };
-
-      eventSource.onerror = () => {
-        setUploadError({
-          code: 'NETWORK_ERROR',
-          message: 'Connection lost',
-          details: 'Lost connection to server during processing',
-        });
-        setUploadState('error');
-        eventSource.close();
-      };
+      // Show success state briefly before redirecting
+      setTimeout(() => {
+        navigate(`/chat/${uploadResponse.data!.id}`);
+      }, 1500);
 
     } catch (error) {
       console.error('Upload failed:', error);

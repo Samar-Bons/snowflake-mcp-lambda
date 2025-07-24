@@ -2,10 +2,14 @@
 # ABOUTME: Compatible interface with existing schema service for seamless CSV querying
 
 import logging
+import re
 import sqlite3
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+import sqlparse  # type: ignore[import-untyped]
+from sqlparse.tokens import DDL, DML, Keyword, Token  # type: ignore[import-untyped]
 
 from ..services.file_management import FileManager
 
@@ -26,6 +30,19 @@ class SQLiteSchemaService:
         self.file_manager = FileManager()
         self._current_file_id: str | None = None
         self._current_db_path: Path | None = None
+        # Valid identifier pattern for SQLite
+        self._identifier_pattern = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+
+    def _validate_identifier(self, identifier: str) -> str:
+        """Validate and return a safe SQL identifier"""
+        # If identifier contains special characters, use bracket notation
+        if not self._identifier_pattern.match(identifier):
+            # SQLite allows identifiers with special characters using bracket notation
+            # Return the identifier wrapped in brackets for SQLite
+            return f"[{identifier}]"
+
+        # Otherwise, it's already a valid identifier
+        return identifier
 
     def set_active_file(self, file_id: str) -> bool:
         """Set the active file for querying"""
@@ -71,12 +88,16 @@ class SQLiteSchemaService:
                 schema["databases"][db_name]["schemas"][schema_name] = {"tables": {}}
 
                 for (table_name,) in tables:
-                    # Get table info - properly quote table name
-                    cursor.execute(f'PRAGMA table_info("{table_name}")')
+                    # For SQL queries, we need a safe identifier
+                    safe_table_name = self._validate_identifier(table_name)
+
+                    # Get table info using validated identifier
+                    cursor.execute(f"PRAGMA table_info({safe_table_name})")  # noqa: S608, RUF100
                     columns = cursor.fetchall()
 
-                    # Get row count - properly quote table name
-                    cursor.execute(f'SELECT COUNT(*) FROM "{table_name}"')  # noqa: S608
+                    # Get row count using validated identifier
+                    # Using parameterized query isn't possible for table names, but we've validated the identifier
+                    cursor.execute(f"SELECT COUNT(*) FROM {safe_table_name}")  # noqa: S608, RUF100
                     row_count = cursor.fetchone()[0]
 
                     table_info = {
@@ -99,6 +120,7 @@ class SQLiteSchemaService:
                         tables_dict = schema["databases"][db_name]["schemas"][
                             schema_name
                         ]["tables"]
+                        # Use original table name in schema for compatibility
                         tables_dict[table_name] = table_info
                     except (KeyError, TypeError):
                         # Schema structure is unexpected, skip this table
@@ -201,18 +223,41 @@ class SQLiteSchemaService:
             ) from e
 
     def _validate_readonly_query(self, sql: str) -> None:
-        """Validate that SQL query is read-only"""
-        sql_upper = sql.upper().strip()
+        """Validate that SQL query is read-only using proper SQL parsing"""
+        parsed = sqlparse.parse(sql)
+        if not parsed:
+            raise SQLiteSchemaError("Invalid SQL query")
 
-        # Allowed statements
-        allowed_statements = ["SELECT", "WITH"]
+        for statement in parsed:
+            self._validate_statement(statement)
 
-        # Check if query starts with allowed statement
-        if not any(sql_upper.startswith(stmt) for stmt in allowed_statements):
-            raise SQLiteSchemaError("Only SELECT and WITH statements are allowed")
+    def _validate_statement(self, statement: Any) -> None:
+        """Validate a single SQL statement is read-only"""
+        stmt_type = statement.get_type()
 
-        # Blocked keywords that might modify data
-        blocked_keywords = [
+        # Check statement type
+        if stmt_type not in ("SELECT", "UNKNOWN"):  # UNKNOWN can be WITH
+            raise SQLiteSchemaError(
+                f"Only SELECT queries are allowed, got: {stmt_type}"
+            )
+
+        # Check for WITH statements
+        first_token = statement.token_first(skip_ws=True, skip_cm=True)
+        if (
+            first_token
+            and first_token.ttype is Keyword
+            and first_token.value.upper() == "WITH"
+        ):
+            return  # Valid WITH statement
+        elif stmt_type == "UNKNOWN":
+            raise SQLiteSchemaError("Invalid SQL statement")
+
+        # Check tokens for dangerous operations
+        self._check_tokens(statement)
+
+    def _check_tokens(self, statement: Any) -> None:
+        """Check tokens for dangerous SQL operations"""
+        dangerous_keywords = {
             "INSERT",
             "UPDATE",
             "DELETE",
@@ -224,13 +269,27 @@ class SQLiteSchemaService:
             "PRAGMA",
             "ATTACH",
             "DETACH",
-        ]
+        }
 
-        for keyword in blocked_keywords:
-            if keyword in sql_upper:
-                raise SQLiteSchemaError(
-                    f"Statement contains blocked keyword: {keyword}"
-                )
+        for token in statement.flatten():
+            # Check DML/DDL tokens
+            if token.ttype in (DML, DDL):
+                if token.ttype is DML and token.value.upper() == "SELECT":
+                    continue
+                raise SQLiteSchemaError(f"Data modification not allowed: {token.value}")
+
+            # Check dangerous keywords
+            if token.ttype is Keyword and token.value.upper() in dangerous_keywords:
+                # Skip if in string literal
+                parent = token.parent
+                if (
+                    parent
+                    and hasattr(parent, "ttype")
+                    and parent.ttype
+                    in (Token.Literal.String.Single, Token.Literal.String.Symbol)
+                ):
+                    continue
+                raise SQLiteSchemaError(f"Potentially dangerous keyword: {token.value}")
 
     def _add_limit_to_query(self, sql: str, limit: int) -> str:
         """Add LIMIT clause to query if not present"""

@@ -124,7 +124,7 @@ export function ChatWindow({
                       onExport={(format) => {
                         if (message.queryResults) {
                           chatService.downloadResults(
-                            message.queryResults.id,
+                            message.queryResults,
                             `query-results-${Date.now()}`,
                             format
                           );

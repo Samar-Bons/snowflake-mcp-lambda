@@ -315,43 +315,6 @@ class FileUploadService {
     }
   }
 
-  /**
-   * Create event source for processing updates
-   * MVP: Returns mock EventSource since backend doesn't provide SSE
-   */
-  createProcessingEventSource(fileId: string): EventSource {
-    // Create a mock EventSource for MVP - in real app this would be apiClient.createEventSource()
-    const mockEventSource = {
-      onmessage: null as ((event: any) => void) | null,
-      onerror: null as ((event: any) => void) | null,
-      onopen: null as ((event: any) => void) | null,
-      close: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-      readyState: 1, // EventSource.OPEN
-      url: `/api/v1/processing/${fileId}/stream`,
-      withCredentials: false,
-      CONNECTING: 0,
-      OPEN: 1,
-      CLOSED: 2,
-    } as EventSource;
-
-    // Simulate processing completion after a short delay
-    setTimeout(() => {
-      if (mockEventSource.onmessage) {
-        mockEventSource.onmessage({
-          data: JSON.stringify({
-            type: 'complete',
-            progress: 100,
-            message: 'Processing completed successfully'
-          })
-        } as MessageEvent);
-      }
-    }, 2000);
-
-    return mockEventSource;
-  }
 
   /**
    * Get list of uploaded files for current session

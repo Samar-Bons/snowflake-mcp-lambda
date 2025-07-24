@@ -10,8 +10,10 @@ import { ChatWindow } from '../components/chat/ChatWindow';
 import { SchemaSidebar } from '../components/schema/SchemaSidebar';
 import { FileUploadZone } from '../components/upload/FileUploadZone';
 import { Modal } from '../components/ui/Modal';
+import { ChatErrorBoundary } from '../components/ErrorBoundary';
 import { fileUploadService } from '../services/fileUpload';
 import { chatService } from '../services/chat';
+import { generateMessageId } from '../utils/id';
 import {
   UploadedFile,
   TableSchema,
@@ -159,43 +161,18 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
         (progress) => setUploadProgress(progress)
       );
 
-      setUploadState('processing');
-
-      // Create event source for processing updates
+      // File is already processed by backend, no need for EventSource
       if (!uploadResponse.success || !uploadResponse.data) {
         throw new Error(uploadResponse.error || 'Upload failed');
       }
 
-      const eventSource = fileUploadService.createProcessingEventSource(uploadResponse.data.id);
+      setUploadState('success');
 
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-
-        if (data.type === 'complete') {
-          setUploadState('success');
-          eventSource.close();
-          loadFiles(); // Refresh file list
-          navigate(`/chat/${uploadResponse.data!.id}`);
-        } else if (data.type === 'error') {
-          setUploadError({
-            code: 'PROCESSING_FAILED',
-            message: 'Processing failed',
-            details: data.error,
-          });
-          setUploadState('error');
-          eventSource.close();
-        }
-      };
-
-      eventSource.onerror = () => {
-        setUploadError({
-          code: 'NETWORK_ERROR',
-          message: 'Connection lost',
-          details: 'Lost connection during processing',
-        });
-        setUploadState('error');
-        eventSource.close();
-      };
+      // Add a small delay for better UX (shows processing state briefly)
+      setTimeout(() => {
+        loadFiles(); // Refresh file list
+        navigate(`/chat/${uploadResponse.data!.id}`);
+      }, 500);
 
     } catch (error) {
       console.error('Upload failed:', error);
@@ -232,7 +209,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
 
     // Add user message
     const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
+      id: generateMessageId('user'),
       type: 'user',
       content: message,
       timestamp: new Date(),
@@ -281,7 +258,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
       setIsTyping(false);
 
       const errorMessage: ChatMessage = {
-        id: `error-${Date.now()}`,
+        id: generateMessageId('error'),
         type: 'assistant',
         content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         timestamp: new Date(),
@@ -403,14 +380,16 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
         {/* Chat Area */}
         <div className="flex-1 min-h-0">
           {activeFile && schema ? (
-            <ChatWindow
-              messages={messages}
-              isTyping={isTyping}
-              onSendMessage={handleSendMessage}
-              onExecuteQuery={handleExecuteQuery}
-              schema={schema}
-              settings={settings}
-            />
+            <ChatErrorBoundary>
+              <ChatWindow
+                messages={messages}
+                isTyping={isTyping}
+                onSendMessage={handleSendMessage}
+                onExecuteQuery={handleExecuteQuery}
+                schema={schema}
+                settings={settings}
+              />
+            </ChatErrorBoundary>
           ) : (
             <div className="h-full flex items-center justify-center">
               <div className="text-center space-y-4 max-w-md mx-auto px-4">
@@ -447,14 +426,16 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
         title="Upload New CSV File"
         size="medium"
       >
-        <FileUploadZone
-          onUpload={handleNewUpload}
-          maxSize={100}
-          acceptedTypes={['.csv', '.tsv']}
-          state={uploadState}
-          progress={uploadProgress}
-          error={uploadError}
-        />
+        <ChatErrorBoundary>
+          <FileUploadZone
+            onUpload={handleNewUpload}
+            maxSize={100}
+            acceptedTypes={['.csv', '.tsv']}
+            state={uploadState}
+            progress={uploadProgress}
+            error={uploadError}
+          />
+        </ChatErrorBoundary>
 
         {uploadState === 'error' && (
           <div className="mt-4 flex justify-end">

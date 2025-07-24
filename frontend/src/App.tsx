@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './hooks/useAuth';
 import { LandingPage } from './pages/LandingPage';
 import { ChatPage } from './pages/ChatPage';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { useEffect, useState } from 'react';
 
 function App() {
@@ -27,41 +28,49 @@ function App() {
   };
 
   return (
-    <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-primary text-light-primary">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <LandingPage
-                  theme={theme}
-                  onToggleTheme={toggleTheme}
-                />
-              }
-            />
-            <Route
-              path="/chat"
-              element={
-                <ChatPage
-                  theme={theme}
-                  onToggleTheme={toggleTheme}
-                />
-              }
-            />
-            <Route
-              path="/chat/:fileId"
-              element={
-                <ChatPage
-                  theme={theme}
-                  onToggleTheme={toggleTheme}
-                />
-              }
-            />
-          </Routes>
-        </div>
-      </Router>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
+          <div className="min-h-screen bg-primary text-light-primary">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <ErrorBoundary>
+                    <LandingPage
+                      theme={theme}
+                      onToggleTheme={toggleTheme}
+                    />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="/chat"
+                element={
+                  <ErrorBoundary>
+                    <ChatPage
+                      theme={theme}
+                      onToggleTheme={toggleTheme}
+                    />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="/chat/:fileId"
+                element={
+                  <ErrorBoundary>
+                    <ChatPage
+                      theme={theme}
+                      onToggleTheme={toggleTheme}
+                    />
+                  </ErrorBoundary>
+                }
+              />
+            </Routes>
+          </div>
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

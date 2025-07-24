@@ -26,6 +26,8 @@ cryptography = "^45.0.5"
 pandas = "^2.1.0"
 chardet = "^5.2.0"
 python-multipart = "^0.0.9"
+sqlparse = "^0.4.4"
+itsdangerous = "^2.2.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
@@ -99,6 +101,8 @@ ignore = [
     "S105",    # hardcoded password (test fixtures)
     "S106",    # hardcoded password in argument (test fixtures)
     "S603",    # subprocess call (integration tests)
+    "S608",    # SQL injection (test queries)
+    "S108",    # insecure temp file usage (test fixtures)
     "PLR2004", # magic values (common in tests)
     "SLF001",  # private member access (testing internals)
 ]

@@ -3,6 +3,7 @@
 
 import { apiClient } from './api';
 import { BackendAdapters } from './adapters';
+import { generateMessageId } from '../utils/id';
 import { TableSchema, ChatMessage, QueryResult, ChatQueryResponse, ApiResponse } from '../types';
 
 class ChatService {
@@ -62,21 +63,53 @@ class ChatService {
 
   /**
    * Download query results in specified format (client-side implementation)
+   * NOTE: This needs to be called with the actual QueryResult object, not just the ID
    */
-  async downloadResults(
-    queryId: string,
+  downloadResults(
+    queryResult: QueryResult,
     filename: string,
     format: 'csv' | 'json'
-  ): Promise<void> {
-    // For now, we'll need to handle this differently since we're passing just the ID
-    // This is a simplified implementation for MVP
-    console.log(`Download requested for query ${queryId} as ${format}`);
-    // MVP: Client-side download would need the actual QueryResult object
-    // For now, just show a message
+  ): void {
+    let content: string;
+    let mimeType: string;
+
+    if (format === 'csv') {
+      // Convert to CSV format
+      const headers = queryResult.columns.map(col => col.label).join(',');
+      const rows = queryResult.data.map(row =>
+        queryResult.columns.map(col => {
+          const value = row[col.key];
+          // Escape values containing commas or quotes
+          if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+            return `"${value.replace(/"/g, '""')}"`;
+          }
+          return value;
+        }).join(',')
+      );
+      content = [headers, ...rows].join('\n');
+      mimeType = 'text/csv';
+    } else {
+      // JSON format
+      content = JSON.stringify({
+        columns: queryResult.columns,
+        data: queryResult.data,
+        totalRows: queryResult.totalRows,
+        query: queryResult.query,
+        executionTime: queryResult.executionTime
+      }, null, 2);
+      mimeType = 'application/json';
+    }
+
+    // Create blob and download
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = '#';
+    link.href = url;
     link.download = `${filename}.${format}`;
     link.click();
+
+    // Clean up
+    setTimeout(() => URL.revokeObjectURL(url), 100);
   }
 
   /**
@@ -197,7 +230,7 @@ class ChatService {
    */
   createTypingMessage(): ChatMessage {
     return {
-      id: `typing-${Date.now()}`,
+      id: generateMessageId('typing'),
       type: 'assistant',
       content: 'Thinking...',
       timestamp: new Date(),

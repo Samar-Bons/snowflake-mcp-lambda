@@ -112,8 +112,12 @@ async def upload_file(
 
         # Convert to database
         file_manager = FileManager()
-        # Use session ID instead of user ID for anonymous uploads
-        session_id = "anonymous"
+        # Generate or get session ID for the user
+        session_id = request.session.get("session_id")
+        if not session_id:
+            session_id = str(uuid.uuid4())
+            request.session["session_id"] = session_id
+
         db_path = file_manager.get_user_db_path(session_id, temp_file_id)
 
         result = processor.convert_to_database(temp_file_path, db_path)
@@ -174,12 +178,13 @@ async def upload_file(
 @router.get("/schema/{file_id}")
 async def get_file_schema(
     file_id: str,
+    request: Request,
 ) -> JSONResponse:
     """Get schema information for uploaded file"""
 
     file_manager = FileManager()
-    # Use anonymous session for public access
-    session_id = "anonymous"
+    # Get session ID from request
+    session_id = request.session.get("session_id", "anonymous")
     file_info = file_manager.get_file_info(session_id, file_id)
 
     if not file_info:

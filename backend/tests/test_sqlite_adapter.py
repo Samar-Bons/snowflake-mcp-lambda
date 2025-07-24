@@ -234,7 +234,7 @@ class TestSQLiteSchemaService:
         ]
 
         for query in blocked_queries:
-            with pytest.raises(SQLiteSchemaError, match="blocked keyword|Only SELECT"):
+            with pytest.raises(SQLiteSchemaError):
                 service.execute_query(query)
 
     def test_execute_query_with_cte(self, service, mock_file_manager, temp_db):
@@ -330,9 +330,8 @@ class TestSQLiteSchemaService:
         with pytest.raises(SQLiteSchemaError):
             service._validate_readonly_query("iNsErT INTO test VALUES (1)")
 
-        # Keywords in string literals should still be blocked (conservative approach)
-        with pytest.raises(SQLiteSchemaError):
-            service._validate_readonly_query("SELECT 'DROP TABLE' as msg")
+        # Keywords in string literals should be allowed
+        service._validate_readonly_query("SELECT 'DROP TABLE' as msg")
 
         # Leading whitespace
         service._validate_readonly_query("  \n\t SELECT * FROM test")

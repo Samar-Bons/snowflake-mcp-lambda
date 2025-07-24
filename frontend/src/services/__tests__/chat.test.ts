@@ -1,10 +1,11 @@
 // ABOUTME: Unit tests for chat service functionality
 // ABOUTME: Tests natural language processing, query execution, and chat management
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { chatService } from '../chat';
 import { apiClient } from '../api';
 import { mockTableSchema } from '../../test/utils';
+import { QueryResult } from '../../types';
 
 // Mock the API client
 vi.mock('../api', () => ({
@@ -18,6 +19,11 @@ vi.mock('../api', () => ({
 describe('ChatService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe('sendMessage', () => {
@@ -114,7 +120,23 @@ describe('ChatService', () => {
   });
 
   describe('downloadResults', () => {
-    it('should download results client-side (MVP - no backend export)', async () => {
+    it('should download CSV results client-side', () => {
+      const mockQueryResult: QueryResult = {
+        id: 'result-123',
+        columns: [
+          { key: 'name', label: 'Name', type: 'text' },
+          { key: 'age', label: 'Age', type: 'number' }
+        ],
+        data: [
+          { name: 'John', age: 30 },
+          { name: 'Jane, Doe', age: 25 },
+        ],
+        totalRows: 2,
+        query: 'SELECT * FROM users',
+        executionTime: 123,
+        status: 'success'
+      };
+
       // Mock DOM methods
       const mockLink = {
         href: '',
@@ -122,16 +144,64 @@ describe('ChatService', () => {
         click: vi.fn(),
       };
       const createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
+      const createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url');
+      const revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL');
 
-      await chatService.downloadResults('result-123', 'test-results', 'csv');
+      chatService.downloadResults(mockQueryResult, 'test-results', 'csv');
 
-      // Should NOT call backend
-      expect(apiClient.get).not.toHaveBeenCalled();
-
-      // Should create download link (simplified MVP version)
+      // Should create blob and download link
       expect(createElementSpy).toHaveBeenCalledWith('a');
+      expect(createObjectURLSpy).toHaveBeenCalled();
       expect(mockLink.download).toBe('test-results.csv');
+      expect(mockLink.href).toBe('blob:mock-url');
       expect(mockLink.click).toHaveBeenCalled();
+
+      // Clean up blob URL after delay
+      vi.runAllTimers();
+      expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:mock-url');
+
+      createElementSpy.mockRestore();
+    });
+
+    it('should download JSON results client-side', () => {
+      const mockQueryResult: QueryResult = {
+        id: 'result-123',
+        columns: [
+          { key: 'name', label: 'Name', type: 'text' },
+          { key: 'age', label: 'Age', type: 'number' }
+        ],
+        data: [
+          { name: 'John', age: 30 },
+          { name: 'Jane', age: 25 },
+        ],
+        totalRows: 2,
+        query: 'SELECT * FROM users',
+        executionTime: 123,
+        status: 'success'
+      };
+
+      // Mock DOM methods
+      const mockLink = {
+        href: '',
+        download: '',
+        click: vi.fn(),
+      };
+      const createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
+      const createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url');
+      const revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL');
+
+      chatService.downloadResults(mockQueryResult, 'test-results', 'json');
+
+      // Should create blob and download link
+      expect(createElementSpy).toHaveBeenCalledWith('a');
+      expect(createObjectURLSpy).toHaveBeenCalled();
+      expect(mockLink.download).toBe('test-results.json');
+      expect(mockLink.href).toBe('blob:mock-url');
+      expect(mockLink.click).toHaveBeenCalled();
+
+      // Clean up blob URL after delay
+      vi.runAllTimers();
+      expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:mock-url');
 
       createElementSpy.mockRestore();
     });
