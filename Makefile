@@ -87,11 +87,11 @@ db-reset: ## Reset database (WARNING: destroys project database data only)
 	@echo "✅ Database reset complete"
 
 # Testing
-test: ## Run backend tests
-	docker compose exec backend poetry run pytest
+test: ## Run backend tests with coverage (matches CI/pre-commit)
+	docker compose exec backend poetry run pytest --cov=app --cov-report=term-missing --cov-fail-under=85
 
-test-cov: ## Run backend tests with coverage
-	docker compose exec backend poetry run pytest --cov=app --cov-report=html
+test-cov: ## Run backend tests with detailed HTML coverage report
+	docker compose exec backend poetry run pytest --cov=app --cov-report=html --cov-report=term-missing --cov-fail-under=85
 
 # Cleanup
 clean: ## Stop containers and remove project volumes (WARNING: destroys project data only)
