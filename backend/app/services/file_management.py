@@ -6,9 +6,16 @@ import logging
 import tempfile
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 import redis
+
+if TYPE_CHECKING:
+    # Type hint for modern Redis versions with generics
+    RedisType = redis.Redis[str]
+else:
+    # Runtime compatibility for all Redis versions
+    RedisType = redis.Redis
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +23,7 @@ logger = logging.getLogger(__name__)
 class FileManager:
     """Manages uploaded files and metadata with session-based storage"""
 
-    def __init__(self, redis_client: redis.Redis | None = None):
+    def __init__(self, redis_client: RedisType | None = None):
         self.redis_client = redis_client or self._get_redis_client()
         self.base_dir = Path(tempfile.gettempdir()) / "data_chat_files"
         self.base_dir.mkdir(exist_ok=True)
@@ -25,7 +32,7 @@ class FileManager:
         self.file_expiry_hours = 24  # Files expire after 24 hours
         self.metadata_key_prefix = "file_metadata:"
 
-    def _get_redis_client(self) -> redis.Redis | None:
+    def _get_redis_client(self) -> RedisType | None:
         """Get Redis client for metadata storage"""
         try:
             # Use default Redis connection (same as sessions)

@@ -80,7 +80,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
     if (fileId) {
       loadFileData(fileId);
     }
-  }, [fileId]);
+  }, [fileId, files]);
 
   const loadFiles = async () => {
     try {
@@ -98,11 +98,20 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
 
   const loadFileData = async (selectedFileId: string) => {
     try {
-      const file = files.find(f => f.id === selectedFileId);
+      let file = files.find(f => f.id === selectedFileId);
+      
       if (!file) {
-        // If file not found in current list, try to reload files
-        await loadFiles();
-        return;
+        // If file not found in current list, try to reload files first
+        const uploadedFiles = await fileUploadService.getUploadedFiles();
+        setFiles(uploadedFiles);
+        
+        // Now try to find the file in the fresh list
+        file = uploadedFiles.find(f => f.id === selectedFileId);
+        
+        if (!file) {
+          console.error('File not found after reload:', selectedFileId);
+          return;
+        }
       }
 
       setActiveFile(file);

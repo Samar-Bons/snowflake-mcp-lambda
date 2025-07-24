@@ -116,9 +116,36 @@ export function LandingPage({ theme, onToggleTheme }: LandingPageProps) {
     }
   };
 
-  const handleTrySample = () => {
-    // TODO: Implement sample data functionality
-    console.log('Try sample data clicked');
+  const handleTrySample = async () => {
+    try {
+      // Create a sample CSV data
+      const sampleCsvContent = `customer_id,name,email,age,city,purchase_amount,purchase_date
+1,John Doe,john.doe@email.com,28,New York,150.50,2024-01-15
+2,Jane Smith,jane.smith@email.com,34,Los Angeles,89.99,2024-01-16
+3,Mike Johnson,mike.johnson@email.com,42,Chicago,210.75,2024-01-17
+4,Sarah Wilson,sarah.wilson@email.com,29,Houston,45.99,2024-01-18
+5,David Brown,david.brown@email.com,35,Phoenix,320.00,2024-01-19
+6,Lisa Garcia,lisa.garcia@email.com,27,Philadelphia,125.50,2024-01-20
+7,Robert Taylor,robert.taylor@email.com,38,San Antonio,199.99,2024-01-21
+8,Emily Davis,emily.davis@email.com,31,San Diego,75.25,2024-01-22
+9,Michael Miller,michael.miller@email.com,45,Dallas,410.80,2024-01-23
+10,Jessica Wilson,jessica.wilson@email.com,26,San Jose,95.75,2024-01-24`;
+
+      // Create a File object from the CSV content
+      const blob = new Blob([sampleCsvContent], { type: 'text/csv' });
+      const sampleFile = new File([blob], 'sample_customer_data.csv', { type: 'text/csv' });
+
+      // Use the existing file upload handler
+      await handleFileUpload(sampleFile);
+    } catch (error) {
+      console.error('Failed to load sample data:', error);
+      setUploadError({
+        code: 'SAMPLE_LOAD_ERROR',
+        message: 'Failed to load sample data',
+        details: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
+      setUploadState('error');
+    }
   };
 
   const handleRetry = () => {

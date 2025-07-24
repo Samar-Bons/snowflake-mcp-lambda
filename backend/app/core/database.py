@@ -4,9 +4,16 @@
 import logging
 import time
 from collections.abc import Generator
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 import redis
+
+if TYPE_CHECKING:
+    # Type hint for modern Redis versions with generics
+    RedisType = redis.Redis[str]
+else:
+    # Runtime compatibility for all Redis versions
+    RedisType = redis.Redis
 from sqlalchemy import Engine, create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
@@ -177,10 +184,10 @@ class DatabaseManager:
 _database_manager: DatabaseManager | None = None
 
 # Global Redis client
-_redis_client: redis.Redis | None = None
+_redis_client: RedisType | None = None
 
 
-def get_redis_client() -> redis.Redis | None:
+def get_redis_client() -> RedisType | None:
     """
     Get or create global Redis client instance.
 
