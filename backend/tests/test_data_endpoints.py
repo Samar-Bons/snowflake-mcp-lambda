@@ -267,27 +267,43 @@ class TestDataEndpoints:
 
     def test_delete_file_success(self, client, mock_file_manager, mock_user, auth_headers):
         """Test deleting a file"""
+        from app.auth.endpoints import get_current_user
+
         mock_file_manager.delete_file.return_value = True
 
-        with patch("app.data.endpoints.FileManager", return_value=mock_file_manager):
-            with patch("app.auth.endpoints.get_current_user", return_value=mock_user):
+        # Override the dependency
+        app.dependency_overrides[get_current_user] = lambda: mock_user
+
+        try:
+            with patch("app.data.endpoints.FileManager", return_value=mock_file_manager):
                 response = client.delete("/api/v1/data/files/file123", headers=auth_headers)
 
-        assert response.status_code == 200
-        result = response.json()
-        assert result["success"] is True
-        assert "File deleted" in result["message"]
+            assert response.status_code == 200
+            result = response.json()
+            assert result["success"] is True
+            assert "File deleted" in result["message"]
+        finally:
+            # Clean up the override
+            app.dependency_overrides.clear()
 
     def test_delete_file_not_found(self, client, mock_file_manager, mock_user, auth_headers):
         """Test deleting non-existent file"""
+        from app.auth.endpoints import get_current_user
+
         mock_file_manager.delete_file.return_value = False
 
-        with patch("app.data.endpoints.FileManager", return_value=mock_file_manager):
-            with patch("app.auth.endpoints.get_current_user", return_value=mock_user):
+        # Override the dependency
+        app.dependency_overrides[get_current_user] = lambda: mock_user
+
+        try:
+            with patch("app.data.endpoints.FileManager", return_value=mock_file_manager):
                 response = client.delete("/api/v1/data/files/nonexistent", headers=auth_headers)
 
-        assert response.status_code == 404
-        assert "File not found" in response.json()["detail"]
+            assert response.status_code == 404
+            assert "File not found" in response.json()["detail"]
+        finally:
+            # Clean up the override
+            app.dependency_overrides.clear()
 
     def test_delete_file_unauthenticated(self, client):
         """Test deleting file without authentication"""
@@ -298,27 +314,43 @@ class TestDataEndpoints:
 
     def test_list_files_success(self, client, mock_file_manager, mock_user, auth_headers):
         """Test listing user files"""
-        with patch("app.data.endpoints.FileManager", return_value=mock_file_manager):
-            with patch("app.auth.endpoints.get_current_user", return_value=mock_user):
+        from app.auth.endpoints import get_current_user
+
+        # Override the dependency
+        app.dependency_overrides[get_current_user] = lambda: mock_user
+
+        try:
+            with patch("app.data.endpoints.FileManager", return_value=mock_file_manager):
                 response = client.get("/api/v1/data/files", headers=auth_headers)
 
-        assert response.status_code == 200
-        result = response.json()
-        assert len(result["files"]) == 2
-        assert result["files"][0]["file_id"] == "file1"
-        assert result["files"][1]["filename"] == "data2.csv"
+            assert response.status_code == 200
+            result = response.json()
+            assert len(result["files"]) == 2
+            assert result["files"][0]["file_id"] == "file1"
+            assert result["files"][1]["filename"] == "data2.csv"
+        finally:
+            # Clean up the override
+            app.dependency_overrides.clear()
 
     def test_list_files_empty(self, client, mock_file_manager, mock_user, auth_headers):
         """Test listing files when user has none"""
+        from app.auth.endpoints import get_current_user
+
         mock_file_manager.list_user_files.return_value = []
 
-        with patch("app.data.endpoints.FileManager", return_value=mock_file_manager):
-            with patch("app.auth.endpoints.get_current_user", return_value=mock_user):
+        # Override the dependency
+        app.dependency_overrides[get_current_user] = lambda: mock_user
+
+        try:
+            with patch("app.data.endpoints.FileManager", return_value=mock_file_manager):
                 response = client.get("/api/v1/data/files", headers=auth_headers)
 
-        assert response.status_code == 200
-        result = response.json()
-        assert result["files"] == []
+            assert response.status_code == 200
+            result = response.json()
+            assert result["files"] == []
+        finally:
+            # Clean up the override
+            app.dependency_overrides.clear()
 
     def test_list_files_unauthenticated(self, client):
         """Test listing files without authentication"""
@@ -329,16 +361,24 @@ class TestDataEndpoints:
 
     def test_cleanup_expired_files_success(self, client, mock_file_manager, mock_user, auth_headers):
         """Test cleanup endpoint"""
+        from app.auth.endpoints import get_current_user
+
         mock_file_manager.cleanup_expired_files.return_value = 5
 
-        with patch("app.data.endpoints.FileManager", return_value=mock_file_manager):
-            with patch("app.auth.endpoints.get_current_user", return_value=mock_user):
+        # Override the dependency
+        app.dependency_overrides[get_current_user] = lambda: mock_user
+
+        try:
+            with patch("app.data.endpoints.FileManager", return_value=mock_file_manager):
                 response = client.post("/api/v1/data/cleanup", headers=auth_headers)
 
-        assert response.status_code == 200
-        result = response.json()
-        assert result["success"] is True
-        assert result["cleaned_files"] == 5
+            assert response.status_code == 200
+            result = response.json()
+            assert result["success"] is True
+            assert result["cleaned_files"] == 5
+        finally:
+            # Clean up the override
+            app.dependency_overrides.clear()
 
     def test_cleanup_expired_files_unauthenticated(self, client):
         """Test cleanup without authentication"""

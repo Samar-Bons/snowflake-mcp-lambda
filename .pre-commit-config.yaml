@@ -68,16 +68,15 @@ repos:
         pass_filenames: false
 
       # Pytest - full test suite with coverage (exactly as CI runs it)
-      # Coverage achieved: 88% (requirement: 85%)
-      # TODO: Fix 5 auth-related test failures before re-enabling
-      # - id: pytest-backend
-      #   name: pytest with coverage
-      #   entry: ./scripts/poetry-wrapper.sh run pytest
-      #   language: system
-      #   pass_filenames: false
-      #   always_run: true
-      #   args: [--cov=app, --cov-report=term-missing, --cov-fail-under=85]
-      #   stages: [commit]
+      # Coverage achieved: 88.87% (requirement: 85%)
+      - id: pytest-backend
+        name: pytest with coverage
+        entry: ./scripts/poetry-wrapper.sh run pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+        args: [--cov=app, --cov-report=term-missing, --cov-fail-under=85]
+        stages: [commit]
 
       # Poetry check - ensure lock file is up to date
       - id: poetry-check
