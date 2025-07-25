@@ -4,7 +4,7 @@
 from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
@@ -113,14 +113,15 @@ def _get_schema_service_for_file(
 @router.post("/", response_model=ChatResponse)
 async def chat(
     request: ChatRequest,
+    http_request: Request,
     gemini_service: GeminiService = Depends(get_gemini_service),  # noqa: B008
     schema_service: SchemaService | None = Depends(get_schema_service),  # noqa: B008
 ) -> ChatResponse:
     """Convert natural language to SQL and optionally execute it."""
     try:
         # Get schema service and context
-        # Use anonymous session for public access
-        session_id = "anonymous"
+        # Get session ID from request
+        session_id = http_request.session.get("session_id", "anonymous")
         active_service, schema_context = _get_schema_service_for_file(
             session_id, request.file_id, schema_service
         )
@@ -164,6 +165,7 @@ async def chat(
 @router.post("/execute", response_model=ExecuteSQLResponse)
 async def execute_sql(
     request: ExecuteSQLRequest,
+    http_request: Request,
     schema_service: SchemaService | None = Depends(get_schema_service),  # noqa: B008
 ) -> ExecuteSQLResponse:
     """Execute a SQL query.
@@ -181,7 +183,7 @@ async def execute_sql(
     """
     try:
         # MVP: Only SQLite file uploads, no Snowflake fallback
-        session_id = "anonymous"
+        session_id = http_request.session.get("session_id", "anonymous")
         sqlite_service = SQLiteSchemaService(session_id)
         if not sqlite_service.set_active_file(request.file_id):
             raise HTTPException(
