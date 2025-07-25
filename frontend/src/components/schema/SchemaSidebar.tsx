@@ -1,7 +1,7 @@
 // ABOUTME: Sidebar component showing uploaded files and database schema information
 // ABOUTME: Provides file management, column details, and navigation between datasets
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   FileText,
   Database,
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { UploadedFile, TableSchema } from '../../types';
+import { generateFileDisplayNames } from '../../utils/fileUtils';
 
 interface SchemaSidebarProps {
   files: UploadedFile[];
@@ -45,6 +46,11 @@ export function SchemaSidebar({
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(['files', 'schema'])
   );
+
+  // Generate display names for all files
+  const fileDisplayNames = useMemo(() => {
+    return generateFileDisplayNames(files);
+  }, [files]);
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => {
@@ -146,25 +152,27 @@ export function SchemaSidebar({
 
           {expandedSections.has('files') && (
             <div className="mt-3 space-y-2">
-              {files.map((file) => (
-                <div
-                  key={file.id}
-                  className={`
-                    group p-3 rounded-lg border cursor-pointer transition-all
-                    ${activeFileId === file.id
-                      ? 'border-blue-primary bg-blue-primary/10'
-                      : 'border-surface hover:border-surface-elevated hover:bg-surface/50'
-                    }
-                  `}
-                  onClick={() => onFileSelect(file.id)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-2 flex-1 min-w-0">
-                      <FileText className="h-4 w-4 text-blue-primary mt-0.5 flex-shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-light-primary truncate">
-                          {file.name}
-                        </p>
+              {files.map((file) => {
+                const displayName = fileDisplayNames.find(f => f.id === file.id)?.displayName || file.name;
+                return (
+                  <div
+                    key={file.id}
+                    className={`
+                      group p-3 rounded-lg border cursor-pointer transition-all
+                      ${activeFileId === file.id
+                        ? 'border-blue-primary bg-blue-primary/10'
+                        : 'border-surface hover:border-surface-elevated hover:bg-surface/50'
+                      }
+                    `}
+                    onClick={() => onFileSelect(file.id)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-2 flex-1 min-w-0">
+                        <FileText className="h-4 w-4 text-blue-primary mt-0.5 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-light-primary truncate">
+                            {displayName}
+                          </p>
                         <div className="flex items-center gap-2 mt-1">
                           <span className={`text-xs ${getStatusColor(file.processingStatus)}`}>
                             {getStatusText(file.processingStatus)}
@@ -200,7 +208,8 @@ export function SchemaSidebar({
                     </div>
                   )}
                 </div>
-              ))}
+                );
+              })}
 
               <Button
                 variant="outline"

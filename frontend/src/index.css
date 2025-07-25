@@ -6,7 +6,7 @@
 @import 'tailwindcss/utilities';
 
 /* Import design system CSS variables */
-@import url('../../styleGuide/styles.css');
+@import url('../styleGuide/styles.css');
 
 /* Global styles and theme variables */
 :root {

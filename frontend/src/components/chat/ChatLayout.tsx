@@ -1,7 +1,7 @@
 // ABOUTME: Main chat layout with responsive sidebar and chat area
 // ABOUTME: Handles desktop sidebar + mobile bottom navigation for chat interface
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Menu,
   X,
@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { UploadedFile, TableSchema } from '../../types';
+import { generateFileDisplayNames } from '../../utils/fileUtils';
 
 interface ChatLayoutProps {
   files: UploadedFile[];
@@ -38,6 +39,17 @@ export function ChatLayout({
 
   const closeSidebar = () => setSidebarOpen(false);
 
+  // Generate display names for all files
+  const fileDisplayNames = useMemo(() => {
+    return generateFileDisplayNames(files);
+  }, [files]);
+
+  // Get display name for active file
+  const activeFileDisplayName = useMemo(() => {
+    if (!activeFile) return null;
+    return fileDisplayNames.find(f => f.id === activeFile.id)?.displayName || activeFile.name;
+  }, [activeFile, fileDisplayNames]);
+
   return (
     <div className="h-screen bg-secondary-dark flex overflow-hidden">
       {/* Desktop Sidebar */}
@@ -45,6 +57,7 @@ export function ChatLayout({
         <div className="flex flex-col w-80">
           <Sidebar
             files={files}
+            fileDisplayNames={fileDisplayNames}
             activeFile={activeFile}
             schema={schema}
             activeTab={activeTab}
@@ -73,6 +86,7 @@ export function ChatLayout({
             </div>
             <Sidebar
               files={files}
+              fileDisplayNames={fileDisplayNames}
               activeFile={activeFile}
               schema={schema}
               activeTab={activeTab}
@@ -99,11 +113,11 @@ export function ChatLayout({
           </Button>
 
           <div className="flex items-center gap-2">
-            {activeFile && (
+            {activeFile && activeFileDisplayName && (
               <>
                 <FileSpreadsheet className="h-4 w-4 text-blue-primary" />
                 <span className="text-sm font-medium text-light-primary truncate max-w-32">
-                  {activeFile.name}
+                  {activeFileDisplayName}
                 </span>
               </>
             )}
@@ -131,6 +145,7 @@ export function ChatLayout({
 // Sidebar Component
 interface SidebarProps {
   files: UploadedFile[];
+  fileDisplayNames: Array<{ id: string; originalName: string; displayName: string }>;
   activeFile: UploadedFile | null;
   schema: TableSchema | null;
   activeTab: 'files' | 'schema' | 'settings';
@@ -142,6 +157,7 @@ interface SidebarProps {
 
 function Sidebar({
   files,
+  fileDisplayNames,
   activeFile,
   schema,
   activeTab,
@@ -189,6 +205,7 @@ function Sidebar({
         {activeTab === 'files' && (
           <FilesPanel
             files={files}
+            fileDisplayNames={fileDisplayNames}
             activeFile={activeFile}
             onFileSelect={onFileSelect}
             onUploadNew={onUploadNew}
@@ -210,12 +227,13 @@ function Sidebar({
 // Files Panel
 interface FilesPanelProps {
   files: UploadedFile[];
+  fileDisplayNames: Array<{ id: string; originalName: string; displayName: string }>;
   activeFile: UploadedFile | null;
   onFileSelect: (fileId: string) => void;
   onUploadNew: () => void;
 }
 
-function FilesPanel({ files, activeFile, onFileSelect, onUploadNew }: FilesPanelProps) {
+function FilesPanel({ files, fileDisplayNames, activeFile, onFileSelect, onUploadNew }: FilesPanelProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -246,30 +264,33 @@ function FilesPanel({ files, activeFile, onFileSelect, onUploadNew }: FilesPanel
         </div>
       ) : (
         <div className="space-y-2">
-          {files.map((file) => (
-            <button
-              key={file.id}
-              onClick={() => onFileSelect(file.id)}
-              className={`w-full p-3 rounded-lg border text-left transition-colors ${
-                activeFile?.id === file.id
-                  ? 'border-blue-primary bg-blue-primary/10 text-light-primary'
-                  : 'border-surface bg-surface/30 text-light-secondary hover:bg-surface/50 hover:border-surface-elevated'
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <FileSpreadsheet className="h-4 w-4 text-blue-primary mt-0.5 flex-shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium truncate">{file.name}</p>
-                  <p className="text-xs text-light-muted">
-                    {file.estimatedRows?.toLocaleString()} rows • {(file.size / 1024 / 1024).toFixed(1)} MB
-                  </p>
-                  <p className="text-xs text-light-subtle">
-                    {file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString() : 'Processing...'}
-                  </p>
+          {files.map((file) => {
+            const displayName = fileDisplayNames.find(f => f.id === file.id)?.displayName || file.name;
+            return (
+              <button
+                key={file.id}
+                onClick={() => onFileSelect(file.id)}
+                className={`w-full p-3 rounded-lg border text-left transition-colors ${
+                  activeFile?.id === file.id
+                    ? 'border-blue-primary bg-blue-primary/10 text-light-primary'
+                    : 'border-surface bg-surface/30 text-light-secondary hover:bg-surface/50 hover:border-surface-elevated'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <FileSpreadsheet className="h-4 w-4 text-blue-primary mt-0.5 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium truncate">{displayName}</p>
+                    <p className="text-xs text-light-muted">
+                      {file.estimatedRows?.toLocaleString()} rows • {(file.size / 1024 / 1024).toFixed(1)} MB
+                    </p>
+                    <p className="text-xs text-light-subtle">
+                      {file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString() : 'Processing...'}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

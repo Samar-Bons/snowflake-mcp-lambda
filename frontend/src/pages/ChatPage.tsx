@@ -1,7 +1,7 @@
 // ABOUTME: Main chat interface page with desktop sidebar and mobile responsive layout
 // ABOUTME: Handles chat conversations, file management, and query results display
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Menu, X, Upload, Settings, FileText, MessageSquare } from 'lucide-react';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
@@ -14,6 +14,7 @@ import { ChatErrorBoundary } from '../components/ErrorBoundary';
 import { fileUploadService } from '../services/fileUpload';
 import { chatService } from '../services/chat';
 import { generateMessageId } from '../utils/id';
+import { generateFileDisplayNames } from '../utils/fileUtils';
 import {
   UploadedFile,
   TableSchema,
@@ -57,6 +58,17 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
     exportFormat: 'csv',
     theme: theme,
   });
+
+  // Generate display names for all files
+  const fileDisplayNames = useMemo(() => {
+    return generateFileDisplayNames(files);
+  }, [files]);
+
+  // Get display name for active file
+  const activeFileDisplayName = useMemo(() => {
+    if (!activeFile) return null;
+    return fileDisplayNames.find(f => f.id === activeFile.id)?.displayName || activeFile.name;
+  }, [activeFile, fileDisplayNames]);
 
   // Mobile detection
   useEffect(() => {
@@ -343,7 +355,7 @@ export function ChatPage({ theme, onToggleTheme }: ChatPageProps) {
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-blue-primary" />
               <span className="font-medium truncate">
-                {activeFile?.name || 'Select a file'}
+                {activeFileDisplayName || 'Select a file'}
               </span>
               {activeFile && (
                 <span className="text-xs text-light-muted px-2 py-1 bg-surface rounded">

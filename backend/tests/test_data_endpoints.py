@@ -497,3 +497,166 @@ class TestDataEndpoints:
 
         finally:
             temp_path.unlink(missing_ok=True)
+
+
+class TestMeaningfulFileIds:
+    """Test meaningful file ID generation"""
+
+    @pytest.fixture
+    def client(self):
+        """Create test client"""
+        return TestClient(app)
+
+    @pytest.fixture
+    def sample_csv_content(self):
+        """Create sample CSV content"""
+        return b"id,name,value\n1,Item1,100\n2,Item2,200\n3,Item3,300"
+
+    @pytest.fixture
+    def mock_file_manager(self):
+        """Create mock file manager"""
+        mock = MagicMock()
+        mock.get_user_db_path.return_value = Path("/tmp/test.db")
+        mock.store_file_info.return_value = True
+        return mock
+
+    @pytest.fixture
+    def mock_processor(self):
+        """Create mock file processor"""
+        mock = MagicMock()
+        mock.validate_file.return_value = []  # Empty list means no validation errors
+        mock.convert_to_database.return_value = ProcessingResult(
+            success=True,
+            database_path="/tmp/test.db"
+        )
+        schema = FileSchema(
+            table_name="test_table",
+            columns=[
+                SchemaColumn(name="id", data_type="INTEGER", sample_values=[1, 2, 3]),
+                SchemaColumn(name="name", data_type="TEXT", sample_values=["Item1", "Item2", "Item3"]),
+                SchemaColumn(name="value", data_type="INTEGER", sample_values=[100, 200, 300])
+            ],
+            row_count=3,
+            file_metadata=FileMetadata(
+                filename="test.csv",
+                size=100,
+                mime_type="text/csv",
+                file_extension=".csv"
+            )
+        )
+        mock.discover_schema.return_value = schema
+        mock.detect_schema.return_value = schema  # Add this for the upload endpoint
+        return mock
+
+    def test_generate_meaningful_file_id_basic(self):
+        """Test basic file ID generation"""
+        from app.data.endpoints import _generate_meaningful_file_id
+        
+        # Test with simple filename
+        file_id = _generate_meaningful_file_id("customer_data.csv")
+        parts = file_id.split("_")
+        
+        # Should have format: customer_data_YYYYMMDD_HHMMSS_xxxx
+        assert parts[0] == "customer"
+        assert parts[1] == "data"
+        assert len(parts[2]) == 8  # YYYYMMDD
+        assert len(parts[3]) == 6  # HHMMSS
+        assert len(parts[4]) == 4  # short UUID
+        
+    def test_generate_meaningful_file_id_special_chars(self):
+        """Test file ID generation with special characters"""
+        from app.data.endpoints import _generate_meaningful_file_id
+        
+        # Test with special characters
+        file_id = _generate_meaningful_file_id("customer-data@2024!.csv")
+        assert not any(char in file_id for char in "@!")
+        # The hyphen gets converted to underscore, and "@" is removed
+        assert "customer_data2024" in file_id
+        
+    def test_generate_meaningful_file_id_spaces(self):
+        """Test file ID generation with spaces"""
+        from app.data.endpoints import _generate_meaningful_file_id
+        
+        # Test with spaces
+        file_id = _generate_meaningful_file_id("customer  data   file.csv")
+        assert "customer_data_file" in file_id
+        assert "__" not in file_id  # No double underscores
+        
+    def test_generate_meaningful_file_id_long_name(self):
+        """Test file ID generation with long filename"""
+        from app.data.endpoints import _generate_meaningful_file_id
+        
+        # Test with very long filename
+        long_name = "this_is_a_very_long_filename_that_exceeds_thirty_characters.csv"
+        file_id = _generate_meaningful_file_id(long_name)
+        
+        # Extract the filename part (before timestamp)
+        name_part = "_".join(file_id.split("_")[:-3])
+        assert len(name_part) <= 30
+        assert name_part == "this_is_a_very_long_filename_t"
+        
+    def test_generate_meaningful_file_id_no_extension(self):
+        """Test file ID generation without extension"""
+        from app.data.endpoints import _generate_meaningful_file_id
+        
+        # Test without extension
+        file_id = _generate_meaningful_file_id("datafile")
+        assert "datafile_" in file_id
+        
+    def test_generate_meaningful_file_id_empty_after_clean(self):
+        """Test file ID generation when name becomes empty after cleaning"""
+        from app.data.endpoints import _generate_meaningful_file_id
+        
+        # Test with only special characters
+        file_id = _generate_meaningful_file_id("@#$%.csv")
+        # Should have timestamp and short ID even if name is empty
+        parts = file_id.split("_")
+        assert len(parts) >= 3  # At least _YYYYMMDD_HHMMSS_xxxx
+        
+    def test_generate_meaningful_file_id_consistency(self):
+        """Test that file ID format is consistent"""
+        from app.data.endpoints import _generate_meaningful_file_id
+        import re
+        
+        # Generate multiple IDs
+        file_ids = [
+            _generate_meaningful_file_id("test1.csv"),
+            _generate_meaningful_file_id("test-2.csv"),
+            _generate_meaningful_file_id("TEST_3.CSV"),
+        ]
+        
+        # All should match the pattern
+        pattern = r'^[a-z0-9_]+_\d{8}_\d{6}_[a-f0-9]{4}$'
+        for file_id in file_ids:
+            assert re.match(pattern, file_id), f"File ID {file_id} doesn't match expected pattern"
+    
+    def test_upload_uses_meaningful_file_id(self, client, mock_file_manager, mock_processor, sample_csv_content):
+        """Test that file upload uses the new meaningful file ID"""
+        import re
+        captured_file_id = None
+        
+        def capture_file_id(session_id, file_id):
+            nonlocal captured_file_id
+            captured_file_id = file_id
+            return Path(f"/tmp/{file_id}.db")
+        
+        mock_file_manager.get_user_db_path.side_effect = capture_file_id
+        
+        with patch("app.data.endpoints.FileManager", return_value=mock_file_manager):
+            with patch("app.data.endpoints.file_processor_registry.get_processor", return_value=mock_processor):
+                response = client.post(
+                    "/api/v1/data/upload",
+                    files={"file": ("sales_report_2024.csv", sample_csv_content, "text/csv")}
+                )
+        
+        assert response.status_code == 200
+        result = response.json()
+        
+        # Verify the file ID format
+        file_id = result["file_id"]
+        assert file_id == captured_file_id
+        assert "sales_report_2024" in file_id
+        
+        # Should match our meaningful ID pattern
+        pattern = r'^sales_report_2024_\d{8}_\d{6}_[a-f0-9]{4}$'
+        assert re.match(pattern, file_id), f"File ID {file_id} doesn't match expected pattern"

@@ -55,7 +55,11 @@ export class BackendAdapters {
    * Transform backend upload response to frontend UploadedFile format
    */
   static adaptUploadResponse(response: BackendUploadResponse): ApiResponse<UploadedFile & { schema: TableSchema }> {
-    const filename = this.extractFilenameFromTableName(response.schema.table_name);
+    // With meaningful file IDs, we store the full ID+filename
+    // The UI will simplify it using fileUtils
+    const filename = response.file_id.endsWith('.csv') 
+      ? response.file_id 
+      : `${response.file_id}_${this.extractFilenameFromTableName(response.schema.table_name)}`;
     const estimatedSize = this.estimateFileSize(response.schema.row_count);
 
     const uploadedFile: UploadedFile = {
