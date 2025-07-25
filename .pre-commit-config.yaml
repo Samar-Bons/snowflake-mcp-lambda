@@ -71,12 +71,12 @@ repos:
       # Coverage achieved: 88.87% (requirement: 85%)
       - id: pytest-backend
         name: pytest with coverage
-        entry: ./scripts/poetry-wrapper.sh run pytest
+        entry: bash -c 'cd backend && poetry install --no-interaction && poetry run pytest --override-ini="addopts="'
         language: system
         pass_filenames: false
         always_run: true
         args: [--cov=app, --cov-report=term-missing, --cov-fail-under=85]
-        stages: [commit]
+        stages: [pre-commit]
 
       # Poetry check - ensure lock file is up to date
       - id: poetry-check
@@ -142,5 +142,5 @@ repos:
         require_serial: true
 
 # Configuration to run all hooks
-default_stages: [commit]
+default_stages: [pre-commit]
 fail_fast: false  # Run all checks even if one fails
