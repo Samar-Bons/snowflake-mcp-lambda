@@ -41,58 +41,57 @@ repos:
   # Backend hooks (Python) - Use local hooks to ensure exact CI parity
   - repo: local
     hooks:
-      # Ruff - linting and formatting for backend (exact CI parity)
+      # Ruff - linting and formatting for backend (EXACT CI MATCH - runs on ALL files)
       - id: ruff-check-backend
-        name: ruff check (backend)
-        entry: ./scripts/poetry-wrapper.sh run ruff check --output-format=github .
-        language: system
-        files: ^backend/.*\.py$
-        require_serial: true
-        pass_filenames: false
-
-      - id: ruff-format-backend
-        name: ruff format (backend)
-        entry: ./scripts/poetry-wrapper.sh run ruff format --check .
-        language: system
-        files: ^backend/.*\.py$
-        require_serial: true
-        pass_filenames: false
-
-      # MyPy - type checking for backend (exact CI parity)
-      - id: mypy-backend
-        name: mypy (backend)
-        entry: ./scripts/poetry-wrapper.sh run mypy .
-        language: system
-        files: ^backend/.*\.py$
-        require_serial: true
-        pass_filenames: false
-
-      # Pytest - full test suite with coverage (exactly as CI runs it)
-      # Coverage achieved: 88.87% (requirement: 85%)
-      - id: pytest-backend
-        name: pytest with coverage
-        entry: bash -c 'cd backend && poetry install --no-interaction && poetry run pytest --override-ini="addopts="'
+        name: ruff check (backend) - CI match ALL FILES
+        entry: bash -c 'cd backend && poetry run ruff check --output-format=github .'
         language: system
         pass_filenames: false
         always_run: true
-        args: [--cov=app, --cov-report=term-missing, --cov-fail-under=85]
+        require_serial: true
+
+      - id: ruff-format-backend
+        name: ruff format (backend) - CI match ALL FILES
+        entry: bash -c 'cd backend && poetry run ruff format --check .'
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # MyPy - type checking for backend (EXACT CI MATCH - runs on ALL files)
+      - id: mypy-backend
+        name: mypy (backend) - CI match ALL FILES
+        entry: bash -c 'cd backend && poetry run mypy .'
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # Pytest - full test suite with coverage (EXACT CI MATCH)
+      # Coverage achieved: 88.87% (requirement: 85%)
+      - id: pytest-backend
+        name: pytest with coverage - CI match
+        entry: bash -c 'cd backend && poetry run pytest --cov=app --cov-report=xml --cov-report=term-missing --cov-fail-under=85'
+        language: system
+        pass_filenames: false
+        always_run: true
         stages: [pre-commit]
 
       # Poetry check - ensure lock file is up to date
       - id: poetry-check
-        name: poetry check
-        entry: ./scripts/poetry-wrapper.sh check
+        name: poetry check - ALL FILES
+        entry: bash -c 'cd backend && poetry check'
         language: system
         pass_filenames: false
-        files: backend/pyproject.toml
+        always_run: true
 
-      # Security check with bandit (via ruff S rules) for backend
+      # Security check with bandit (via ruff S rules) for backend - ALL FILES
       - id: security-check-backend
-        name: security check (backend)
-        entry: ./scripts/poetry-wrapper.sh run ruff check --select=S app/ tests/
+        name: security check (backend) - ALL FILES
+        entry: bash -c 'cd backend && poetry run ruff check --select=S app/ tests/'
         language: system
-        files: ^backend/.*\.py$
         pass_filenames: false
+        always_run: true
 
       # SQL migration validation
       - id: sql-check
@@ -105,40 +104,40 @@ repos:
   # Frontend hooks (TypeScript/React)
   - repo: local
     hooks:
-      # ESLint for frontend
+      # ESLint for frontend (EXACT CI MATCH - runs on ALL files)
       - id: eslint-frontend
-        name: ESLint (frontend)
+        name: ESLint (frontend) - CI match ALL FILES
         entry: bash -c 'cd frontend && npm run lint'
         language: system
-        files: ^frontend/.*\.(ts|tsx|js|jsx)$
         pass_filenames: false
+        always_run: true
         require_serial: true
 
-      # TypeScript check for frontend (via build)
+      # TypeScript check for frontend (EXACT CI MATCH - runs on ALL files)
       - id: tsc-frontend
-        name: TypeScript check (frontend)
+        name: TypeScript check (frontend) - CI match ALL FILES
         entry: bash -c 'cd frontend && npx tsc --noEmit'
         language: system
-        files: ^frontend/.*\.(ts|tsx)$
         pass_filenames: false
+        always_run: true
         require_serial: true
 
-      # Frontend unit tests with Vitest
+      # Frontend unit tests with Vitest (EXACT CI MATCH - runs on ALL files)
       - id: vitest-frontend
-        name: Frontend unit tests
+        name: Frontend unit tests - CI match ALL FILES
         entry: bash -c 'cd frontend && npm run test -- --run --reporter=verbose'
         language: system
-        files: ^frontend/.*\.(ts|tsx)$
         pass_filenames: false
+        always_run: true
         require_serial: true
 
-      # Frontend build verification
+      # Frontend build verification (EXACT CI MATCH - runs on ALL files)
       - id: frontend-build
-        name: Frontend build check
+        name: Frontend build check - CI match ALL FILES
         entry: bash -c 'cd frontend && npm run build'
         language: system
-        files: ^frontend/.*\.(ts|tsx|js|jsx|html|css)$
         pass_filenames: false
+        always_run: true
         require_serial: true
 
 # Configuration to run all hooks

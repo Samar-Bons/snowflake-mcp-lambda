@@ -25,34 +25,34 @@ router = APIRouter(prefix="/data", tags=["data"])
 # File upload limits
 MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
 ALLOWED_EXTENSIONS = [".csv", ".tsv", ".txt"]
+MAX_FILENAME_LENGTH = 30  # Maximum length for clean filename part
 
 
 def _generate_meaningful_file_id(filename: str) -> str:
     """Generate a meaningful file ID from filename.
-    
+
     Format: clean_filename_YYYYMMDD_HHMMSS_shortid
     Example: customer_data_20250125_100630_a1b2
     """
     # Clean the filename
     base_name = Path(filename).stem
     # Remove special characters and normalize
-    clean_name = re.sub(r'[^\w\s-]', '', base_name)
-    clean_name = re.sub(r'[-\s]+', '_', clean_name)
-    clean_name = clean_name.strip('_').lower()
-    
+    clean_name = re.sub(r"[^\w\s-]", "", base_name)
+    clean_name = re.sub(r"[-\s]+", "_", clean_name)
+    clean_name = clean_name.strip("_").lower()
+
     # Limit length to keep IDs reasonable
-    if len(clean_name) > 30:
-        clean_name = clean_name[:30].rstrip('_')
-    
+    if len(clean_name) > MAX_FILENAME_LENGTH:
+        clean_name = clean_name[:MAX_FILENAME_LENGTH].rstrip("_")
+
     # Add timestamp
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
     # Add short unique identifier (4 chars from UUID)
     short_id = str(uuid.uuid4())[:4]
-    
+
     # Combine parts
     file_id = f"{clean_name}_{timestamp}_{short_id}"
-    
     return file_id
 
 
